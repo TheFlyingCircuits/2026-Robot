@@ -179,6 +179,16 @@ public final class Constants {
         public static final double mountPoseRollDegrees = -0.591957151889801;
     }
 
+    public final static class TurretConstants {
+        public static final double aimerInitialPositionDegrees = 0.0;
+        public static final double hoodInitialPositionDegrees = 0.0;
+
+        public static final int aimerKrakenID = 0;
+        public static final int hoodKrakenID = 0;
+        public static final int frontWheelKrakenID = 0;
+        public static final int hoodWheelKrakenID = 0;
+    }
+
     public final static class VisionConstants {
         //Camera, IP, hostname
         //intakeCam, 10.17.87.50, ?
