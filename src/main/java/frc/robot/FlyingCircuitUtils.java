@@ -143,4 +143,18 @@ public class FlyingCircuitUtils {
 
     // Useful Unicode Symbols for "ASCII" art
     // ↑ ← → ↓
+
+     public static double getNumberFromDashboard(String name, double valueWhenNoComs){
+        double numberFromDashboard = SmartDashboard.getNumber(name, valueWhenNoComs);
+        
+        //make dashboard aware of our number's existence
+        //this makes the number on the dashboard
+        SmartDashboard.putNumber(name, numberFromDashboard);  //this puts the info on the dashboard the first loop through.  This line of code does nothing significant except waste time for all other iterations of our code
+        return numberFromDashboard;
+    }
+
+    public static void putNumberOnDashboard(String name, double numberToPutOnDashboard){
+        SmartDashboard.putNumber(name, numberToPutOnDashboard);
+    }
+
 }
