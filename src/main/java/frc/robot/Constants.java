@@ -186,6 +186,7 @@ public final class Constants {
         public static final int aimerKrakenID = 0;
         public static final int hoodKrakenID = 0;
         public static final int frontWheelKrakenID = 0;
+        public static final int frontWheelFollowerKrakenID = 0;
         public static final int hoodWheelKrakenID = 0;
     }
 

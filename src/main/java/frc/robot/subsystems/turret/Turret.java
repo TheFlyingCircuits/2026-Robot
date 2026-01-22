@@ -1,36 +1,25 @@
 package frc.robot.subsystems.turret;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Turret {
+public class Turret extends SubsystemBase{
 
-    TurretIOInputsAutoLogged inputs;
-    TurretIO io;
+    AimerIOInputsAutoLogged aimerInputs;
+    FlywheelsIOInputsAutoLogged flywheelsInputs;
+    HoodIOInputsAutoLogged hoodInputs;
 
-    Aimer aimer;
-    Flywheels flywheels;
-    Hood hood;
+    AimerIO aimer;
+    FlywheelsIO flywheels;
+    HoodIO hood;
 
-    public Turret(TurretIO io) {
-        this.io = io;
-        inputs = new TurretIOInputsAutoLogged();
+    public Turret(AimerIO aimer, FlywheelsIO flywheels, HoodIO hood) {
+        this.aimer = aimer;
+        this.flywheels = flywheels;
+        this.hood = hood;
 
-        aimer = new Aimer();
-        flywheels = new Flywheels();
-        hood = new Hood();
-    }
-
-    public class Aimer extends SubsystemBase {
-
-    }
-
-    public class Flywheels extends SubsystemBase {
-
-    }
-
-    public class Hood extends SubsystemBase {
-
+        aimerInputs = new AimerIOInputsAutoLogged();
+        flywheelsInputs = new FlywheelsIOInputsAutoLogged();
+        hoodInputs = new HoodIOInputsAutoLogged();
     }
     
 }

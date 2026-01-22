@@ -8,7 +8,7 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.UniversalConstants;
 import frc.robot.VendorWrappers.Kraken;
 
-public class TurretIOKraken implements TurretIO {
+public class TurretIOKraken {
 
     private Kraken aimerKraken;
     private Kraken frontWheelKraken;

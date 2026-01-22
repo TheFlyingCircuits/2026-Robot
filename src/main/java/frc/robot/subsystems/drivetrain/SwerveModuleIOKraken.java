@@ -101,8 +101,6 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.Feedback.SensorToMechanismRatio = 1;
         config.ClosedLoopGeneral.ContinuousWrap = true;
-        config.TorqueCurrent.withPeakForwardTorqueCurrent(10)
-      .withPeakReverseTorqueCurrent(-10);
         angleMotor.applyConfig(config);
     }
 
