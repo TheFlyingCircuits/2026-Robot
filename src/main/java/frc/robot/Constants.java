@@ -190,6 +190,18 @@ public final class Constants {
         public static final int hoodWheelKrakenID = 0;
     }
 
+    public final static class IntakeConstants {
+        public static final double intakePositionDegrees = 0.0;
+        
+        public static final int intakeLeftKrakenID = 0;
+        public static final int intakeRightKrakenID = 0;
+        public static final int rollerTopKrakenID = 0;
+        public static final int rollerBottomKrakenID = 0;
+        public static final int leftPivotEncoderID = 0;
+
+
+    }
+
     public final static class VisionConstants {
         //Camera, IP, hostname
         //intakeCam, 10.17.87.50, ?
