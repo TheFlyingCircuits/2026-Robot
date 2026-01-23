@@ -113,4 +113,10 @@ wpi.java.configureTestTasks(test)
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
+
+    // The default file encoding seems to be windows-1252 instead of UTF-8.
+    // Adding this line allows us to use unicode characters in code,
+    // which I somtimes do in the comments when drawing "ASCII" art.
+    // https://www.chiefdelphi.com/t/java-using-unicode-characters-in-variable-names/374652/3
+    options.encoding = 'UTF-8'
 }
