@@ -10,7 +10,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -25,17 +24,19 @@ public class Robot extends LoggedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
-    private void initAdvantageKit() {
-        Logger.recordMetadata("projectName", "Base_code");
-        Logger.addDataReceiver(new NT4Publisher());
-        if (Constants.atCompetition) {
-            Logger.addDataReceiver(new WPILOGWriter()); // <- log to USB stick
-        }
-        new PowerDistribution();    // Apparently just constructing a PDH
-                                    // will allow it's values to be logged? 
-                                    // This is what the advantage kit docs imply at least.
-        Logger.start();
+  private void initAdvantageKit() {
+    Logger.recordMetadata("projectName", "2026_Robot");
+    Logger.addDataReceiver(new NT4Publisher());
+    if (Constants.atCompetition) {
+      Logger.addDataReceiver(new WPILOGWriter()); // <- log to USB stick
     }
+    // new PowerDistribution();    // Apparently just constructing a PDH
+    //                             // will allow it's values to be logged? 
+    //                             // This is what the advantage kit docs imply at least.
+    // TODO: We may not need this anymore as of 2026. The AdvantageKit docs indicate that this is
+    //       automatically done for us now, provided we use the default CAN ID for our PDH.
+    Logger.start();
+  }
 
   @Override
   public void robotPeriodic() {
@@ -47,8 +48,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-        m_robotContainer.drivetrain.allowTeleportsNextPoseUpdate();
-        m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
+    m_robotContainer.drivetrain.allowTeleportsNextPoseUpdate();
+    m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
   }
 
   @Override
