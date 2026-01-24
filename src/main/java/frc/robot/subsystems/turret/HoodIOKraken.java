@@ -8,7 +8,7 @@ public class HoodIOKraken implements HoodIO{
     private Kraken hoodKraken;
 
     public HoodIOKraken() {
-        hoodKraken = new Kraken(TurretConstants.hoodKrakenID, UniversalConstants.canivoreName);
+        // hoodKraken = new Kraken(TurretConstants.hoodKrakenID, UniversalConstants.canivoreName);
     }
 
 }

@@ -112,7 +112,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         inputs.targetAngleDegrees = desiredAngleDeg;
 
         inputs.driveAppliedVoltage = driveMotor.getMotorVoltage().getValueAsDouble();
-        inputs.driveCurrent = driveMotor.getTorqueCurrent().getValueAsDouble();
+        inputs.driveCurrent = driveMotor.getStatorCurrent().getValueAsDouble();
     }
 
     @Override

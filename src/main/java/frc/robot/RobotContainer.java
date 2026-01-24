@@ -9,23 +9,24 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
-import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
+import frc.robot.subsystems.turret.AimerIOKraken;
+import frc.robot.subsystems.turret.FlywheelsIOKraken;
+import frc.robot.subsystems.turret.HoodIOKraken;
+import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonLib;
 
 
 public class RobotContainer {
 
     public final Drivetrain drivetrain;
     public final Leds leds;
+    public final Turret turret;
 
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
@@ -34,17 +35,26 @@ public class RobotContainer {
         /**** INITIALIZE SUBSYSTEMS ****/
         if (RobotBase.isReal()) {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
-            drivetrain = new Drivetrain( 
-                new GyroIOPigeon(),
-                new SwerveModuleIOKraken(0, 1, -0.377686, 0, "FL"), 
-                new SwerveModuleIOKraken(2, 3, 0.397705, 1, "FR"),
-                new SwerveModuleIOKraken(4, 5, 0.238281, 2, "BL"),
-                new SwerveModuleIOKraken(6, 7,  -0.370850, 3, "BR"),
-                new VisionIO() {} //VisionConstants.useNewSingleTagCodeFromBuckeye ? new VisionIO() {} : new VisionIOPhotonLib()
+            // drivetrain = new Drivetrain( 
+            //     new GyroIOPigeon(),
+            //     new SwerveModuleIOKraken(0, 1, -0.377686, 0, "FL"), 
+            //     new SwerveModuleIOKraken(2, 3, 0.397705, 1, "FR"),
+            //     new SwerveModuleIOKraken(4, 5, 0.238281, 2, "BL"),
+            //     new SwerveModuleIOKraken(6, 7,  -0.370850, 3, "BR"),
+            //     new VisionIO() {} //VisionConstants.useNewSingleTagCodeFromBuckeye ? new VisionIO() {} : new VisionIOPhotonLib()
+            // );
+            drivetrain = new Drivetrain(
+                new GyroIOSim(){},
+                new SwerveModuleIOSim(){},
+                new SwerveModuleIOSim(){},
+                new SwerveModuleIOSim(){},
+                new SwerveModuleIOSim(){},
+                new VisionIO() {}
             );
             leds = new Leds();
-        }
-        else {
+            turret = new Turret(new AimerIOKraken(), new FlywheelsIOKraken(), new HoodIOKraken());
+        } else {
+            turret = new Turret(new AimerIOKraken(), new FlywheelsIOKraken(), new HoodIOKraken());
             drivetrain = new Drivetrain(
                 new GyroIOSim(){},
                 new SwerveModuleIOSim(){},
@@ -55,16 +65,19 @@ public class RobotContainer {
             );
             leds = new Leds();
         }
+        FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
         configureBindings();
         setDefaultCommands();
     }
 
     private void configureBindings() {
-        duncanController.y().onTrue(reSeedRobotPose());
-        duncanController.a().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptAllTags()));
-        duncanController.x().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptNoTags()));
-        duncanController.b().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.onlyAcceptOneTag(10)));
+        // duncanController.y().onTrue(reSeedRobotPose());
+        // duncanController.a().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptAllTags()));
+        // duncanController.x().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptNoTags()));
+        // duncanController.b().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.onlyAcceptOneTag(10)));
+        duncanController.a().whileTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
+        // duncanController.b().whileTrue(turret.setAimerVoltsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
     }
 
     public Command getAutonomousCommand() {

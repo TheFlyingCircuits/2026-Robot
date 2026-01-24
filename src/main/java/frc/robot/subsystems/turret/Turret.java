@@ -1,5 +1,10 @@
 package frc.robot.subsystems.turret;
 
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase{
@@ -21,5 +26,26 @@ public class Turret extends SubsystemBase{
         flywheelsInputs = new FlywheelsIOInputsAutoLogged();
         hoodInputs = new HoodIOInputsAutoLogged();
     }
-    
+
+    @Override 
+    public void periodic() {
+        aimer.updateInputs(aimerInputs);
+        Logger.processInputs("aimerInputs", aimerInputs);
+    }
+
+    public void aimAtTarget(double targetAngleDegrees) {
+        Logger.recordOutput("aimerInputs/targetAngleDegrees", targetAngleDegrees);
+        aimer.setTargetAimerPosition(targetAngleDegrees);
+    }
+
+    public void setAimerVolts(double volts) {
+        aimer.setAimerVolts(volts);
+    }
+
+    public Command aimAtTargetCommand(DoubleSupplier targetAngleDegrees) {
+        return this.run(() -> aimAtTarget(targetAngleDegrees.getAsDouble()));
+    }
+        public Command setAimerVoltsCommand(DoubleSupplier volts) {
+        return this.run(() -> setAimerVolts(volts.getAsDouble()));
+    }
 }

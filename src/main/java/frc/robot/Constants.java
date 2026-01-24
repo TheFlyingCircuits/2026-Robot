@@ -183,11 +183,13 @@ public final class Constants {
         public static final double aimerInitialPositionDegrees = 0.0;
         public static final double hoodInitialPositionDegrees = 0.0;
 
-        public static final int aimerKrakenID = 0;
+        public static final int aimerKrakenID = 5;
         public static final int hoodKrakenID = 0;
         public static final int frontWheelKrakenID = 0;
         public static final int frontWheelFollowerKrakenID = 0;
         public static final int hoodWheelKrakenID = 0;
+
+        public static final double turretKrakenToTurretRotationsGearRatio = 3.0;
     }
 
     public final static class IntakeConstants {
