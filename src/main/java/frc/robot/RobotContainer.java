@@ -76,8 +76,9 @@ public class RobotContainer {
         // duncanController.a().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptAllTags()));
         // duncanController.x().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.acceptNoTags()));
         // duncanController.b().whileTrue(new InstantCommand(() -> VisionIOPhotonLib.onlyAcceptOneTag(10)));
-        duncanController.a().whileTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
+        // duncanController.a().whileTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
         // duncanController.b().whileTrue(turret.setAimerVoltsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
+        duncanController.a().whileTrue(turret.aimAtTargetCommand(() -> (duncanController.getLeftTriggerAxis()*180.0)));
     }
 
     public Command getAutonomousCommand() {
