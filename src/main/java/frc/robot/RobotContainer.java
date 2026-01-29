@@ -15,10 +15,10 @@ import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
-import frc.robot.subsystems.turret.AimerIOKraken;
-import frc.robot.subsystems.turret.FlywheelsIOKraken;
-import frc.robot.subsystems.turret.HoodIOKraken;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.aimer.AimerIOKraken;
+import frc.robot.subsystems.turret.flywheels.FlywheelsIOKraken;
+import frc.robot.subsystems.turret.hood.HoodIOKraken;
 import frc.robot.subsystems.vision.VisionIO;
 
 

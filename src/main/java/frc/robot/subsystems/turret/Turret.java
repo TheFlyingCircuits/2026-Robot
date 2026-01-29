@@ -6,6 +6,9 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.turret.aimer.AimerIO;
+import frc.robot.subsystems.turret.flywheels.FlywheelsIO;
+import frc.robot.subsystems.turret.hood.HoodIO;
 
 public class Turret extends SubsystemBase{
 
