@@ -1,0 +1,203 @@
+{
+  "hubs": [
+    {
+      "x": -8,
+      "y": -8,
+      "width": 1552,
+      "height": 840,
+      "state": {
+        "sidebar": {
+          "width": 296,
+          "expanded": [
+            "/AdvantageKit/RealOutputs",
+            "/AdvantageKit"
+          ]
+        },
+        "tabs": {
+          "selected": 3,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "ik98od6tb3bwrpr94ccfxdx3ggvbyrwd",
+              "renderer": "",
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "rightUnitConversion": {
+                  "autoTarget": null,
+                  "preset": null
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "caprw3wb65uqwfe1h1tbblalctaigwfo",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [],
+                "field": "FRC:Evergreen",
+                "orientation": 0,
+                "size": "large"
+              },
+              "controllerUUID": "l4cvoog30uumv848pkcrqje8aur8t33j",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/HUB",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/HUB/tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/OUTPOST",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/OUTPOST/tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TOWER",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TOWER/tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TRENCH_LEFT",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TRENCH_LEFT/tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TRENCH_RIGHT",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/TRENCH_RIGHT/tags",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/DEPOT",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/BUMP_LEFT",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldElement/BUMP_RIGHT",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "Duck Bot"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "oykyjhw9gc0ylfarala1cvgz7dyuzbte",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  1.276440090532955,
+                  1.0234760004339154,
+                  -1.7401843480426442
+                ],
+                "cameraTarget": [
+                  0.22958486464999445,
+                  0.1520071864438046,
+                  0.1761564416529916
+                ]
+              },
+              "controlsHeight": 426
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.0"
+}

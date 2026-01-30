@@ -1,7 +1,5 @@
 package frc.robot.PlayingField;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -123,16 +121,6 @@ public enum FieldElement {
         return false;
     }
 
-    public Pose3d[] getTagPoses() {
-        int[] tagIDs = FlyingCircuitUtils.getAllianceDependentValue(redTagIDs, blueTagIDs, new int[0]);
-        ArrayList<Pose3d> tagPoses = new ArrayList<>();
-        for (int id : tagIDs) {
-            tagPoses.add(FieldConstants.tagPose(id));
-        }
-
-        return tagPoses.toArray(new Pose3d[0]);
-    }
-
     private static Translation3d getAvgLocation(int[] tagsToSample) {
         Translation3d avgLocation = new Translation3d();
         for (int tagID : tagsToSample) {
@@ -157,5 +145,22 @@ public enum FieldElement {
 
         return output;
     }
+
+    // private Pose3d[] getTagPoses() {
+    //     int[] tagIDs = FlyingCircuitUtils.getAllianceDependentValue(redTagIDs, blueTagIDs, new int[0]);
+    //     ArrayList<Pose3d> tagPoses = new ArrayList<>();
+    //     for (int id : tagIDs) {
+    //         tagPoses.add(FieldConstants.tagPose(id));
+    //     }
+
+    //     return tagPoses.toArray(new Pose3d[0]);
+    // }
+
+    // public static void advantageScopeViz() {
+    //     for (FieldElement element : FieldElement.values()) {
+    //         Logger.recordOutput("FieldElementViz/"+element.name(), element.getPose());
+    //         Logger.recordOutput("FieldElementViz/"+element.name()+"/tags", element.getTagPoses());
+    //     }
+    // }
 }
 
