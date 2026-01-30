@@ -1,12 +1,16 @@
 package frc.robot.subsystems.drivetrain;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -25,6 +29,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
@@ -212,6 +217,25 @@ public class Drivetrain extends SubsystemBase {
         ChassisSpeeds v = getFieldOrientedVelocity();
         double s = Math.hypot(v.vxMetersPerSecond, v.vyMetersPerSecond);
         return s;
+    }
+
+    /**
+     * Util method to create a path following command given the name of the path in pathplanner.
+     * Make sure to call this only after the AutoBuilder is configured.
+     */
+    public Command followPath(String pathName) {
+        System.out.println("getting path: " + pathName);
+        try {
+             return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName)).withName(pathName);
+        }
+        catch (IOException e) {
+            System.out.println("IOException when reading path name");
+            return null; 
+        }
+        catch (ParseException e) {
+            System.out.println("ParseExeption when reading path name");
+            return null;
+        }
     }
 
     //**************** ODOMETRY ****************//

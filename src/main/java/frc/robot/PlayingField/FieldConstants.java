@@ -28,6 +28,22 @@ public class FieldConstants {
         return new Transform3d(pose.getTranslation(), pose.getRotation());
     }
 
+    /**
+     * Returns true if the fed position is inside the field perimeter.
+     * @param toleranceMeters - How far the given coordinates can poke outside of the
+     *                          field perimeter, while still having this function return true.
+     */
+    public static boolean isInField(Translation2d location, double toleranceMeters) {
+        boolean insideX = ((0 - toleranceMeters) < location.getX()) && (location.getX() < (maxX + toleranceMeters));
+        boolean insideY = ((0 - toleranceMeters) < location.getY()) && (location.getY() < (maxY + toleranceMeters));
+        return insideX && insideY;
+    }
+    /** Returns true if the fed position is inside the field perimeter. No tolerance is applied. */
+    public static boolean isInField(Translation2d location) {
+        return isInField(location, 0);
+    }
+
+
     // Fuel geometry
     public static final double fuelDiameterMeters = 0.15; // Game Manual seciton 5.10
     public static final double fuelRadiusMeters = fuelDiameterMeters / 2.0;

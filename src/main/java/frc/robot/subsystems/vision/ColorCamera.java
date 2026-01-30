@@ -24,6 +24,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.FlyingCircuitUtils;
+import frc.robot.PlayingField.FieldConstants;
 
 public class ColorCamera {
 
@@ -128,7 +129,7 @@ public class ColorCamera {
             // Don't track gamepieces outside the field perimeter.
             boolean requireInField = DriverStation.isFMSAttached() || RobotBase.isSimulation();
             double inFieldToleranceMeters = 0.05;
-            if (requireInField && !FlyingCircuitUtils.isInField(gamepieceLocation_fieldCoords, inFieldToleranceMeters)) {
+            if (requireInField && !FieldConstants.isInField(gamepieceLocation_fieldCoords.toTranslation2d(), inFieldToleranceMeters)) {
                 this.invalidGamepieces_fieldCoords.add(gamepiecePose_fieldCoords);
                 continue;
             }
