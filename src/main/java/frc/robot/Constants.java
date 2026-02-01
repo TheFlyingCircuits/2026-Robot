@@ -76,6 +76,7 @@ public final class Constants {
         public static final double frameWidthMeters = Units.inchesToMeters(27);
 
         public static final double bumperWidthMeters = Units.inchesToMeters(27 + 7);
+        public static final double halfBumperWidthMeters = bumperWidthMeters / 2.0;
 
 
 
@@ -210,9 +211,7 @@ public final class Constants {
         //frontLeft, 10.17.87.54, Photon-RPi4-FL
         //frontRight, 10.17.87.51, Photon-RPi4-FR
         //backRight, 10.17.87.52, Photon-RPi4-BR
-        //backLeft, 10.17.87.53, Photon-RPi4-BL
-        public final static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-                                                       
+        //backLeft, 10.17.87.53, Photon-RPi4-BL                                                       
 
         public final static Transform3d robotToFrontLeft = new Transform3d(
             new Translation3d(Units.inchesToMeters(7.248), Units.inchesToMeters(11.275), Units.inchesToMeters(7.281)),

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.simulation.VisionTargetSim;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
@@ -22,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -34,17 +37,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.FlyingCircuitUtils;
+import frc.robot.PlayingField.FieldConstants;
+import frc.robot.PlayingField.FieldElement;
+import frc.robot.subsystems.vision.ColorCamera;
 import frc.robot.subsystems.vision.SingleTagCam;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIO.VisionIOInputsLogged;
 
 public class Drivetrain extends SubsystemBase {
     private GyroIO gyroIO;
     private GyroIOInputsAutoLogged gyroInputs;
-
-    private VisionIO visionIO;
-    private VisionIOInputsLogged visionInputs;
 
     private SingleTagCam[] tagCams = {
         new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front left
@@ -52,10 +53,12 @@ public class Drivetrain extends SubsystemBase {
         new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
         new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
     };
+    private ColorCamera intakeCam = new ColorCamera("intakeCam", VisionConstants.robotToCoralCamera);
 
     private boolean fullyTrustVisionNextPoseUpdate = false;
     private boolean allowTeleportsNextPoseUpdate = false;
     private boolean hasAcceptablePoseObservationsThisLoop = false;
+    private Optional<FieldElement> focus = Optional.empty();
 
     private SwerveModule[] swerveModules;
 
@@ -79,15 +82,11 @@ public class Drivetrain extends SubsystemBase {
         SwerveModuleIO flSwerveModuleIO, 
         SwerveModuleIO frSwerveModuleIO, 
         SwerveModuleIO blSwerveModuleIO, 
-        SwerveModuleIO brSwerveModuleIO,
-        VisionIO visionIO
+        SwerveModuleIO brSwerveModuleIO
     ) {
         
         this.gyroIO = gyroIO;
         gyroInputs = new GyroIOInputsAutoLogged();
-
-        this.visionIO = visionIO;
-        visionInputs = new VisionIOInputsLogged();
 
         swerveModules = new SwerveModule[] {
             new SwerveModule(flSwerveModuleIO, 0, "frontLeft"),
@@ -296,6 +295,14 @@ public class Drivetrain extends SubsystemBase {
         this.setOrientation(FlyingCircuitUtils.getAllianceDependentValue(forwardOnRed, forwardOnBlue, forwardNow));
     }
 
+    /** Makes the pose estimator only use tags that are on the given field element. */
+    public void setFocus(FieldElement focus) {
+        this.focus = Optional.of(focus);
+    }
+    /** Allows the pose estimator to use all apriltags on the field, instead of only those attached to a specific field element. */
+    public void resetFocus() {
+        this.focus = Optional.empty();
+    }
     public void fullyTrustVisionNextPoseUpdate() {
         this.fullyTrustVisionNextPoseUpdate = true;
     }
@@ -349,9 +356,16 @@ public class Drivetrain extends SubsystemBase {
 
             // Don't allow the robot to teleport. Disallowing teleports can cause problems when we get bumped
             // and experience lots of wheel slip, which is why we have the "allowTeleportsNextPoseUpdate" flag
-            // (used at driver's discretion (typically via y-button)).
+            // (used at driver's discretion (typically via y-button)). Also useful for seeding the robot pose
+            // at the beginning of a match.
             double teleportToleranceMeters = 4.0;
             if (observedLocation.getDistance(locationNow) > teleportToleranceMeters && (!this.allowTeleportsNextPoseUpdate)) {
+                rejectedTags.add(poseObservation.getTagPose());
+                continue;
+            }
+
+            // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
+            if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -379,19 +393,17 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        for (SwerveModule mod : swerveModules)
+            mod.periodic();
+        
         gyroIO.updateInputs(gyroInputs);
         if (gyroIO instanceof GyroIOSim) //calculates sim gyro
             gyroIO.calculateYaw(getModulePositions());
-          
-
-        visionIO.updateInputs(visionInputs);
-        for (SwerveModule mod : swerveModules)
-            mod.periodic();
-          
         Logger.processInputs("gyroInputs", gyroInputs);
-        Logger.processInputs("visionInputs", visionInputs);
 
         updatePoseEstimator();
+
+        intakeCam.periodic(fusedPoseEstimator);
 
         Logger.recordOutput("drivetrain/fusedPose", fusedPoseEstimator.getEstimatedPosition());
         Logger.recordOutput("drivetrain/wheelsOnlyPose", wheelsOnlyPoseEstimator.getEstimatedPosition());
@@ -401,5 +413,19 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("drivetrain/swerveModulePositions", getModulePositions());
 
         // this.compareCamPoses();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        // Move the simulation forward by 1 timestep (just camera stuff for now)
+        FieldConstants.simulatedTagLayout.update(wheelsOnlyPoseEstimator.getEstimatedPosition());
+        FieldConstants.simulatedFuelLayout.update(wheelsOnlyPoseEstimator.getEstimatedPosition());
+
+        ArrayList<Translation3d> simulatedFuel = new ArrayList<>();
+        for (VisionTargetSim fuel : FieldConstants.simulatedFuelLayout.getVisionTargets()) {
+            simulatedFuel.add(fuel.getPose().getTranslation());
+        }
+
+        Logger.recordOutput("simulatedFuel", simulatedFuel.toArray(new Translation3d[0]));
     }
 }
