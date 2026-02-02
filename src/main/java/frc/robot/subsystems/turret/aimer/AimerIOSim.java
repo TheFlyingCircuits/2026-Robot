@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class AimerIOSim implements AimerIO{
     private Drivetrain drivetrain;
@@ -26,19 +25,17 @@ public class AimerIOSim implements AimerIO{
     public void updateInputs(AimerIOInputs inputs) {
 
 
-        // inputs.pivotAngleDegrees += pivotVelDegPerSec * deltaT;
-        // inputs.pivotAngleRadians += Units.degreesToRadians(pivotVelDegPerSec * deltaT);
-        // // System.out.println(inputs.pivotAngleDegrees);
-        // inputs.pivotVelocityDegreesPerSecond = pivotVelDegPerSec;
+        inputs.aimerPositionDegrees += pivotVelDegPerSec * deltaT;
+        inputs.aimerVelocityDegreesPerSecond = pivotVelDegPerSec;
 
-        // double robotYawRad = drivetrain.getPoseMeters().getRotation().getRadians();
+        double robotYawRad = drivetrain.getPoseMeters().getRotation().getRadians();
 
-        // Translation2d intakeTranslation2d = drivetrain.getPoseMeters().getTranslation().plus(new Translation2d(Math.cos(robotYawRad)* 0.4,Math.sin(robotYawRad)*0.4));
+        Translation2d aimerTranslation2d = drivetrain.getPoseMeters().getTranslation().plus(new Translation2d(Math.cos(robotYawRad)* 0.4,Math.sin(robotYawRad)*0.4));
 
-        // Pose3d intakePoseOnRobotSIM = new Pose3d(new Translation3d(intakeTranslation2d.getX(),intakeTranslation2d.getY(),0.3), 
-        //     new Rotation3d(0,-inputs.pivotAngleRadians,drivetrain.getPoseMeters().getRotation().getRadians()));
+        Pose3d aimerPoseOnRobotSIM = new Pose3d(new Translation3d(aimerTranslation2d.getX(),aimerTranslation2d.getY(),0.75), 
+            new Rotation3d(0,0,drivetrain.getPoseMeters().getRotation().getRadians()+Units.degreesToRadians(inputs.aimerPositionDegrees)));
 
-        // Logger.recordOutput("intakeInputs/intakePoseOnRobotSIM", intakePoseOnRobotSIM);
+        Logger.recordOutput("intakeInputs/intakePoseOnRobotSIM", aimerPoseOnRobotSIM);
     }
 
     @Override
@@ -50,7 +47,7 @@ public class AimerIOSim implements AimerIO{
     @Override
     public void setTargetAimerPosition(double targetPositionDegrees) {
         double simVoltageOutput = 0.03 * (targetPositionDegrees-simulatedPositionDegrees);
-        setAimerVolts(targetPositionDegrees);
+        setAimerVolts(simVoltageOutput);
     }
 
 }
