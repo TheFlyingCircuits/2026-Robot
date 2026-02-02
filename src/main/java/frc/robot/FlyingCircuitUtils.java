@@ -1,106 +1,14 @@
 package frc.robot;
 
-import java.io.IOException;
 import java.util.Optional;
 
-import org.json.simple.parser.ParseException;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.VisionConstants;
 
 public class FlyingCircuitUtils {
-
-    /**
-     * Generates a field relative pose for the closest pickup for auto-intaking a note
-     * by drawing a straight line to the note.
-     * Once the robot is at this position, the robot should be
-     * able to track the note itself.
-     * @param robot - Current translation of the robot.
-     * @param note - Translation of the target note.
-     * @param radiusMeters - Distance from the note of the output pose.
-     */
-    public static Pose2d pickupAtNote(Translation2d robot, Translation2d note, double radiusMeters) {
-        //vector pointing from the note to the robot
-        Translation2d noteToBot = robot.minus(note);
-
-        Translation2d targetTranslation = note.interpolate(robot, radiusMeters/noteToBot.getNorm());
-
-        return new Pose2d(targetTranslation, noteToBot.getAngle());
-    }
-
-    /**
-     * Util method to create a path following command given the name of the path in pathplanner.
-     * Make sure to call this after the AutoBuilder is configured.
-     */
-    public static Command followPath(String pathName) {
-        System.out.println("getting path: " + pathName);
-        try {
-             return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName)).withName(pathName);
-        }
-        catch (IOException e) {
-            System.out.println("IOException when reading path name");
-            return null; 
-        }
-        catch (ParseException e) {
-            System.out.println("ParseExeption when reading path name");
-            return null;
-        }
-    }
-
-    /**
-     * Returns true if the fed position is inside the field perimeter.
-     * @param toleranceMeters - Distance outside of the field that will still be considered "in the field";
-     *                          i.e. the method will still return true.
-     */
-    public static boolean isInField(Translation2d location, double toleranceMeters) {
-        // Modeling the field as a long octagon instead of just a rectangle is necessary
-        // for accurately rejecting the coral that are outside the field at the loading stations.
-        //
-        // When using a tolerance, the current calculation isn't totally correct at the corners of the octagon
-        // (see https://www.desmos.com/calculator/xr9ocyj96n for an illustration of the innaccuracy),
-        // but it should still be close enough for our purposes.
-        int[] cornerTagIDs = {1, 2, 12, 13};
-        for (int tagID : cornerTagIDs) {
-            // Get vector from tag to location
-            Pose2d tagPose = VisionConstants.aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
-            Translation2d tagToLocation = location.minus(tagPose.getTranslation());
-
-            // Project that onto the tag's normal vector to get signed distance from the loading station wall.
-            // Negative values indicate out of the field, because the tag's normal faces into the field.
-            Rotation2d tagNormal = tagPose.getRotation();
-            double signedDistance = tagToLocation.getX() * tagNormal.getCos() + tagToLocation.getY() * tagNormal.getSin();
-
-            if (signedDistance < -toleranceMeters) {
-                return false;
-            }
-        }
-
-        // we've passed all the loading station checks if we've gotten to this point,
-        // so all that's left to check is the length and width of the field.
-        boolean insideX = ((0 - toleranceMeters) < location.getX()) && (location.getX() < (VisionConstants.aprilTagFieldLayout.getFieldLength() + toleranceMeters));
-        boolean insideY = ((0 - toleranceMeters) < location.getY()) && (location.getY() < (VisionConstants.aprilTagFieldLayout.getFieldWidth() + toleranceMeters));
-        return insideX && insideY;
-    }
-    public static boolean isInField(Translation3d location, double toleranceMeters) {
-        return FlyingCircuitUtils.isInField(location.toTranslation2d(), toleranceMeters);
-    }
-
-
-    public static double getPlanarDistanceMeters(Translation3d locaitonA, Translation3d locationB) {
-        return locaitonA.toTranslation2d().getDistance(locationB.toTranslation2d());
-    }
-
-
 
     public static <T> T getAllianceDependentValue(T valueOnRed, T valueOnBlue, T valueWhenNoComms) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -116,6 +24,77 @@ public class FlyingCircuitUtils {
 
         // Should never get to this point as long as we're connected to the driver station.
         return valueWhenNoComms;
+    }
+
+    public static double getNumberFromDashboard(String name, double defaultValue) {
+        // get the value from the dashboard, then echo it back to confirm
+        // the value is being read correctly.
+        double value = SmartDashboard.getNumber(name, defaultValue);
+        SmartDashboard.putNumber(name, value);
+
+        return value;
+    }
+
+    public static boolean getBooleanFromDashboard(String name, boolean defaultValue) {
+        // get the value from the dashboard, then echo it back to confirm
+        // the value is being read correctly.
+        boolean value = SmartDashboard.getBoolean(name, defaultValue);
+        SmartDashboard.putBoolean(name, value);
+
+        return value;
+    }
+
+    public static void putNumberOnDashboard(String name, double numberToPutOnDashboard) {
+        // This function honestly isn't really necessary. It's mostly here to have the
+        // "symmetry" of using "FlyingCircuitUtils" to for reading/writing numbers from/to the dashboard,
+        // instead of using "FlyingCircuitUtils" for reading, while using "SmartDashboard" for writing.
+        // 
+        // In practice, the dashboard is only really used for brief periods of time as we test and tune things,
+        // and Logger.recordOutput() is the more appropriate tool for "printing" debug info.
+        SmartDashboard.putNumber(name, numberToPutOnDashboard);
+    }
+
+    /** Intended for wrapping angles to a restricted range, while preserving the "direction" the angle points in.
+     *  Can also be used for other purposes, like wrapping the position of an LED pattern back to the begining of
+     *  an LED strip once it runs off the end. See comments within this function for more details.
+     *  TODO: Better docs?
+     */
+    public static double circularClamp(double wrapMe, double inclusiveMin, double exclusiveMax) {
+        // The easiest way to implement this function (in terms of understanding) is probably:
+        //   double distanceBetweenEquivalentValues =  exclusiveMax - inclusiveMin;
+        //   while (wrapMe <  min) { wrapMe += distanceBetweenEquivalentValues; }
+        //   while (wrapMe >= max) { wrapMe -= distanceBetweenEquivalentValues; }
+        //   return wrapMe;
+        //
+        // However, you hopefully get the feeling that there's a way to just calculate the answer
+        // directly instead of looping until you're in the desired range, which is what we do below.
+
+        // 1) Find the number that we're allowed to add or subtract from "wrapMe" without
+        //    changing its effective value.
+        //    (e.g. when wrapping angles measured in degrees, this value is 360. Adding or subtracting
+        //     360 to any given angle results in an angle pointing in the same direction as the original.)
+        double distanceBetweenEquivalentValues =  exclusiveMax - inclusiveMin;
+
+        // 2) Find the "t" value for if "wrapMe" had been obtained by
+        //    linearly interpolating between the min and the max.
+        double t = (wrapMe - inclusiveMin) / distanceBetweenEquivalentValues;
+
+        // 3) Use the non-fractional part of "t" (i.e. the part that's before the decimal place) to calculate the "index"
+        //    of the current range. For example, if we're clamping to the range 0 to 360, then:
+        //
+        //      [0-360) has index 0
+        //      [360-720) has index 1
+        //      [720-1080) has index 2
+        //      [-360-0) has index -1
+        //      [-720-360) has index -2, etc.
+        double indexOfCurrentRange = Math.floor(t);
+        // Note: You need to use Math.floor() here as opposed to just casting to int. This is because casting
+        //       to int always rounds towards 0, whereas the floor of a negative number rounds away from 0.
+        //       See: https://www.desmos.com/calculator/pnmjpb1whn
+
+        // 4) Get the final result by subtracting the appropriate amount of
+        //    full ranges from the given number.
+        return wrapMe - (distanceBetweenEquivalentValues * indexOfCurrentRange);
     }
 
     /** Positive to the left of the line, negative to the right of the line */
@@ -135,27 +114,8 @@ public class FlyingCircuitUtils {
         // return pointAsPose.relativeTo(line).getY();
     }
 
-    // public String getBigCommandName(Command command) {
-    //     String name = command.toString();
-    //     command.raceWith(null)
-    //     if (command instanceof )
-    // }
 
-
-    // Useful Unicode Symbols for "ASCII" art
+    // Useful Unicode Symbols for ASCII art
     // ↑ ← → ↓
-
-     public static double getNumberFromDashboard(String name, double valueWhenNoComs){
-        double numberFromDashboard = SmartDashboard.getNumber(name, valueWhenNoComs);
-        
-        //make dashboard aware of our number's existence
-        //this makes the number on the dashboard
-        SmartDashboard.putNumber(name, numberFromDashboard);  //this puts the info on the dashboard the first loop through.  This line of code does nothing significant except waste time for all other iterations of our code
-        return numberFromDashboard;
-    }
-
-    public static void putNumberOnDashboard(String name, double numberToPutOnDashboard){
-        SmartDashboard.putNumber(name, numberToPutOnDashboard);
-    }
-
+    // ↖ ↗ ↘ ↙
 }

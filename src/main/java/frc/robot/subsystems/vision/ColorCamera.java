@@ -10,7 +10,6 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,7 +22,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.FlyingCircuitUtils;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.PlayingField.FieldConstants;
 
 public class ColorCamera {
 
@@ -32,9 +32,8 @@ public class ColorCamera {
     private Rotation3d camOrientation_robotFrame;
 
     // "Sensor" readings
-    private List<Pose3d> validGamepieces_fieldCoords = new ArrayList<>();
-    private List<Pose3d> invalidGamepieces_fieldCoords = new ArrayList<>();
-    private List<Translation3d> projectedBoundingBox_advantageScopeViz = new ArrayList<>();
+    private List<Translation3d> validGamepieces_fieldCoords = new ArrayList<>();
+    private List<Translation3d> invalidGamepieces_fieldCoords = new ArrayList<>();
 
 
     public ColorCamera(String name, Translation3d camLocation_robotFrame, Rotation3d camOrientation_robotFrame) {
@@ -56,7 +55,7 @@ public class ColorCamera {
         int apriltagTiles = 100;
         int pixelsPerTile = 3 * 3;
         simCamera.setMinTargetAreaPixels(apriltagTiles * pixelsPerTile);
-        // FieldConstants.simulatedCoralLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+        FieldConstants.simulatedFuelLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
     }
     public ColorCamera(String name, Pose3d camPose_robotFrame) {
         this(name, camPose_robotFrame.getTranslation(), camPose_robotFrame.getRotation());
@@ -66,11 +65,11 @@ public class ColorCamera {
     }
 
 
-    public Optional<Pose3d> getClosestGamepieceTo(Translation2d locationOnField) {
-        Optional<Pose3d> closest = Optional.empty();
+    public Optional<Translation3d> getClosestGamepieceTo(Translation2d locationOnField) {
+        Optional<Translation3d> closest = Optional.empty();
         double minDistance = -1;
-        for (Pose3d gamepieceLocation_fieldCoords : this.validGamepieces_fieldCoords) {
-            double distance = gamepieceLocation_fieldCoords.getTranslation().toTranslation2d().getDistance(locationOnField);
+        for (Translation3d gamepieceLocation_fieldCoords : this.validGamepieces_fieldCoords) {
+            double distance = gamepieceLocation_fieldCoords.toTranslation2d().getDistance(locationOnField);
             if (closest.isEmpty() || (distance < minDistance)) {
                 minDistance = distance;
                 closest = Optional.of(gamepieceLocation_fieldCoords);
@@ -83,7 +82,7 @@ public class ColorCamera {
         return this.validGamepieces_fieldCoords.size() > 0;
     }
 
-    public List<Pose3d> getValidGamepieces_fieldCoords() {
+    public List<Translation3d> getValidGamepieces_fieldCoords() {
         return this.validGamepieces_fieldCoords;
     }
 
@@ -92,7 +91,6 @@ public class ColorCamera {
         // Reset for a new iteration of the main loop
         this.validGamepieces_fieldCoords = new ArrayList<>();
         this.invalidGamepieces_fieldCoords = new ArrayList<>();
-        this.projectedBoundingBox_advantageScopeViz = new ArrayList<>();
         // Logger.processInputs(cam.getName(), cam);
 
 
@@ -117,43 +115,39 @@ public class ColorCamera {
             // Yaw from PhotonVision is positive to the right, but we use the wpilib convention of positive to the left.
             double pitch = Units.degreesToRadians(target.pitch);
             double yaw = -1 * Units.degreesToRadians(target.yaw);
-            Translation3d gamepieceLocation_robotCoords = getGamepieceLocationInRobotCoords(pitch, yaw, 0.05);
-            // Translation3d gamepieceLocation_robotCoords = getGamepieceLocationInRobotCoords(pitch, yaw, FieldConstants.coralLengthMeters*2./3.);
+            Translation3d gamepieceLocation_robotCoords = getGamepieceLocationInRobotCoords(pitch, yaw, FieldConstants.fuelRadiusMeters);
 
             // robotCoords -> fieldCoords
             Translation3d gamepieceLocation_fieldCoords = gamepieceLocation_robotCoords.rotateBy(robotPoseWhenPicTaken.getRotation()).plus(robotPoseWhenPicTaken.getTranslation());
-            Rotation3d gamepieceOrientation_fieldCoords = getPredictedOrientation(target, robotPoseWhenPicTaken);
-            Pose3d gamepiecePose_fieldCoords = new Pose3d(gamepieceLocation_fieldCoords, gamepieceOrientation_fieldCoords);
 
-            // Don't track gamepieces outside the field perimeter.
+            // Don't track gamepieces outside the field perimeter (unless we're testing gamepiece tracking in the pit or doing a demo).
             boolean requireInField = DriverStation.isFMSAttached() || RobotBase.isSimulation();
             double inFieldToleranceMeters = 0.05;
-            if (requireInField && !FlyingCircuitUtils.isInField(gamepieceLocation_fieldCoords, inFieldToleranceMeters)) {
-                this.invalidGamepieces_fieldCoords.add(gamepiecePose_fieldCoords);
+            if (requireInField && !FieldConstants.isInField(gamepieceLocation_fieldCoords.toTranslation2d(), inFieldToleranceMeters)) {
+                this.invalidGamepieces_fieldCoords.add(gamepieceLocation_fieldCoords);
                 continue;
             }
 
             // Don't track gamepieces too far away from the robot.
             double maxMetersFromRobot = 2.0;
-            double minMetersFromRobot = 0.6;//(DrivetrainConstants.frameWidthMeters / 2.0) + Units.inchesToMeters(8);
+            double minMetersFromRobot = DrivetrainConstants.halfBumperWidthMeters;
             double metersFromRobot = gamepieceLocation_fieldCoords.toTranslation2d().getDistance(robotPoseNow.getTranslation()); // gamepieceLocation_robotCoords.toTranslation2d().getNorm() doesn't take into account any robot travel since the pic was taken.
             if (metersFromRobot > maxMetersFromRobot || metersFromRobot < minMetersFromRobot) {
-                this.invalidGamepieces_fieldCoords.add(gamepiecePose_fieldCoords);
+                this.invalidGamepieces_fieldCoords.add(gamepieceLocation_fieldCoords);
                 continue;
             }
 
                       
             // The gamepiece passes all checks, so its valid.
-            this.validGamepieces_fieldCoords.add(gamepiecePose_fieldCoords);
+            this.validGamepieces_fieldCoords.add(gamepieceLocation_fieldCoords);
         }
 
 
         // Logging, then we're done!
         String logPrefix = cam.getName()+"/mostRecentFrame/";
         Logger.recordOutput(logPrefix+"timestampSeconds", mostRecentFrame.getTimestampSeconds());
-        Logger.recordOutput(logPrefix+"validGamepieces", this.validGamepieces_fieldCoords.toArray(new Pose3d[0]));
-        Logger.recordOutput(logPrefix+"invalidGamepieces", this.invalidGamepieces_fieldCoords.toArray(new Pose3d[0]));
-        Logger.recordOutput(logPrefix+"projectedBoundingBoxes", this.projectedBoundingBox_advantageScopeViz.toArray(new Translation3d[0]));
+        Logger.recordOutput(logPrefix+"validGamepieces", this.validGamepieces_fieldCoords.toArray(new Translation3d[0]));
+        Logger.recordOutput(logPrefix+"invalidGamepieces", this.invalidGamepieces_fieldCoords.toArray(new Translation3d[0]));
 
         // AdvantageScopeDrawingUtils.drawCircle("coralTracking/minDetectionDistance", robotPoseNow.getTranslation(), 0.6);
         // AdvantageScopeDrawingUtils.drawCircle("coralTracking/maxDetectionDistance", robotPoseNow.getTranslation(), 2.0);
@@ -218,130 +212,6 @@ public class ColorCamera {
         
         Translation3d camToGamepiece_robotCoords = camTowardsGamepiece_robotCoords.times(metersFromCameraToGamepiece);
         return camLocation_robotFrame.plus(camToGamepiece_robotCoords);
-    }
-
-
-
-    private List<Translation3d> getCornerRays(PhotonTrackedTarget target, Pose3d robotPoseWhenPicWasTaken) {
-        List<Translation3d> cornerLocations_fieldFrame = new ArrayList<>();
-        // Get the gamepiece's location relative to the robot.
-        // Yaw from PhotonVision is positive to the right, but we use the wpilib convention of positive to the left.
-        double pitch = Units.degreesToRadians(target.pitch);
-        double yaw = -1 * Units.degreesToRadians(target.yaw);
-        Translation3d gamepieceLocation_robotCoords = getGamepieceLocationInRobotCoords(pitch, yaw, 0.05);
-
-        // iterate through each corner of bounding box
-        for (TargetCorner corner : target.minAreaRectCorners) {
-            // get direction vector from camera to the observed corner
-            Rotation3d directionVector = pixelCoordsToRotation3d(corner);
-            double wpilibPitch = directionVector.getY();
-            double wpilibYaw = directionVector.getZ();
-
-            // corner rays may intersect anywhere between the floor and the top of the gamepiece,
-            // so we check a few to find the best candidate. This idea came from seeing
-            // innaccuracies from assuming all corners were at the same height in sim.
-            Translation3d physicalCorner_robotFrame = null;
-            double smallestDeltaFromExpectedDistance = 0;
-            double heightGuessResolutionMeters = 0.05 / 4.0;
-
-            // iterate through real world height guesses
-            for (double realWorldHeightGuess = 0; realWorldHeightGuess <= 0.05; realWorldHeightGuess += heightGuessResolutionMeters) {
-                // find the candidate corner in 3d space
-                Translation3d candidateCorner_robotFrame = getGamepieceLocationInRobotCoords(-wpilibPitch, wpilibYaw, realWorldHeightGuess);
-                double centerToCornerDistance = candidateCorner_robotFrame.getDistance(gamepieceLocation_robotCoords);
-
-                // compare it to expected distance from center
-                double expectedCenterToCornerDistance = Math.hypot(0.05, 0.2794/2.0);
-                double deviationFromExpectation = centerToCornerDistance - expectedCenterToCornerDistance;
-                if ( (physicalCorner_robotFrame == null) || (Math.abs(deviationFromExpectation) < Math.abs(smallestDeltaFromExpectedDistance)) ) {
-                    smallestDeltaFromExpectedDistance = deviationFromExpectation;
-                    physicalCorner_robotFrame = candidateCorner_robotFrame;
-                }
-            }
-
-            // We've found the best candidate, so we transform it to field frame
-            // and add it to the output.
-            Translation3d physicalCorner_fieldFrame = physicalCorner_robotFrame.rotateBy(robotPoseWhenPicWasTaken.getRotation()).plus(robotPoseWhenPicWasTaken.getTranslation());
-            cornerLocations_fieldFrame.add(physicalCorner_fieldFrame);
-        }
-
-        return cornerLocations_fieldFrame;
-    }
-
-    private Rotation3d pixelCoordsToRotation3d(TargetCorner pixel) {
-        // extract info from camera matrix for calculations
-        double fX, fY, cX, cY;
-        if (cam.getCameraMatrix().isPresent()) {
-            fX = cam.getCameraMatrix().get().get(0, 0);
-            fY = cam.getCameraMatrix().get().get(1, 1);
-            cX = cam.getCameraMatrix().get().get(0, 2);
-            cY = cam.getCameraMatrix().get().get(1, 2);
-            Logger.recordOutput("intakeCam/hasCamCalibration", true);
-        }
-        else {
-            Logger.recordOutput("intakeCam/hasCamCalibration", false);
-            // cam resolution 640x480
-            double width = 640;
-            double height = 480;
-            double hFov = Units.degreesToRadians(70);
-
-            double minX = 0;
-            double maxX = width-1;
-            cX = (minX + maxX) / 2.0;
-
-            double minY = 0;
-            double maxY = height-1;
-            cY = (minY + maxY) / 2.0;
-
-            // maybe use cX instead of width/2? (off by 0.5).
-            fX = (width / 2.0) / Math.tan(hFov / 2.0);
-            fY = fX;
-        }
-
-        double wpilibYaw = -1 * Math.atan2(pixel.x - cX, fX); // positive deltaX -> rightOfCenter -> negativeYaw
-
-        double baseInTermsOfPixelWidth = Math.hypot(fX, (pixel.x - cX));
-        double baseInTermsOfPixelHeight = (fY/fX) * baseInTermsOfPixelWidth;
-        double wpilibPitch = Math.atan2(pixel.y - cY, baseInTermsOfPixelHeight); // positive deltaY -> belowHorizion -> positivePitch
-
-        return new Rotation3d(0, wpilibPitch, wpilibYaw);
-    }
-
-    private Rotation3d getPredictedOrientation(PhotonTrackedTarget target, Pose3d robotPoseWhenPicWasTaken) {
-        // TODO: the whole orientation prediction process should prob be done in robot coords first,
-        //       then transformed into field coords. Knowing the robot's pose when the pic was taken
-        //       isn't necessary for finding the orientation relative to the robot!
-        List<Translation3d> cornerLocations_fieldCords = this.getCornerRays(target, robotPoseWhenPicWasTaken);
-        this.projectedBoundingBox_advantageScopeViz.addAll(cornerLocations_fieldCords);
-        this.projectedBoundingBox_advantageScopeViz.add(cornerLocations_fieldCords.get(0));
-
-        // find the longest edge of the bounding box, have coral be aligned to that
-        double longestEdge = 0;
-        Rotation2d output = new Rotation2d();
-        for (int i = 0; i < cornerLocations_fieldCords.size()-1; i += 1) {
-            Translation3d base = cornerLocations_fieldCords.get(i);
-            Translation3d tip = cornerLocations_fieldCords.get((i+1) % cornerLocations_fieldCords.size());
-
-            Translation2d boundingBoxEdge = tip.minus(base).toTranslation2d();
-            if (boundingBoxEdge.getNorm() > longestEdge) {
-                longestEdge = boundingBoxEdge.getNorm();
-
-                // decide if coral should be oriented from base to tip, or tip to base
-                Rotation2d robotDirection = robotPoseWhenPicWasTaken.getRotation().toRotation2d();
-                Rotation2d directionAlongEdge = boundingBoxEdge.getAngle();
-                double dotProduct = (robotDirection.getCos() * directionAlongEdge.getCos()) + (robotDirection.getSin() * directionAlongEdge.getSin());
-                boolean sameGeneralDirection = dotProduct >= 0;
-                
-                if (sameGeneralDirection) {
-                    output = directionAlongEdge;
-                }
-                else {
-                    output = boundingBoxEdge.unaryMinus().getAngle();
-                }
-            }
-        }
-
-        return new Rotation3d(output);
     }
 
 

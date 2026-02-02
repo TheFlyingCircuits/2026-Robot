@@ -11,20 +11,17 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
-import frc.robot.Constants.UniversalConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.FlyingCircuitUtils;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.PlayingField.FieldConstants;
 
-// TODO: add quick camera placement detector by putting robot at known pose
+
 public class SingleTagCam {
 
     private final PhotonCamera cam;
@@ -50,7 +47,7 @@ public class SingleTagCam {
         int apriltagTiles = 100;
         int pixelsPerTile = 3 * 3;
         simCamera.setMinTargetAreaPixels(apriltagTiles * pixelsPerTile);
-        // FieldConstants.simulatedTagLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+        FieldConstants.simulatedTagLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
     }
     public SingleTagCam(String name, Pose3d camPose_robotFrame) {
         this(name, camPose_robotFrame.getTranslation(), camPose_robotFrame.getRotation());
@@ -65,7 +62,7 @@ public class SingleTagCam {
 
         // advantage scope viz hacks
         List<Pose3d> justRobotPoses = new ArrayList<>();
-        List<Pose3d> sightlines = new ArrayList<>();
+        List<Translation3d> sightlines = new ArrayList<>();
 
         // See if we've gotten any new frames since last time
         List<PhotonPipelineResult> freshFrames = cam.getAllUnreadResults();
@@ -79,36 +76,31 @@ public class SingleTagCam {
             return output;
         }
 
+        // For each frame, get pose info for all tags seen in that frame.
         for (PhotonPipelineResult frame : freshFrames) {
             for (PhotonTrackedTarget tag : frame.targets) {
-                if(VisionIOPhotonLib.wantedAcceptedTags[0] == null) {
-                    VisionIOPhotonLib.acceptAllTags();
-                }
+                // Extract data from PhotonVision.
                 int tagID = tag.fiducialId;
-                // checks if we want to accept the tag based off the accepted tags list
-                if(VisionIOPhotonLib.wantedAcceptedTags[tagID]) {
-                    Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
-                    double timestamp = frame.getTimestampSeconds();
-                    double tagToCamDistance = tag.getBestCameraToTarget().getTranslation().getNorm();
-                    double ambiguity = tag.poseAmbiguity;
+                Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
+                double timestamp = frame.getTimestampSeconds();
+                double tagToCamDistance = tag.getBestCameraToTarget().getTranslation().getNorm();
+                double ambiguity = tag.poseAmbiguity;
 
-                    SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(cam.getName(), robotPose, timestamp, tagID, tagToCamDistance, ambiguity);
-                    output.add(poseObservation);
+                SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(cam.getName(), robotPose, timestamp, tagID, tagToCamDistance, ambiguity);
+                output.add(poseObservation);
 
-                    // advantage scope viz
-                    justRobotPoses.add(robotPose);
-                    Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
-                    Pose3d tagPoseOnField = VisionConstants.aprilTagFieldLayout.getTagPose(tagID).get();
-                    sightlines.addAll(Arrays.asList(camPoseOnfield, tagPoseOnField, camPoseOnfield));
-                }
-
+                // advantage scope viz
+                justRobotPoses.add(robotPose);
+                Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+                Pose3d tagPoseOnField = FieldConstants.tagPose(tagID);
+                sightlines.addAll(Arrays.asList(camPoseOnfield.getTranslation(), tagPoseOnField.getTranslation(), camPoseOnfield.getTranslation()));
             }
         }
 
         // viz persists between robot loops with no freshly processed frames
         Logger.recordOutput("tagCams/"+cam.getName()+"/singleTagPoseObservations", output.toArray(new SingleTagPoseObservation[0]));
         Logger.recordOutput("tagCams/"+cam.getName()+"/mostRecentObservedPoses", justRobotPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("tagCams/"+cam.getName()+"/mostRecentSightlines", sightlines.toArray(new Pose3d[0]));
+        Logger.recordOutput("tagCams/"+cam.getName()+"/mostRecentSightlines", sightlines.toArray(new Translation3d[0]));
         return output;
     }
 
@@ -123,8 +115,7 @@ public class SingleTagCam {
         Transform3d robotPose_camFrame = camPose_robotFrame.inverse();
 
 
-        Pose3d pose = VisionConstants.aprilTagFieldLayout.getTagPose(singleTag.fiducialId).get();
-        Transform3d tagPose_fieldFrame = new Transform3d(pose.getTranslation(), pose.getRotation());
+        Transform3d tagPose_fieldFrame = FieldConstants.tagPoseAsTransform(singleTag.fiducialId);
         Transform3d camPose_tagFrame = singleTag.getBestCameraToTarget().inverse();
         Transform3d camPose_fieldFrame = tagPose_fieldFrame.plus(camPose_tagFrame);
         Transform3d robotPose_fieldFrame = camPose_fieldFrame.plus(robotPose_camFrame);
@@ -132,64 +123,72 @@ public class SingleTagCam {
         return new Pose3d(robotPose_fieldFrame.getTranslation(), robotPose_fieldFrame.getRotation());
     }
 
-        private void makeTagCamsAgree(Pose2d knownRobotPose) {
-        makeTagCamsAgree(new Pose3d(knownRobotPose));
+
+
+    private void calibrateCamPose_robotFrame() {
+        int calibrationTagID = 5; // random placeholder for now
+
+        double tagX_robotFrame = DrivetrainConstants.halfBumperWidthMeters + FlyingCircuitUtils.getNumberFromDashboard("bumperToWallMeters", 0);
+        double tagY_robotFrame = 0; // this will prob stay 0
+        double tagZ_robotFrame = 0; // this will be prob be the height of the calibration tag
+
+        boolean facingTag = FlyingCircuitUtils.getBooleanFromDashboard("facingCalibrationTag", false);
+        Rotation3d tagOrientation_robotFrame = Rotation3d.kZero;
+        if (facingTag) {
+            tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg);
+        }
+        this.calibrateCamPose_robotFrame(calibrationTagID, new Pose3d(tagX_robotFrame, tagY_robotFrame, tagZ_robotFrame, tagOrientation_robotFrame));
     }
 
-    private void makeTagCamsAgree(Pose3d knownRobotPose) {
-
-        PhotonCamera tagCam = cam;
-
-        List<PhotonPipelineResult> newFrames = tagCam.getAllUnreadResults();
+    /** When paired with a measurement jig, this function helps us determine the location/orientaiton
+     *  of the cameras on our robot without having to make awkward measurements.
+     */
+    private void calibrateCamPose_robotFrame(int tagToLookFor, Pose3d tagPose_robotFrame) {
+        // Check for new frames from the camera
+        List<PhotonPipelineResult> newFrames = cam.getAllUnreadResults();
         if (newFrames.size() == 0) {
             return;
         }
 
+        // Iterate through all seen tags from the most recent frame until we find the calibration tag
         PhotonPipelineResult mostRecentFrame = newFrames.get(newFrames.size()-1);
-
-        Transform3d camPose_fieldFrame = new Transform3d();
-        if (mostRecentFrame.multitagResult.isPresent()) {
-            camPose_fieldFrame = mostRecentFrame.multitagResult.get().estimatedPose.best;
-        }
-        else if (mostRecentFrame.hasTargets()) {
-            // single tag
-            PhotonTrackedTarget singleTag = mostRecentFrame.targets.get(0);
-            Transform3d tagPose_camFrame = singleTag.bestCameraToTarget;
-            Transform3d camPose_tagFrame = tagPose_camFrame.inverse();
-            Pose3d tagPose_fieldFrame = Constants.VisionConstants.aprilTagFieldLayout.getTagPose(singleTag.fiducialId).get();
-            Transform3d tagTransform_fieldFrame = new Transform3d(tagPose_fieldFrame.getTranslation(), tagPose_fieldFrame.getRotation());
-            camPose_fieldFrame = tagTransform_fieldFrame.plus(camPose_tagFrame);
-        }
-        else {
-            return;
+        Transform3d tagPose_camFrame = null;
+        for (PhotonTrackedTarget tag : mostRecentFrame.targets) {
+            if (tag.getFiducialId() == tagToLookFor) {
+                tagPose_camFrame = tag.getBestCameraToTarget();
+                break;
+            }
         }
 
-        Pose3d camPose_fieldFrame_asPose = new Pose3d(camPose_fieldFrame.getTranslation(), camPose_fieldFrame.getRotation());
-        Pose3d camPose_robotFrame = camPose_fieldFrame_asPose.relativeTo(knownRobotPose);
-        Logger.recordOutput("tagCamAgree/"+tagCam.getName()+"/pose", camPose_robotFrame);
-        Logger.recordOutput("tagCamAgree/"+tagCam.getName()+"/rollDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getX()));
-        Logger.recordOutput("tagCamAgree/"+tagCam.getName()+"/pitchDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getY()));
-        Logger.recordOutput("tagCamAgree/"+tagCam.getName()+"/yawDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getZ()));
+        // Early exit if we didn't see the calibration tag.
+        if (tagPose_camFrame == null) { return; }
+
+        // Reverse engineer the camera's placement
+        Transform3d camPose_tagFrame = tagPose_camFrame.inverse();
+        Transform3d robotPose_tagFrame = new Transform3d(tagPose_robotFrame.getTranslation(), tagPose_robotFrame.getRotation()).inverse();
+        Pose3d camPose_robotFrame = Pose3d.kZero.plus(camPose_tagFrame).relativeTo(Pose3d.kZero.plus(robotPose_tagFrame));
+
+        // Report results to AdvantageScope, and we're done!
+        Logger.recordOutput("cameraPlacementCalibration/"+cam.getName()+"/pose", camPose_robotFrame);
+        Logger.recordOutput("cameraPlacementCalibration/"+cam.getName()+"/rollDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getX()));
+        Logger.recordOutput("cameraPlacementCalibration/"+cam.getName()+"/pitchDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getY()));
+        Logger.recordOutput("cameraPlacementCalibration/"+cam.getName()+"/yawDegrees", Units.radiansToDegrees(camPose_robotFrame.getRotation().getZ()));
+
+        // Note to self: The intent of this function is to let it run and collect data for a minute or so to collect a bunch of data points,
+        //               and then use AdvantageScope's statistics feature to get an average value for the camera placement.
+        //               However, I know from past experience that averaging angular quantities can be tricky, or sometimes even ill-defined!
+        //               For example, should the average of 0 degrees and 360 degrees be 180 degrees? In one sense, the average of a full turn
+        //               and not turning at all is indeed a half turn. But in another sense, the average should be 0 (or 360) because 0 and 360
+        //               are the same in terms of describing a direction / orientation. This second sense is probably closer to what we want
+        //               for pose estimation, because we're mostly consered with how we're oriented right now, rather than how exactly we got
+        //               to that orientaiton. One method I read about online for computing "angluar / circular averages" in this second sense is
+        //               to simply average the direction vectors themselves, rather than their angles. However, this doesn't work in 3D, because
+        //               averaging each column of many rotation matricies to yield an [avgXHat, avgYHat, avgZHat] doesn't necessarily yield a set
+        //               of 3 orthogonal vectors! This seems like an interesting rabbit hole to dive into later, but I unfortuantley don't have
+        //               the time at the moment. If I do get some time later though, one thing I want to look into weighted slerping
+        //               (i.e. slerp between A and B to get the average of 2 orientations, then slerp 2/3rds of the way from that average towards orientation C, and so on.)
     }
 
-    public void makeTagCamsAgree() {
-        int tagID = (int)SmartDashboard.getNumber("tagCamsAgree/Face", 9);
-        SmartDashboard.putNumber("tagCamsAgree/Face", tagID);
-        Pose2d calibrationFace = VisionConstants.aprilTagFieldLayout.getTagPose(tagID).get().toPose2d();
 
-        double inchesBack = SmartDashboard.getNumber("tagCamsAgree/inchesBack", 10.1);
-        SmartDashboard.putNumber("tagCamsAgree/inchesBack", inchesBack);
-        double metersBack = Units.inchesToMeters(inchesBack);
-        double pushOutDistanceMeters = metersBack + (UniversalConstants.frameWidthMeters/2.0);
-
-        boolean facingReef = SmartDashboard.getBoolean("tagCamsAgree/facingReef", true);
-        SmartDashboard.putBoolean("tagCamsAgree/facingReef", facingReef);
-        Rotation2d rotationFromFace = facingReef ? Rotation2d.k180deg : Rotation2d.kZero;
-
-        Transform2d offset = new Transform2d(pushOutDistanceMeters, 0, rotationFromFace);
-        Logger.recordOutput("vision/calibrationPose", calibrationFace.plus(offset));
-
-        this.makeTagCamsAgree(calibrationFace.plus(offset));
-    }
 }
 

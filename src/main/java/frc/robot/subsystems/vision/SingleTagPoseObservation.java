@@ -5,7 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.Constants.VisionConstants;;
+import frc.robot.PlayingField.FieldConstants;;
 
 public record SingleTagPoseObservation (String camName, Pose3d robotPose, double timestampSeconds, int tagUsed, double tagToCamMeters, double ambiguity) {
     public Matrix<N3, N1> getStandardDeviations() {
@@ -25,6 +25,6 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
     }
 
     public Pose3d getTagPose() {
-        return VisionConstants.aprilTagFieldLayout.getTagPose(tagUsed).get();
+        return FieldConstants.tagPose(tagUsed);
     }
 }
