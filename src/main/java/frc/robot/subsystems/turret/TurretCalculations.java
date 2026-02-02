@@ -1,5 +1,10 @@
 package frc.robot.subsystems.turret;
 
+import java.util.ArrayList;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -50,12 +55,44 @@ public class TurretCalculations {
         return target;
     }
 
+    public double getAimerTargetDegrees(Translation2d targetFeildRelative, Translation2d turretTranslation) {
+        Translation2d targetTranslationTurretRelative = targetFeildRelative.minus(turretTranslation);
+        return targetTranslationTurretRelative.getAngle().getDegrees();
+    }
+
     // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
     public static double[] getValuesAngleOfAttackOnTheMove(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
     double angleOfAttackDegrees, Translation3d turretPose) {
 
         Translation3d shootOnTheMoveTarget = targetMovementCompensation(originalTarget, robotVelocityFeildRelative, angleOfAttackDegrees, turretPose);
         return angleOfAttackTrajCalc(shootOnTheMoveTarget, angleOfAttackDegrees, turretPose);
+    }
+
+    public void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
+    double angleOfAttackDegrees, Translation3d turretPose) {
+
+        ArrayList<Translation3d> fuelTrajPoints = new ArrayList<>();
+
+        Translation3d shootOnTheMoveTarget = targetMovementCompensation(originalTarget, robotVelocityFeildRelative, angleOfAttackDegrees, turretPose);
+        double[] shooterValues = angleOfAttackTrajCalc(shootOnTheMoveTarget, angleOfAttackDegrees, turretPose);
+        
+        double tImpact = shooterValues[2];
+        double xyVelocityComponent = shooterValues[0] * Math.cos(Units.degreesToRadians(shooterValues[1]));
+        double zVelocityComponent = shooterValues[0] * Math.sin(Units.degreesToRadians(shooterValues[1]));
+        double aimerTargetDegrees = getAimerTargetDegrees(originalTarget.toTranslation2d(), turretPose.toTranslation2d());
+
+        // get 5 points from traj
+        for(double t = 0.0; t<=tImpact; t= t+(tImpact/5.0)){
+            double xyPositionMeters = xyVelocityComponent * t;
+            double zPosisionMeters = (zVelocityComponent*t) - (0.5*9.81*Math.pow(t,2));
+
+            Translation3d fuelPositionTurretRelative = new Translation3d((xyPositionMeters*Math.sin(Units.degreesToRadians(aimerTargetDegrees))), 
+                (xyPositionMeters*Math.cos(Units.degreesToRadians(aimerTargetDegrees))), zPosisionMeters);
+            fuelTrajPoints.add(fuelPositionTurretRelative);
+        }
+
+        Logger.recordOutput("TrajOuputs/fuelTrajPoints", fuelTrajPoints.toArray(new Translation3d[fuelTrajPoints.size()]));
+        Logger.recordOutput("TrajOuputs/shootOnTheMoveTarget", shootOnTheMoveTarget);
     }
     
 }
