@@ -23,7 +23,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
     final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(1);
 
-     private CANcoder absoluteEncoder;
+    private CANcoder absoluteEncoder;
     private Kraken angleMotor;
     private Kraken driveMotor;
 

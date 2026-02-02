@@ -33,11 +33,11 @@ public interface IntakeIO {
    };
 
 
-   public default void setTargetRollerTopVolts(double volts) {
+   public default void setTargetRollerTopVelocity(double volts) {
    };
 
 
-   public default void setTargetRollerBottomVolts(double volts) {
+   public default void setTargetRollerBottomVelocity(double volts) {
    };
 
 
