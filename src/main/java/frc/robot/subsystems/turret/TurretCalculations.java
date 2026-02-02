@@ -44,7 +44,7 @@ public class TurretCalculations {
     double angleOfAttackDegrees, Translation3d turretPose) {
         // see https://www.desmos.com/3d/783cec8449
         Translation3d target = originalTarget;
-        for (int approximationCount = 0; approximationCount < 3; approximationCount += 1) {
+        for (int approximationCount = 0; approximationCount < 6; approximationCount += 1) {
             // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
             double [] trajectoryOuputs = angleOfAttackTrajCalc(target, angleOfAttackDegrees, turretPose);
             double timeOfImpactSeconds = trajectoryOuputs[2];
@@ -55,7 +55,7 @@ public class TurretCalculations {
         return target;
     }
 
-    public double getAimerTargetDegrees(Translation2d targetFeildRelative, Translation2d turretTranslation) {
+    public static double getAimerTargetDegrees(Translation2d targetFeildRelative, Translation2d turretTranslation) {
         Translation2d targetTranslationTurretRelative = targetFeildRelative.minus(turretTranslation);
         return targetTranslationTurretRelative.getAngle().getDegrees();
     }
@@ -68,10 +68,12 @@ public class TurretCalculations {
         return angleOfAttackTrajCalc(shootOnTheMoveTarget, angleOfAttackDegrees, turretPose);
     }
 
-    public void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
+    public static void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
     double angleOfAttackDegrees, Translation3d turretPose) {
 
+
         ArrayList<Translation3d> fuelTrajPoints = new ArrayList<>();
+        ArrayList<Translation3d> fuelTrajPointsWithRobotVelocity = new ArrayList<>();
 
         Translation3d shootOnTheMoveTarget = targetMovementCompensation(originalTarget, robotVelocityFeildRelative, angleOfAttackDegrees, turretPose);
         double[] shooterValues = angleOfAttackTrajCalc(shootOnTheMoveTarget, angleOfAttackDegrees, turretPose);
@@ -79,20 +81,41 @@ public class TurretCalculations {
         double tImpact = shooterValues[2];
         double xyVelocityComponent = shooterValues[0] * Math.cos(Units.degreesToRadians(shooterValues[1]));
         double zVelocityComponent = shooterValues[0] * Math.sin(Units.degreesToRadians(shooterValues[1]));
-        double aimerTargetDegrees = getAimerTargetDegrees(originalTarget.toTranslation2d(), turretPose.toTranslation2d());
+        double aimerTargetDegrees = getAimerTargetDegrees(shootOnTheMoveTarget.toTranslation2d(), turretPose.toTranslation2d());
 
-        // get 5 points from traj
-        for(double t = 0.0; t<=tImpact; t= t+(tImpact/5.0)){
+
+
+        // get 6 points from traj withoutRobotVelocity
+        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)){
             double xyPositionMeters = xyVelocityComponent * t;
             double zPosisionMeters = (zVelocityComponent*t) - (0.5*9.81*Math.pow(t,2));
 
-            Translation3d fuelPositionTurretRelative = new Translation3d((xyPositionMeters*Math.sin(Units.degreesToRadians(aimerTargetDegrees))), 
-                (xyPositionMeters*Math.cos(Units.degreesToRadians(aimerTargetDegrees))), zPosisionMeters);
+            Translation3d fuelPositionFeildRelative = new Translation3d((xyPositionMeters*Math.cos(Units.degreesToRadians(aimerTargetDegrees))), 
+                (xyPositionMeters*Math.sin(Units.degreesToRadians(aimerTargetDegrees))), zPosisionMeters);
+            Translation3d fuelPositionTurretRelative = turretPose.plus(fuelPositionFeildRelative);
             fuelTrajPoints.add(fuelPositionTurretRelative);
         }
 
+        // get 6 points from traj withoutRobotVelocity
+        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)){
+            double xyPositionMetersNoRobotVelocity = xyVelocityComponent * t;
+            double zPosisionMeters = (zVelocityComponent*t) - (0.5*9.81*Math.pow(t,2));
+
+            double xPositionWithRobotVelocity = xyPositionMetersNoRobotVelocity*Math.cos(Units.degreesToRadians(aimerTargetDegrees))
+                + robotVelocityFeildRelative.vxMetersPerSecond * t;
+
+            double yPositionWithRobotVelocity = xyPositionMetersNoRobotVelocity*Math.sin(Units.degreesToRadians(aimerTargetDegrees))
+                + robotVelocityFeildRelative.vyMetersPerSecond * t;
+
+            Translation3d fuelPositionFeildRelative = new Translation3d(xPositionWithRobotVelocity, yPositionWithRobotVelocity, zPosisionMeters);
+            Translation3d fuelPositionTurretRelative = turretPose.plus(fuelPositionFeildRelative);
+            fuelTrajPointsWithRobotVelocity.add(fuelPositionTurretRelative);
+        }
+
         Logger.recordOutput("TrajOuputs/fuelTrajPoints", fuelTrajPoints.toArray(new Translation3d[fuelTrajPoints.size()]));
+        Logger.recordOutput("TrajOuputs/fuelTrajPointsWithRobotVelocity", fuelTrajPointsWithRobotVelocity.toArray(new Translation3d[fuelTrajPointsWithRobotVelocity.size()]));
         Logger.recordOutput("TrajOuputs/shootOnTheMoveTarget", shootOnTheMoveTarget);
+        Logger.recordOutput("TrajOuputs/originalTarget", originalTarget);
     }
     
 }

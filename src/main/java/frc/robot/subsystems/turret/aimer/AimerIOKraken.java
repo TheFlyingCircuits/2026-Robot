@@ -46,7 +46,6 @@ public class AimerIOKraken implements AimerIO{
         // Units.degreesToRotations(1100);
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.3);
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        config.Feedback.RotorToSensorRatio = TurretConstants.turretKrakenToTurretRotationsGearRatio;
         config.Feedback.SensorToMechanismRatio = TurretConstants.turretKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
         aimerKraken.applyConfig(config);
