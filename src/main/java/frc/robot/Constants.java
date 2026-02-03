@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -191,6 +189,11 @@ public final class Constants {
         public static final int hoodWheelKrakenID = 0;
 
         public static final double turretKrakenToTurretRotationsGearRatio = 3.0;
+
+        public static final double hoodDefaultAngleDegrees = 45.0;
+
+        public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3);
+        public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(2);
     }
 
     public final static class IntakeConstants {

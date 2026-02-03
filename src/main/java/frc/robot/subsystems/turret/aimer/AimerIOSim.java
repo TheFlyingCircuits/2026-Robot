@@ -46,13 +46,14 @@ public class AimerIOSim implements AimerIO{
     }
 
     @Override
-    public void setTargetAimerPosition(double targetPositionDegrees) {
-        targetPositionDegrees = targetPositionDegrees - drivetrain.getPoseMeters().getRotation().getDegrees();
+    public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
+        double targetPositionDegreesTurretRelative = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
+        Logger.recordOutput("aimerInputs/targetAngleDegreesTurretRelative", targetPositionDegreesTurretRelative);
         double simVoltageOutput;
-        if(Math.abs(targetPositionDegrees-simulatedPositionDegrees) > 10){
-            simVoltageOutput = 0.2 * (targetPositionDegrees-simulatedPositionDegrees);
+        if(Math.abs(targetPositionDegreesTurretRelative-simulatedPositionDegrees) > 10){
+            simVoltageOutput = 0.2 * (targetPositionDegreesTurretRelative-simulatedPositionDegrees);
         } else {
-            simVoltageOutput = 0.4 * (targetPositionDegrees-simulatedPositionDegrees);
+            simVoltageOutput = 0.4 * (targetPositionDegreesTurretRelative-simulatedPositionDegrees);
         }
         setAimerVolts(simVoltageOutput);
     }

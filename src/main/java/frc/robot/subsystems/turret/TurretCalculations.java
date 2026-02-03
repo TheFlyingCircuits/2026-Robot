@@ -15,8 +15,8 @@ public class TurretCalculations {
     // This will return two doubles in a list and the first one will be target fuel exit velocity,
     // and second will be target shot angle/hood angle
     // https://www.desmos.com/calculator/uvsbgxh2mb
-    public static double[] angleOfAttackTrajCalc(Translation3d target, double angleOfAttackDegrees, Translation3d turretPose) {
-        Translation3d targetTranslationTurretRelative = target.minus(turretPose);
+    public static double[] angleOfAttackTrajCalc(Translation3d targetTranslation, double angleOfAttackDegrees, Translation3d turretTranslation) {
+        Translation3d targetTranslationTurretRelative = targetTranslation.minus(turretTranslation);
 
         double ballDisplacementXYMeters = Math.sqrt(Math.pow(targetTranslationTurretRelative.getX(), 2)
             + Math.pow(targetTranslationTurretRelative.getY(),2)); // same as math.hypot but I wanted to write it out one time
@@ -41,12 +41,12 @@ public class TurretCalculations {
 
 
     public static Translation3d targetMovementCompensation(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
-    double angleOfAttackDegrees, Translation3d turretPose) {
+    double angleOfAttackDegrees, Translation3d turretTranslation) {
         // see https://www.desmos.com/3d/783cec8449
         Translation3d target = originalTarget;
         for (int approximationCount = 0; approximationCount < 6; approximationCount += 1) {
             // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
-            double [] trajectoryOuputs = angleOfAttackTrajCalc(target, angleOfAttackDegrees, turretPose);
+            double [] trajectoryOuputs = angleOfAttackTrajCalc(target, angleOfAttackDegrees, turretTranslation);
             double timeOfImpactSeconds = trajectoryOuputs[2];
             Translation3d robotVelocityVector = new Translation3d(robotVelocityFeildRelative.vxMetersPerSecond, robotVelocityFeildRelative.vyMetersPerSecond, 0);
             // robotVelocityVector = robotVelocityVector.times(fudgeFactor);
