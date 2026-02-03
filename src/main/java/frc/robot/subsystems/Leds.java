@@ -45,6 +45,7 @@ public class Leds extends SubsystemBase {
             buffer.setLED(i, color);
         }
         leds.setData(buffer);
+
     }
 
     private void turnOff() {

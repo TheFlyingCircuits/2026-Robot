@@ -17,7 +17,7 @@ public class AimerIOSim implements AimerIO{
         this.drivetrain=drivetrain;
     }
 
-    double simulatedPositionDegrees = 90;
+    double simulatedPositionDegrees = 0.0;
     double pivotVelDegPerSec = 0;
 
     
@@ -26,6 +26,7 @@ public class AimerIOSim implements AimerIO{
 
 
         inputs.aimerPositionDegrees += pivotVelDegPerSec * deltaT;
+        simulatedPositionDegrees = inputs.aimerPositionDegrees;
         inputs.aimerVelocityDegreesPerSecond = pivotVelDegPerSec;
 
         double robotYawRad = drivetrain.getPoseMeters().getRotation().getRadians();
@@ -35,7 +36,7 @@ public class AimerIOSim implements AimerIO{
         Pose3d aimerPoseOnRobotSIM = new Pose3d(new Translation3d(aimerTranslation2d.getX(),aimerTranslation2d.getY(),0.75), 
             new Rotation3d(0,0,drivetrain.getPoseMeters().getRotation().getRadians()+Units.degreesToRadians(inputs.aimerPositionDegrees)));
 
-        Logger.recordOutput("intakeInputs/intakePoseOnRobotSIM", aimerPoseOnRobotSIM);
+        Logger.recordOutput("aimerInputs/aimerPoseOnRobotSIM", aimerPoseOnRobotSIM);
     }
 
     @Override
@@ -46,7 +47,13 @@ public class AimerIOSim implements AimerIO{
 
     @Override
     public void setTargetAimerPosition(double targetPositionDegrees) {
-        double simVoltageOutput = 0.03 * (targetPositionDegrees-simulatedPositionDegrees);
+        targetPositionDegrees = targetPositionDegrees - drivetrain.getPoseMeters().getRotation().getDegrees();
+        double simVoltageOutput;
+        if(Math.abs(targetPositionDegrees-simulatedPositionDegrees) > 10){
+            simVoltageOutput = 0.2 * (targetPositionDegrees-simulatedPositionDegrees);
+        } else {
+            simVoltageOutput = 0.4 * (targetPositionDegrees-simulatedPositionDegrees);
+        }
         setAimerVolts(simVoltageOutput);
     }
 
