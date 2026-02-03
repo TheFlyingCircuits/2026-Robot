@@ -11,9 +11,9 @@ public interface IntakeIO {
    public class IntakeIOInputs {
         public double intakePositionDegrees = IntakeConstants.intakePositionDegrees;
 
-        public double intakeVelocityRPM = 0.0;
-        public double rollerTopVelocityRPM = 0.0;
-        public double rollerBottomVelocityRPM = 0.0;
+        public double intakeVelocityRPS = 0.0;
+        public double rollerTopVelocityRPS = 0.0;
+        public double rollerBottomVelocityRPS = 0.0;
 
         public double intakeVelocityDegreesPerSecond = 0.0;
    }

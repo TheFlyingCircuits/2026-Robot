@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -30,17 +31,16 @@ public class IntakeIOKraken implements IntakeIO{
        rollerTopKraken = new Kraken(IntakeConstants.rollerTopKrakenID, UniversalConstants.canivoreName);
        rollerBottomKraken = new Kraken(IntakeConstants.rollerBottomKrakenID, UniversalConstants.canivoreName);
        intakeCANcoder = new CANcoder(IntakeConstants.leftPivotEncoderID, UniversalConstants.canivoreName);
-       configIntakeLeftKraken();
-       configIntakeRightKraken();
+       configIntakeKrakens();
        configRollerTopKraken();
        configRollerBottomKraken();
     }
 
 
-    private void configIntakeLeftKraken() {
+    private void configIntakeKrakens() {
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+       config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
        config.CurrentLimits.StatorCurrentLimit = 25;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -49,24 +49,12 @@ public class IntakeIOKraken implements IntakeIO{
        config.Slot0.kP = 0.0;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
+
        config.ClosedLoopGeneral.ContinuousWrap = false;
+       config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor; //ask simon abt this
+       config.Feedback.FeedbackRemoteSensorID = 0;
+       config.Feedback.SensorToMechanismRatio = 0;
        intakeLeftKraken.applyConfig(config);
-    }
-
-
-    private void configIntakeRightKraken() {
-       TalonFXConfiguration config = new TalonFXConfiguration();
-       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       config.CurrentLimits.StatorCurrentLimit = 25;
-       config.CurrentLimits.StatorCurrentLimitEnable = true;
-
-
-       config.Slot0.kS = 0.0;
-       config.Slot0.kP = 0.0;
-       config.Slot0.kI = 0.0;
-       config.Slot0.kD = 0.0;
-       config.ClosedLoopGeneral.ContinuousWrap = false;
        intakeRightKraken.applyConfig(config);
        intakeRightKraken.setControl(new Follower(intakeLeftKraken.getDeviceID(), MotorAlignmentValue.Aligned));
     }
@@ -119,13 +107,13 @@ public class IntakeIOKraken implements IntakeIO{
     };
 
 
-    public void setTargetRollerTopVelocity(double volts) {
-        rollerTopKraken.setControl(velocityRequest.withAcceleration(volts));
+    public void setTargetRollerTopVelocity(double velocity) {
+        rollerTopKraken.setControl(velocityRequest.withVelocity(velocity));
     };
 
 
-    public void setTargetRollerBottomVelocity(double volts) {
-        rollerBottomKraken.setControl(velocityRequest.withAcceleration(volts));
+    public void setTargetRollerBottomVelocity(double velocity) {
+        rollerBottomKraken.setControl(velocityRequest.withVelocity(velocity));
     };
 
 
@@ -135,9 +123,9 @@ public class IntakeIOKraken implements IntakeIO{
     
    @Override
    public void updateInputs(IntakeIOInputs inputs) {
-       inputs.intakeVelocityRPM = intakeLeftKraken.getVelocity().getValueAsDouble() * 60;
-       inputs.rollerTopVelocityRPM = rollerTopKraken.getVelocity().getValueAsDouble() * 60;
-       inputs.rollerBottomVelocityRPM = rollerBottomKraken.getVelocity().getValueAsDouble() * 60;
+       inputs.intakeVelocityRPS = intakeLeftKraken.getVelocity().getValueAsDouble();
+       inputs.rollerTopVelocityRPS = rollerTopKraken.getVelocity().getValueAsDouble();
+       inputs.rollerBottomVelocityRPS = rollerBottomKraken.getVelocity().getValueAsDouble();
        inputs.intakePositionDegrees = intakeCANcoder.getPosition().getValueAsDouble();
        inputs.intakeVelocityDegreesPerSecond = intakeCANcoder.getVelocity().getValueAsDouble();
    }
