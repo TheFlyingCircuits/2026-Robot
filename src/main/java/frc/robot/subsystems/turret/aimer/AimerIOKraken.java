@@ -18,6 +18,8 @@ public class AimerIOKraken implements AimerIO{
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1);
     private final VelocityVoltage m_Velrequest = new VelocityVoltage(0).withSlot(0);
 
+    private double targetAimerDegrees = 0.0;
+
 
     public AimerIOKraken() {
         // aimerKraken = new Kraken(TurretConstants.aimerKrakenID, UniversalConstants.canivoreName);
@@ -56,6 +58,7 @@ public class AimerIOKraken implements AimerIO{
     public void updateInputs(AimerIOInputs inputs) {
         inputs.aimerPositionDegrees = Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble());
         inputs.aimerVelocityDegreesPerSecond = Units.rotationsToDegrees(aimerKraken.getVelocity().getValueAsDouble());
+        inputs.aimerTargetPositionDegrees = targetAimerDegrees;
 
         inputs.aimerAppliedVoltage = aimerKraken.getMotorVoltage().getValueAsDouble();
         inputs.aimerAmps = aimerKraken.getStatorCurrent().getValueAsDouble();
@@ -73,7 +76,7 @@ public class AimerIOKraken implements AimerIO{
         } else if(targetPositionDegrees < -175.0) {
             targetPositionDegrees = -175.0;
         }
-        System.out.println(Units.degreesToRotations(targetPositionDegrees));
+        targetAimerDegrees=targetPositionDegrees;
         if(Math.abs(targetPositionDegrees-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetPositionDegrees)));
         } else {

@@ -16,6 +16,12 @@ public interface FlywheelsIO {
         public double frontWheelVelocityRPS = 0.0;
         public double hoodWheelVelocityRPS = 0.0;
 
+        public double frontWheelVelocityMPS = 0.0;
+        public double hoodWheelVelocityMPS = 0.0;
+
+        public double targetFrontWheelVelocityMPS = 0.0;
+        public double targetHoodWheelVelocityMPS = 0.0;
+
         public double frontWheelAppliedVoltage = 0.0;
         public double frontWheelFollowerAppliedVoltage = 0.0;
         public double hoodWheelAppledVoltage = 0.0;

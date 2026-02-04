@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,14 +47,32 @@ public class AimAndShoot extends Command{
 
         double robotToTargetAngle = TurretCalculations.getAimerTargetDegrees(targetMovmentCompensated.toTranslation2d(), turretTranlsation.get().toTranslation2d());
 
+        boolean[] readyToShoot = turret.isReadyToShoot(1.0,0.5,0.4,0.4);
+
         if(driverReadyToShoot.get()) {
-            turret.aimAtTargetAndShootCommand(()->robotToTargetAngle, ()->shootingValues[1], ()->shootingValues[0]);
-            indexer.indexFuelCommand();
+
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]);
+
+            if(readyToShoot[0] && readyToShoot[1] && readyToShoot[2] && readyToShoot[3]) {
+                indexer.indexFuelCommand();
+                Logger.recordOutput("AimAndShoot/shooting", true);
+            } else {
+                indexer.stopIndexingCommand();
+                Logger.recordOutput("AimAndShoot/shooting", false);
+            }
         } else {
-            turret.aimAtTargetNoShootCommand(()->robotToTargetAngle);
+            turret.aimAtTargetNoShoot(robotToTargetAngle);
             indexer.stopIndexingCommand();
+            Logger.recordOutput("AimAndShoot/shooting", false);
         }
 
+        Logger.recordOutput("AimAndShoot/driverReadyToShoot", driverReadyToShoot.get());
+        Logger.recordOutput("AimAndShoot/aimerReady", readyToShoot[0]);
+        Logger.recordOutput("AimAndShoot/hoodReady", readyToShoot[1]);
+        Logger.recordOutput("AimAndShoot/mainWheel", readyToShoot[2]);
+        Logger.recordOutput("AimAndShoot/hoodWheel", readyToShoot[3]);
+        TurretCalculations.logShootingFunctions(shootingTarget.get(), 
+            robotFieldOrientedVelocity.get(), angleOfAttack.get(), turretTranlsation.get());
         
     }
     

@@ -49,6 +49,18 @@ public class Turret extends SubsystemBase{
         aimer.setAimerVolts(volts);
     }
 
+    // will return a boolean for each part of turret ready to shoot
+    // 0 is aimer ready, 1 is hood ready, 2 is mainFlywheel ready, and 3 is hoodFlywheel ready
+    public boolean[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
+    double mainWheelToleranceMPS, double hoodWheelToleranceMPS) {
+
+        boolean aimerReady = Math.abs(aimerInputs.aimerTargetPositionDegrees-aimerInputs.aimerPositionDegrees) <= aimerToleranceDegrees;
+        boolean hoodReady = Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
+        boolean mainWheelReady = Math.abs(flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS) <= mainWheelToleranceMPS;
+        boolean hoodWheelReady = Math.abs(flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS) <= hoodWheelToleranceMPS;
+        return new boolean[]{aimerReady, hoodReady, mainWheelReady, hoodWheelReady};
+    }
+
     public void aimAtTargetNoShoot(double targetAimerDegrees) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(TurretConstants.hoodDefaultAngleDegrees);

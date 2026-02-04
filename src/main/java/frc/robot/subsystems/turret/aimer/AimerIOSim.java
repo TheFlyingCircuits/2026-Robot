@@ -19,6 +19,7 @@ public class AimerIOSim implements AimerIO{
 
     double simulatedPositionDegrees = 0.0;
     double pivotVelDegPerSec = 0;
+    double targetAimerDegrees = 0.0;
 
     
     @Override
@@ -28,6 +29,8 @@ public class AimerIOSim implements AimerIO{
         inputs.aimerPositionDegrees += pivotVelDegPerSec * deltaT;
         simulatedPositionDegrees = inputs.aimerPositionDegrees;
         inputs.aimerVelocityDegreesPerSecond = pivotVelDegPerSec;
+
+        inputs.aimerTargetPositionDegrees = targetAimerDegrees;
 
         double robotYawRad = drivetrain.getPoseMeters().getRotation().getRadians();
 
@@ -48,6 +51,8 @@ public class AimerIOSim implements AimerIO{
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
         double targetPositionDegreesTurretRelative = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
+
+        targetAimerDegrees=targetPositionDegreesTurretRelative;
         Logger.recordOutput("aimerInputs/targetAngleDegreesTurretRelative", targetPositionDegreesTurretRelative);
         double simVoltageOutput;
         if(Math.abs(targetPositionDegreesTurretRelative-simulatedPositionDegrees) > 10){

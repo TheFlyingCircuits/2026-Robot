@@ -9,6 +9,7 @@ public interface HoodIO {
     public class HoodIOInputs {
         public double hoodPositionDegrees = TurretConstants.aimerInitialPositionDegrees;
         public double hoodVelocityDegreesPerSecond = 0.0;
+        public double targetHoodPositionDegrees;
 
         public double hoodAppliedVoltage = 0.0;
         public double hoodAmps = 0.0;

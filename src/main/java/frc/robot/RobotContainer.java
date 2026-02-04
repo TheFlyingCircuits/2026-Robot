@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.PlayingField.FieldElement;
+import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
+import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.aimer.AimerIOKraken;
@@ -32,6 +34,7 @@ public class RobotContainer {
     public final Drivetrain drivetrain;
     public final Leds leds;
     public final Turret turret;
+    public final Indexer indexer;
 
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
@@ -56,6 +59,7 @@ public class RobotContainer {
             // );
             leds = new Leds();
             turret = new Turret(new AimerIOKraken(), new FlywheelsIOKraken(), new HoodIOKraken());
+            indexer = new Indexer();
         } else {
             drivetrain = new Drivetrain(
                 new GyroIOSim(){},
@@ -66,6 +70,7 @@ public class RobotContainer {
             );
             turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             leds = new Leds();
+            indexer = new Indexer();
         }
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
@@ -83,10 +88,17 @@ public class RobotContainer {
         // duncanController.a().onTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
         duncanController.a().onTrue(turret.aimAtTargetCommand(() -> TurretCalculations.getAimerTargetDegrees(FieldElement.HUB.getLocation().toTranslation2d(),
             drivetrain.getPoseMeters().getTranslation())));
-        duncanController.b().onTrue(Commands.run(() -> TurretCalculations.logShootingFunctions(
-            FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), drivetrain.getFieldOrientedVelocity(), -45.0, 
-                new Translation3d(drivetrain.getPoseMeters().getTranslation().getX(), 
-                    drivetrain.getPoseMeters().getTranslation().getY(), 0.0))));
+        // duncanController.b().onTrue(Commands.run(() -> TurretCalculations.logShootingFunctions(
+        //     FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), drivetrain.getFieldOrientedVelocity(), -45.0, 
+        //         new Translation3d(drivetrain.getPoseMeters().getTranslation().getX(), 
+        //             drivetrain.getPoseMeters().getTranslation().getY(), 0.0))));
+        duncanController.b().onTrue(new AimAndShoot(turret, indexer, () -> new Translation3d(drivetrain.getPoseMeters().getTranslation().getX(), 
+            drivetrain.getPoseMeters().getTranslation().getY(), 0.0), () -> drivetrain.getFieldOrientedVelocity(),
+            () -> FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), () -> false, ()-> -45.0));
+
+        duncanController.x().onTrue(new AimAndShoot(turret, indexer, () -> new Translation3d(drivetrain.getPoseMeters().getTranslation().getX(), 
+            drivetrain.getPoseMeters().getTranslation().getY(), 0.0), () -> drivetrain.getFieldOrientedVelocity(),
+            () -> FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), () -> true, ()-> -45.0));
     }
 
     public Command getAutonomousCommand() {

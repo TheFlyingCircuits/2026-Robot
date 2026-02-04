@@ -9,6 +9,7 @@ public interface AimerIO {
     public class AimerIOInputs {
         public double aimerPositionDegrees = TurretConstants.aimerInitialPositionDegrees;
         public double aimerVelocityDegreesPerSecond = 0.0;
+        public double aimerTargetPositionDegrees = 0.0;
 
         public double aimerAppliedVoltage = 0.0;
         public double aimerAmps = 0.0;
