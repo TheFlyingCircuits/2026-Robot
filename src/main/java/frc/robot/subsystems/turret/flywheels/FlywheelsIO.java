@@ -7,12 +7,6 @@ import frc.robot.Constants.TurretConstants;
 public interface FlywheelsIO {
     @AutoLog
     public class FlywheelsIOInputs {
-        public double aimerPositionDegrees = TurretConstants.aimerInitialPositionDegrees;
-        public double hoodPositionDegrees = TurretConstants.hoodInitialPositionDegrees;
-        
-        public double aimerVelocityDegreesPerSecond = 0.0;
-        public double hoodVelocityDegreesPerSecond = 0.0;
-
         public double frontWheelVelocityRPS = 0.0;
         public double hoodWheelVelocityRPS = 0.0;
 

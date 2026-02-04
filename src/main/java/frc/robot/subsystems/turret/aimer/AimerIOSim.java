@@ -56,9 +56,9 @@ public class AimerIOSim implements AimerIO{
         Logger.recordOutput("aimerInputs/targetAngleDegreesTurretRelative", targetPositionDegreesTurretRelative);
         double simVoltageOutput;
         if(Math.abs(targetPositionDegreesTurretRelative-simulatedPositionDegrees) > 10){
-            simVoltageOutput = 0.2 * (targetPositionDegreesTurretRelative-simulatedPositionDegrees);
-        } else {
             simVoltageOutput = 0.4 * (targetPositionDegreesTurretRelative-simulatedPositionDegrees);
+        } else {
+            simVoltageOutput = 0.8 * (targetPositionDegreesTurretRelative-simulatedPositionDegrees);
         }
         setAimerVolts(simVoltageOutput);
     }

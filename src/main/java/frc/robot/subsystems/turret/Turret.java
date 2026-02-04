@@ -37,7 +37,11 @@ public class Turret extends SubsystemBase{
     @Override 
     public void periodic() {
         aimer.updateInputs(aimerInputs);
+        flywheels.updateInputs(flywheelsInputs);
+        hood.updateInputs(hoodInputs);
         Logger.processInputs("aimerInputs", aimerInputs);
+        Logger.processInputs("flywheelsInputs", flywheelsInputs);
+        Logger.processInputs("hoodInputs", hoodInputs);
     }
 
     public void aimAtTarget(double targetAngleDegrees) {

@@ -26,7 +26,9 @@ import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.aimer.AimerIOKraken;
 import frc.robot.subsystems.turret.aimer.AimerIOSim;
 import frc.robot.subsystems.turret.flywheels.FlywheelsIOKraken;
+import frc.robot.subsystems.turret.flywheels.FlywheelsIOSim;
 import frc.robot.subsystems.turret.hood.HoodIOKraken;
+import frc.robot.subsystems.turret.hood.HoodIOSim;
 
 
 public class RobotContainer {
@@ -68,7 +70,7 @@ public class RobotContainer {
                 new SwerveModuleIOSim(){},
                 new SwerveModuleIOSim(){}
             );
-            turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
+            turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
             leds = new Leds();
             indexer = new Indexer();
         }
