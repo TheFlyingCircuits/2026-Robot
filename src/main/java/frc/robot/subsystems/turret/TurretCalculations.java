@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -8,6 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import frc.robot.FlyingCircuitUtils;
+import frc.robot.PlayingField.FieldElement;
 
 public class TurretCalculations {
     private static double g = 9.81;
@@ -111,6 +114,34 @@ public class TurretCalculations {
         Logger.recordOutput("TrajOuputs/fuelTrajPointsWithRobotVelocity", fuelTrajPointsWithRobotVelocity.toArray(new Translation3d[fuelTrajPointsWithRobotVelocity.size()]));
         Logger.recordOutput("TrajOuputs/shootOnTheMoveTarget", shootOnTheMoveTarget);
         Logger.recordOutput("TrajOuputs/originalTarget", originalTarget);
+    }
+
+    public static Translation3d getHubShootingTargetTranslation() {
+        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.5));
+        return shootingPose;
+    }
+
+    public static Translation3d getPassingTargetTranslation(Supplier<Translation2d> robotTranslation) {
+
+        double distanceToLeftTrench = Math.abs(FieldElement.TRENCH_LEFT.getLocation2d().getDistance(robotTranslation.get()));
+        double distanceToRightTrench = Math.abs(FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(robotTranslation.get()));
+        
+        Translation3d target;
+
+        double inverIfRed = FlyingCircuitUtils.getAllianceDependentValue(-1.0, 1.0, 1.0);
+
+        if(distanceToLeftTrench<distanceToRightTrench) {
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-3.0*inverIfRed,-2.0*inverIfRed,0.5));
+        } else {
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-3.0*inverIfRed,2.0*inverIfRed,0.5));
+        }
+
+        return target;
+    }
+
+    // change z based off cad model once done
+    public static Translation3d getTurretTranslation(Translation2d robotTranslation) {
+        return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), 0.6);
     }
     
 }

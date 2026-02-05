@@ -1,14 +1,6 @@
 package frc.robot.subsystems.turret.hood;
 
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.turret.aimer.AimerIO.AimerIOInputs;
 
 public class HoodIOSim implements HoodIO{
     private Drivetrain drivetrain;
