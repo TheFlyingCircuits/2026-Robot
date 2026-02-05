@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.VendorWrappers.Kraken;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class AimerIOKraken implements AimerIO{
     
@@ -18,13 +19,17 @@ public class AimerIOKraken implements AimerIO{
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1);
     private final VelocityVoltage m_Velrequest = new VelocityVoltage(0).withSlot(0);
 
+    // DO NOT use anything besides get pose meters we don't want conflicts
+    private Drivetrain drivetrain;
+
     private double targetAimerDegrees = 0.0;
 
 
-    public AimerIOKraken() {
+    public AimerIOKraken(Drivetrain drivetrain) {
         // aimerKraken = new Kraken(TurretConstants.aimerKrakenID, UniversalConstants.canivoreName);
         aimerKraken = new Kraken(TurretConstants.aimerKrakenID, "rio");
         configAimerKraken();
+        this.drivetrain=drivetrain;
     }
 
     private void configAimerKraken() {
@@ -70,17 +75,18 @@ public class AimerIOKraken implements AimerIO{
     }
 
     @Override
-    public void setTargetAimerPosition(double targetPositionDegrees) {
-        if(targetPositionDegrees > 175.0) {
-            targetPositionDegrees = 175.0;
-        } else if(targetPositionDegrees < -175.0) {
-            targetPositionDegrees = -175.0;
+    public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
+        if(targetPositionDegreesRobotToTarget > 175.0) {
+            targetPositionDegreesRobotToTarget = 175.0;
+        } else if(targetPositionDegreesRobotToTarget < -175.0) {
+            targetPositionDegreesRobotToTarget = -175.0;
         }
-        targetAimerDegrees=targetPositionDegrees;
-        if(Math.abs(targetPositionDegrees-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
-            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetPositionDegrees)));
+        double targetAngleDegreesTurretToTarget = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
+        targetAimerDegrees=targetAngleDegreesTurretToTarget;
+        if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
+            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)));
         } else {
-            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)));
+            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetAngleDegreesTurretToTarget)));
         }
         // aimerKraken.setControl(m_Velrequest.withVelocity(Units.degreesToRotations(targetPositionDegrees)));
     }

@@ -44,9 +44,9 @@ public class Turret extends SubsystemBase{
         Logger.processInputs("hoodInputs", hoodInputs);
     }
 
-    public void aimAtTarget(double targetAngleDegrees) {
-        Logger.recordOutput("aimerInputs/targetAngleDegreesRobotVector", targetAngleDegrees);
-        aimer.setTargetAimerPosition(targetAngleDegrees);
+    public void aimAtTarget(double targetAngleDegreesRobotToTarget) {
+        Logger.recordOutput("aimerInputs/targetAngleDegreesRobotVector", targetAngleDegreesRobotToTarget);
+        aimer.setTargetAimerPosition(targetAngleDegreesRobotToTarget);
     }
 
     public void setAimerVolts(double volts) {

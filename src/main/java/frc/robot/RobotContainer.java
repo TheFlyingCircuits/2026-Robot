@@ -60,7 +60,8 @@ public class RobotContainer {
             //     new SwerveModuleIOSim(){}
             // );
             leds = new Leds();
-            turret = new Turret(new AimerIOKraken(), new FlywheelsIOKraken(), new HoodIOKraken());
+            // drivetrain is only used for getPoseMeters method and does not do anything else
+            turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer();
         } else {
             drivetrain = new Drivetrain(
@@ -88,7 +89,7 @@ public class RobotContainer {
         // duncanController.a().whileTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
         // duncanController.b().whileTrue(turret.setAimerVoltsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
         // duncanController.a().onTrue(turret.aimAtTargetCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("target Turret Deg", 0.0)));
-        duncanController.a().onTrue(turret.aimAtTargetCommand(() -> TurretCalculations.getAimerTargetDegrees(FieldElement.HUB.getLocation().toTranslation2d(),
+        duncanController.a().onTrue(turret.aimAtTargetCommand(() -> TurretCalculations.getAimerTargetDegreesRobotToTarget(FieldElement.HUB.getLocation().toTranslation2d(),
             drivetrain.getPoseMeters().getTranslation())));
         // duncanController.b().onTrue(Commands.run(() -> TurretCalculations.logShootingFunctions(
         //     FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), drivetrain.getFieldOrientedVelocity(), -45.0, 

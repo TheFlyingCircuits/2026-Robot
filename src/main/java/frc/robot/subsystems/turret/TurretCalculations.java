@@ -55,17 +55,12 @@ public class TurretCalculations {
         return target;
     }
 
-    public static double getAimerTargetDegrees(Translation2d targetFeildRelative, Translation2d turretTranslation) {
+
+    // this returns the angle of turret pose to target but it disregards robot orientation so its essentially robot pose
+    // to target and the actual aiming target is converted in the AimerIOKraken file in the setTargetPosition method
+    public static double getAimerTargetDegreesRobotToTarget(Translation2d targetFeildRelative, Translation2d turretTranslation) {
         Translation2d targetTranslationTurretRelative = targetFeildRelative.minus(turretTranslation);
         return targetTranslationTurretRelative.getAngle().getDegrees();
-    }
-
-    // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
-    public static double[] getValuesAngleOfAttackOnTheMove(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
-    double angleOfAttackDegrees, Translation3d turretPose) {
-
-        Translation3d shootOnTheMoveTarget = targetMovementCompensation(originalTarget, robotVelocityFeildRelative, angleOfAttackDegrees, turretPose);
-        return angleOfAttackTrajCalc(shootOnTheMoveTarget, angleOfAttackDegrees, turretPose);
     }
 
     public static void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
@@ -81,7 +76,7 @@ public class TurretCalculations {
         double tImpact = shooterValues[2];
         double xyVelocityComponent = shooterValues[0] * Math.cos(Units.degreesToRadians(shooterValues[1]));
         double zVelocityComponent = shooterValues[0] * Math.sin(Units.degreesToRadians(shooterValues[1]));
-        double aimerTargetDegrees = getAimerTargetDegrees(shootOnTheMoveTarget.toTranslation2d(), turretPose.toTranslation2d());
+        double aimerTargetDegrees = getAimerTargetDegreesRobotToTarget(shootOnTheMoveTarget.toTranslation2d(), turretPose.toTranslation2d());
 
 
 

@@ -29,8 +29,6 @@ public interface FlywheelsIO {
 
     public default void setFrontWheelVolts(double volts) {};
 
-    public default void setFrontFollowerWheelVolts(double volts) {};
-
     public default void setHoodWheelVolts(double volts) {};
 
     public default void setTargetFrontWheelVelocity(double targetVelocityRPS) {};

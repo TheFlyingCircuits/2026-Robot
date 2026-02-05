@@ -31,12 +31,6 @@ public class FlywheelsIOSim implements FlywheelsIO{
     }
 
     @Override
-    public void setFrontFollowerWheelVolts(double volts) {
-
-    }
-
-
-    @Override
     public void setHoodWheelVolts(double volts) {}
 
     @Override
