@@ -22,6 +22,8 @@ import frc.robot.subsystems.drivetrain.GyroIOSim;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.aimer.AimerIOKraken;
@@ -38,12 +40,14 @@ public class RobotContainer {
     public final Leds leds;
     public final Turret turret;
     public final Indexer indexer;
-
+    public final Intake intake;
+    
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
     
     private Translation3d aimingTarget;
     private boolean driverReadyToShoot;
+
 
     public RobotContainer() {
         aimingTarget = TurretCalculations.getHubShootingTargetTranslation();
@@ -68,6 +72,7 @@ public class RobotContainer {
             // drivetrain is only used for getPoseMeters method and does not do anything else
             turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer();
+            intake = new Intake(new IntakeIOKraken());
         } else {
             drivetrain = new Drivetrain(
                 new GyroIOSim(){},
@@ -79,6 +84,7 @@ public class RobotContainer {
             turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
             leds = new Leds();
             indexer = new Indexer();
+            intake = new Intake(new IntakeIOKraken());
         }
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();

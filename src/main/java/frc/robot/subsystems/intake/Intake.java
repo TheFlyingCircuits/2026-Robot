@@ -22,6 +22,14 @@ public class Intake extends SubsystemBase {
         io.setTargetIntakePositionDegrees(30);
     }
 
+    public void intakeDefault() {
+        io.setIntakeVolts(0);
+    }
+
+    public Command intakeDefaultCommand() {
+        return this.run(() -> intakeDefault());
+    }
+
     public Command intakeDownAndRunRollersCommand() {
         return this.startEnd(() -> intakeDownAndRunRollers(),() -> intakeUp());
     }
