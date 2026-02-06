@@ -17,9 +17,9 @@ public class AimAndShoot extends Command{
     private Indexer indexer;
     private Supplier<Translation3d> turretTranlsation;
     private Supplier<ChassisSpeeds> robotFieldOrientedVelocity;
-    private Supplier<Translation3d> shootingTarget;
+    private Supplier<TurretCalculations.possibeTargets>  shootingTarget;
     private Supplier<Boolean> driverReadyToShoot;
-    private Supplier<Double> angleOfAttack;
+    private double angleOfAttack;
     private boolean isShooting = false;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
@@ -29,14 +29,14 @@ public class AimAndShoot extends Command{
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<Translation3d> shootingTarget, Supplier<Boolean> driverReadyToShoot, Supplier<Double> angleOfAttack) {
+    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot) {
         this.turret=turret;
         this.indexer=indexer;
         this.turretTranlsation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
         this.shootingTarget=shootingTarget;
         this.driverReadyToShoot=driverReadyToShoot;
-        this.angleOfAttack=angleOfAttack;
+        // this.angleOfAttack=angleOfAttack;
         isShooting = false;
 
         addRequirements(turret, indexer);
@@ -45,16 +45,21 @@ public class AimAndShoot extends Command{
     @Override
     public void initialize() {
         isShooting = false;
+        TurretCalculations.currentTarget = shootingTarget.get();
     }
 
     @Override
     public void execute() {
-        Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(shootingTarget.get(), 
-            robotFieldOrientedVelocity.get(), angleOfAttack.get(), turretTranlsation.get());
+        Translation3d originalTargetTranlsation = TurretCalculations.getTargetFromEnum(shootingTarget.get(), () -> turretTranlsation.get().toTranslation2d());
+
+        angleOfAttack = TurretCalculations.getAngleOfAttackFromTargetEnum(shootingTarget.get(), (originalTargetTranlsation.toTranslation2d().minus(turretTranlsation.get().toTranslation2d())).getNorm());
+
+        Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(originalTargetTranlsation, 
+            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
 
         // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
         double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(targetMovmentCompensated, 
-            angleOfAttack.get(), turretTranlsation.get());
+            angleOfAttack, turretTranlsation.get());
 
         // this is the angle that out robot would need to point to aim at the target
         double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranlsation.get().toTranslation2d());
@@ -92,10 +97,11 @@ public class AimAndShoot extends Command{
         Logger.recordOutput("AimAndShoot/hoodReady", readyToShoot[1]);
         Logger.recordOutput("AimAndShoot/mainWheel", readyToShoot[2]);
         Logger.recordOutput("AimAndShoot/hoodWheel", readyToShoot[3]);
+        Logger.recordOutput("AimAndShoot/angleOfAttack", angleOfAttack);
 
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
-        TurretCalculations.logShootingFunctions(shootingTarget.get(), 
-            robotFieldOrientedVelocity.get(), angleOfAttack.get(), turretTranlsation.get());
+        TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
+            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
         
     }
     

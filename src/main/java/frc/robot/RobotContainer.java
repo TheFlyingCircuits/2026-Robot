@@ -107,8 +107,10 @@ public class RobotContainer {
         // duncanController.x().onTrue(new AimAndShoot(turret, indexer, () -> new Translation3d(drivetrain.getPoseMeters().getTranslation().getX(), 
         //     drivetrain.getPoseMeters().getTranslation().getY(), 0.0), () -> drivetrain.getFieldOrientedVelocity(),
         //     () -> FieldElement.HUB.getLocation().plus(new Translation3d(0,0,0.7)), () -> true, ()-> -45.0));
-        duncanController.b().onTrue(aimAndShoot(() -> TurretCalculations.getHubShootingTargetTranslation(), () -> false, () -> -45.0));
-        duncanController.x().onTrue(aimAndShoot(() -> TurretCalculations.getPassingTargetTranslation(() -> drivetrain.getPoseMeters().getTranslation()), () -> false, () -> -45.0));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false));
+        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true))
+        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false));
     }
 
     public Command getAutonomousCommand() {
@@ -122,9 +124,9 @@ public class RobotContainer {
 
     }
 
-    private Command aimAndShoot(Supplier<Translation3d> target, Supplier<Boolean> driverReadyToShoot, Supplier<Double> angleOfAttack) {
+    private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, angleOfAttack);
+        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot);
     }
 
     private Command driverFullyControlDrivetrain() { return drivetrain.run(() -> {

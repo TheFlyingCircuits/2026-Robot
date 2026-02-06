@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +15,15 @@ import frc.robot.PlayingField.FieldElement;
 
 public class TurretCalculations {
     private static double g = 9.81;
+
+    public enum possibeTargets {
+        hub,
+        passing,
+    }
+
+    // currentTarget is used for the shoot button because this variable is changed when a button
+    // is clicked to autoaim at a different target but when the shoot button is held it autoaims at the last used target
+    public static possibeTargets currentTarget = possibeTargets.hub;
 
     // This will return two doubles in a list and the first one will be target fuel exit velocity,
     // and second will be target shot angle/hood angle
@@ -117,7 +127,7 @@ public class TurretCalculations {
     }
 
     public static Translation3d getHubShootingTargetTranslation() {
-        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.5));
+        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.625));
         return shootingPose;
     }
 
@@ -131,9 +141,9 @@ public class TurretCalculations {
         double inverIfRed = FlyingCircuitUtils.getAllianceDependentValue(-1.0, 1.0, 1.0);
 
         if(distanceToLeftTrench<distanceToRightTrench) {
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-3.0*inverIfRed,-2.0*inverIfRed,0.5));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.3*inverIfRed,-1.5*inverIfRed,-0.5));
         } else {
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-3.0*inverIfRed,2.0*inverIfRed,0.5));
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.3*inverIfRed,1.5*inverIfRed,-0.5));
         }
 
         return target;
@@ -142,6 +152,40 @@ public class TurretCalculations {
     // change z based off cad model once done
     public static Translation3d getTurretTranslation(Translation2d robotTranslation) {
         return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), 0.6);
+    }
+
+    public static Translation3d getTargetFromEnum(possibeTargets target, Supplier<Translation2d> robotTranslation) {
+        return target == possibeTargets.hub ? getHubShootingTargetTranslation() : getPassingTargetTranslation(robotTranslation);
+    }
+
+    /**
+     *  @param minAngle - should be angle when at max distance, so for the hub would be like -80.0 or somthing
+     */
+    public static double getAdjustedAngleOfAttack(double minAngle, double maxAngle, double distanceToTargetMeters, double maxDistanceMeters) {
+        // max meters away is like around 8 I think, will make it so we have a max point
+        // and a min point with angle and interpolate inbtween, for example if the angle of attack we want is
+        // -80.0 degrees right against the hub and the farthest point from the hub is like -45.0 we do like
+        // + -4.375 degrees to the angle of attack for each meter of distance from robot to hub vector
+
+        double angleRange = Math.abs(minAngle - maxAngle);
+
+
+        // (maxDistanceMeters/distanceToTargetMeters) has a max value of around 1 and will clamp just incase
+        // this calculation subtracts angle 
+        // System.out.println((distanceToTargetMeters/maxDistanceMeters));
+        return MathUtil.clamp((minAngle + (angleRange * (distanceToTargetMeters/maxDistanceMeters))), minAngle, maxAngle);
+    }
+
+    public static double getAngleOfAttackFromTargetEnum(possibeTargets target, double distanceToTargetMeters) {
+        if(target == possibeTargets.hub) {
+            // hub angle rannge and distance
+            // if(distanceToTargetMeters < 2) {
+            //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
+            // }
+            return getAdjustedAngleOfAttack(-55.0, -48.0, distanceToTargetMeters, 5.65);
+        } else {
+            return getAdjustedAngleOfAttack(-65.0, -57.0, distanceToTargetMeters, 7.5);
+        }
     }
     
 }
