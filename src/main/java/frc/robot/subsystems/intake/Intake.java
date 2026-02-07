@@ -12,10 +12,13 @@ public class Intake extends SubsystemBase {
         inputs = new IntakeIOInputsAutoLogged();
     }
 
-    public void intakeDownAndRunRollers() {
+    public void intakeRunRollers() {
+        io.setTargetRollerBottomVelocity(5);
+        io.setTargetRollerTopVelocity(5);
+    }
+
+    public void intakeDown() {
         io.setTargetIntakePositionDegrees(0); 
-        io.setRollerTopVolts(5);
-        io.setRollerBottomVolts(5);
     }
 
     public void intakeUp() {
@@ -30,8 +33,17 @@ public class Intake extends SubsystemBase {
         return this.run(() -> intakeDefault());
     }
 
-    public Command intakeDownAndRunRollersCommand() {
-        return this.startEnd(() -> intakeDownAndRunRollers(),() -> intakeUp());
+    public Command intakeDownCommand() {
+        return this.runOnce(() -> intakeDown());
+    }
+
+    
+    public Command intakeUpCommand() {
+        return this.runOnce(() -> intakeUp());
+    }
+
+    public Command intakeRunRollersCommand() {
+        return this.run(() -> intakeRunRollers());
     }
 
 }
