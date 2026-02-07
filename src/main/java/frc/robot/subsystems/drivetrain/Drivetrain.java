@@ -11,9 +11,12 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionTargetSim;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
@@ -32,6 +35,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
@@ -129,6 +133,8 @@ public class Drivetrain extends SubsystemBase {
           e.printStackTrace();
         }
 
+        configurePathPlanner(config);
+
         setpointGenerator = new SwerveSetpointGenerator(
             config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
             Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
@@ -138,6 +144,42 @@ public class Drivetrain extends SubsystemBase {
         ChassisSpeeds currentSpeeds = getRobotRelativeVelocityMPS(); // Method to get current robot-relative chassis speeds
         SwerveModuleState[] currentStates = getModuleStates(); // Method to get the current swerve module states
         previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules));
+    }
+
+    private void configurePathPlanner(RobotConfig config) {
+        AutoBuilder.configure(
+            this::getPoseMeters, // Robot pose supplier
+            (Pose2d dummy) -> {}, // Method to reset odometry (will be called if your auto has a starting pose)
+                                  // Note: We never let PathPlanner set the pose, we always seed pose using cameras and apriltags.
+            () -> {return DrivetrainConstants.swerveKinematics.toChassisSpeeds(getModuleStates());}, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (ChassisSpeeds speeds, DriveFeedforwards ff) -> {this.robotOrientedDrive(speeds);}, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(4.0, 0.0, 0.0) // Rotation PID constants // These are different from our angleController gain(s), after testing.
+            ),
+            config,
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored
+              // We by default draw the paths on the red side of the field, mirroring them if we are on the blue alliance.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Blue;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+        );
+
+        // Register logging callbacks so that PathPlanner data shows up in advantage scope.
+        PathPlannerLogging.setLogActivePathCallback( (activePath) -> {
+            Logger.recordOutput("PathPlanner/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+
+        PathPlannerLogging.setLogTargetPoseCallback( (targetPose) -> {
+            Logger.recordOutput("PathPlanner/TrajectorySetpoint", targetPose);
+        });
     }
  
     
