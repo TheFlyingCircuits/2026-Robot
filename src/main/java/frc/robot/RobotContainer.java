@@ -70,7 +70,7 @@ public class RobotContainer {
             //     new SwerveModuleIOSim(){},
             //     new SwerveModuleIOSim(){}
             // );
-            leds = new Leds();
+            leds = new Leds(0,60);
             // drivetrain is only used for getPoseMeters method and does not do anything else
             turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer();
@@ -84,7 +84,7 @@ public class RobotContainer {
                 new SwerveModuleIOSim(){}
             );
             turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
-            leds = new Leds();
+            leds = new Leds(0,60);
             indexer = new Indexer();
             intake = new Intake(new IntakeIOKraken());
         }
