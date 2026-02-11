@@ -188,7 +188,11 @@ public final class Constants {
         public static final int frontWheelFollowerKrakenID = 0;
         public static final int hoodWheelKrakenID = 0;
 
-        public static final double turretKrakenToTurretRotationsGearRatio = 3.0;
+        public static final double aimerKrakenToTurretRotationsGearRatio = 3.0; // TODO: get real ratios and set gains to 0
+        public static final double hoodKrakenToTurretRotationsGearRatio = 3.0;
+
+        public static final double mainWheelKrakenToTurretRotationsGearRatio = 3.0;
+        public static final double hoodWheelKrakenToTurretRotationsGearRatio = 3.0;
 
         public static final double hoodDefaultAngleDegrees = 45.0;
 

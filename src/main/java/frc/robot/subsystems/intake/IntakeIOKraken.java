@@ -21,9 +21,10 @@ public class IntakeIOKraken implements IntakeIO{
     private Kraken rollerTopKraken;
     private Kraken rollerBottomKraken;
     private CANcoder intakeCANcoder;
-    final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
-    final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
-
+    final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
+        .withUpdateFreqHz(0.0);
+    final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0).withEnableFOC(true)
+        .withUpdateFreqHz(0.0);
 
     public IntakeIOKraken() {
        intakeLeftKraken = new Kraken(IntakeConstants.intakeLeftKrakenID, UniversalConstants.canivoreName);
