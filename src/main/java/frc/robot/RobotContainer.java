@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Translation3d;
@@ -50,6 +51,8 @@ public class RobotContainer {
     private Translation3d aimingTarget;
     private boolean driverReadyToShoot;
 
+    private PathPlannerAuto path;
+
 
     public RobotContainer() {
         aimingTarget = TurretCalculations.getHubShootingTargetTranslation();
@@ -90,6 +93,9 @@ public class RobotContainer {
         }
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
+        NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
+        NamedCommands.registerCommand("aimAndShoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        path = new PathPlannerAuto("LoopAndShootAuto");
         configureBindings();
         setDefaultCommands();
     }
@@ -122,13 +128,13 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("LoopAndShootAuto");
+        return path;
     }
 
     public void setDefaultCommands() {
         drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
         leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
-
+        intake.setDefaultCommand(intake.intakeDefaultCommand());
 
     }
 
