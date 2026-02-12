@@ -28,9 +28,9 @@ public class Leds extends SubsystemBase {
     /**
      * TODO: document whole class
      */
-    public Leds() {
-        leds = new AddressableLED(LEDConstants.ledPWMPort);
-        buffer = new AddressableLEDBuffer(LEDConstants.ledsPerStrip);
+    public Leds(int port, int ledLength) {
+        leds = new AddressableLED(port);
+        buffer = new AddressableLEDBuffer(ledLength);
 
         leds.setLength(buffer.getLength());
         

@@ -16,8 +16,10 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 public class AimerIOKraken implements AimerIO{
     
     private Kraken aimerKraken;
-    private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1);
-    private final VelocityVoltage m_Velrequest = new VelocityVoltage(0).withSlot(0);
+    private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
+        .withUpdateFreqHz(0.0);
+    private final VelocityVoltage m_Velrequest = new VelocityVoltage(0).withSlot(0).withEnableFOC(true)
+        .withUpdateFreqHz(0.0);
 
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;
@@ -35,7 +37,7 @@ public class AimerIOKraken implements AimerIO{
     private void configAimerKraken() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.CurrentLimits.StatorCurrentLimit = 25;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -53,7 +55,7 @@ public class AimerIOKraken implements AimerIO{
         // Units.degreesToRotations(1100);
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.3);
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        config.Feedback.SensorToMechanismRatio = TurretConstants.turretKrakenToTurretRotationsGearRatio;
+        config.Feedback.SensorToMechanismRatio = TurretConstants.aimerKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
         aimerKraken.applyConfig(config);
         aimerKraken.setPosition(0.0);
@@ -84,7 +86,9 @@ public class AimerIOKraken implements AimerIO{
         double targetAngleDegreesTurretToTarget = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
         if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
-            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)));
+            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withEnableFOC(true)
+        .withUpdateFreqHz(0.0)
+        );
         } else {
             aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetAngleDegreesTurretToTarget)));
         }

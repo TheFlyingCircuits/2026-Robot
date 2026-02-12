@@ -35,6 +35,7 @@ public class GyroIOPigeon implements GyroIO {
         configs.MountPose.MountPoseYaw =  GyroConstants.mountPoseYawDegrees;
         configs.MountPose.MountPosePitch = GyroConstants.mountPosePitchDegrees;
         configs.MountPose.MountPoseRoll = GyroConstants.mountPoseRollDegrees;
+
         
         pigeon.getConfigurator().apply(configs);
         
