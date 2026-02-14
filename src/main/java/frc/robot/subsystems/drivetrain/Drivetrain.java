@@ -165,7 +165,7 @@ public class Drivetrain extends SubsystemBase {
 
               var alliance = DriverStation.getAlliance();
               if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Blue;
+                return alliance.get() == DriverStation.Alliance.Red;
               }
               return false;
             },

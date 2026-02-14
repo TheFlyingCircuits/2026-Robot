@@ -8,14 +8,19 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
@@ -52,9 +57,6 @@ public class RobotContainer {
     
     private Translation3d aimingTarget;
     private boolean driverReadyToShoot;
-
-    private PathPlannerAuto path;
-
 
     public RobotContainer() {
         aimingTarget = TurretCalculations.getHubShootingTargetTranslation();
@@ -93,13 +95,13 @@ public class RobotContainer {
             indexer = new Indexer();
             intake = new Intake(new IntakeIOSim(drivetrain));
         }
+
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
-        new EventTrigger("intake").whileTrue(intake.intakeRunRollersCommand());
+        new EventTrigger("intake").whileTrue(Commands.print("running intake"));
         NamedCommands.registerCommand("intakeDown",intake.intakeDownCommand());
         NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         NamedCommands.registerCommand("aimAndShoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
-        path = new PathPlannerAuto("LoopAndShootAuto");
         configureBindings();
         setDefaultCommands();
     }
@@ -132,8 +134,21 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return path;
+         try{
+        // Load the path you want to follow using its name in the GUI
+        PathPlannerPath path = PathPlannerPath.fromPathFile("LoopAndShoot");
+
+        // Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path);
+    } catch (Exception e) {
+        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        return Commands.none();
     }
+    }
+
+    // public Command normalAuto() {
+    //     return new SequentialCommandGroup(AutoBuilder.followPath(PathPlannerPath.fromPathFile("a")).alongWith(AimAndShoot).until());
+    // }
 
     public void setDefaultCommands() {
         drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));

@@ -34,6 +34,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command intakeDownCommand() {
+        System.out.print("IntakeDown");
         return this.runOnce(() -> intakeDown());
     }
 

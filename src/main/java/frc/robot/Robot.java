@@ -23,6 +23,7 @@ public class Robot extends LoggedRobot {
   public Robot() {
     initAdvantageKit();
     m_robotContainer = new RobotContainer();
+    FollowPathCommand.warmupCommand().schedule(); 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -64,7 +65,6 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    FollowPathCommand.warmupCommand().schedule(); 
   }
 
   @Override
