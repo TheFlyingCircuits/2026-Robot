@@ -96,6 +96,7 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
         new EventTrigger("intake").whileTrue(intake.intakeRunRollersCommand());
+        NamedCommands.registerCommand("intakeDown",intake.intakeDownCommand());
         NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         NamedCommands.registerCommand("aimAndShoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
         path = new PathPlannerAuto("LoopAndShootAuto");
