@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOKraken;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.aimer.AimerIOKraken;
@@ -89,10 +91,11 @@ public class RobotContainer {
             turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
             leds = new Leds(0,60);
             indexer = new Indexer();
-            intake = new Intake(new IntakeIOKraken());
+            intake = new Intake(new IntakeIOSim(drivetrain));
         }
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
+        new EventTrigger("intake").whileTrue(intake.intakeRunRollersCommand());
         NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         NamedCommands.registerCommand("aimAndShoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
         path = new PathPlannerAuto("LoopAndShootAuto");

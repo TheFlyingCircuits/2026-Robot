@@ -93,41 +93,42 @@ public class IntakeIOKraken implements IntakeIO{
        rollerBottomKraken.applyConfig(config);
     }
       
+    @Override
     public void setRollerTopVolts(double volts) {
         rollerTopKraken.setVoltage(volts);
     };
 
-
+    @Override
     public void setRollerBottomVolts(double volts) {
         rollerBottomKraken.setVoltage(volts);
     };
 
-
+    @Override
     public void setIntakeVolts(double volts) {
         intakeLeftKraken.setVoltage(volts);
     };
 
-
+    @Override
     public void setTargetRollerTopVelocity(double velocity) {
         rollerTopKraken.setControl(velocityRequest.withVelocity(velocity));
     };
 
-
+    @Override
     public void setTargetRollerBottomVelocity(double velocity) {
         rollerBottomKraken.setControl(velocityRequest.withVelocity(velocity));
     };
 
-
+    @Override
     public void setTargetIntakePositionDegrees(double degrees) {
         intakeLeftKraken.setControl(positionRequest.withPosition(degrees));
     };
     
-   @Override
-   public void updateInputs(IntakeIOInputs inputs) {
-       inputs.intakeVelocityRPS = intakeLeftKraken.getVelocity().getValueAsDouble();
-       inputs.rollerTopVelocityRPS = rollerTopKraken.getVelocity().getValueAsDouble();
-       inputs.rollerBottomVelocityRPS = rollerBottomKraken.getVelocity().getValueAsDouble();
-       inputs.intakePositionDegrees = intakeCANcoder.getPosition().getValueAsDouble();
-       inputs.intakeVelocityDegreesPerSecond = intakeCANcoder.getVelocity().getValueAsDouble();
-   }
+    @Override
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.intakeVelocityRPS = intakeLeftKraken.getVelocity().getValueAsDouble();
+        inputs.rollerTopVelocityRPS = rollerTopKraken.getVelocity().getValueAsDouble();
+        inputs.rollerBottomVelocityRPS = rollerBottomKraken.getVelocity().getValueAsDouble();
+        inputs.intakePositionDegrees = intakeCANcoder.getPosition().getValueAsDouble();
+        inputs.intakeVelocityDegreesPerSecond = intakeCANcoder.getVelocity().getValueAsDouble();
+    }
 }
