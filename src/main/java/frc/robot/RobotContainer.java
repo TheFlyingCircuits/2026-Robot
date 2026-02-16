@@ -19,12 +19,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.Leds;
+import frc.robot.subsystems.LedsCANdle;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
@@ -48,6 +50,8 @@ public class RobotContainer {
 
     public final Drivetrain drivetrain;
     public final Leds leds;
+    public final LedsCANdle canLeds;
+    public final LedsCANdle canLedsCounter;
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
@@ -95,6 +99,9 @@ public class RobotContainer {
             indexer = new Indexer();
             intake = new Intake(new IntakeIOSim(drivetrain));
         }
+
+        canLeds = new LedsCANdle(0, 60);
+        canLedsCounter = new LedsCANdle(1, 60);
 
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
@@ -152,9 +159,15 @@ public class RobotContainer {
 
     public void setDefaultCommands() {
         drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
-        leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
+        // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
+        // canLeds.setDefaultCommand(canLeds.heartbeatCommand(1.).ignoringDisable(true).withName("canLedsDefaultCommand"));
+        canLedsCounter.setDefaultCommand(canLedsCounter.countDownShiftsCommand().ignoringDisable(true));
         intake.setDefaultCommand(intake.intakeDefaultCommand());
 
+    }
+
+    public Supplier<Boolean> isInAuto() {
+        return () -> DriverStation.isAutonomous();
     }
 
     private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
