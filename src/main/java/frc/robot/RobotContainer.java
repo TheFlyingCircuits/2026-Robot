@@ -105,10 +105,12 @@ public class RobotContainer {
 
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
-        new EventTrigger("intake").whileTrue(Commands.print("running intake"));
-        NamedCommands.registerCommand("intakeDown",intake.intakeDownCommand());
-        NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
-        NamedCommands.registerCommand("aimAndShoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        new EventTrigger("intakeDown").onTrue(Commands.print("intakeDown"));
+        new EventTrigger("intake").whileTrue(Commands.print("intaking"));
+        new EventTrigger("aim").whileTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
+        new EventTrigger("shoot").onTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        // NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
+        // NamedCommands.registerCommand("shoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
         configureBindings();
         setDefaultCommands();
     }

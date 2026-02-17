@@ -63,7 +63,7 @@ public class IntakeIOSim implements IntakeIO {
         Pose3d intakePoseOnRobotSIM = new Pose3d(new Translation3d(intakeTranslation2d.getX(),intakeTranslation2d.getY(),0.0), 
             new Rotation3d(0,0,drivetrain.getPoseMeters().getRotation().getRadians()+Units.degreesToRadians(inputs.intakePositionDegrees)));
 
-        Logger.recordOutput("aimerInputs/intakePoseOnRobotSIM", intakePoseOnRobotSIM);
+        Logger.recordOutput("intakePoseOnRobotSIM", intakePoseOnRobotSIM);
     
    }
 }

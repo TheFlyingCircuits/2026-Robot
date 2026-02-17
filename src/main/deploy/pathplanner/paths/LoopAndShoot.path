@@ -104,7 +104,19 @@
     {
       "name": "intake",
       "waypointRelativePos": 1.0305084745762714,
-      "endWaypointRelativePos": 3.7694915254237253,
+      "endWaypointRelativePos": 3.823343848580442,
+      "command": null
+    },
+    {
+      "name": "aim",
+      "waypointRelativePos": 2.7634069400630885,
+      "endWaypointRelativePos": 3.85,
+      "command": null
+    },
+    {
+      "name": "shoot",
+      "waypointRelativePos": 3.85,
+      "endWaypointRelativePos": 4.0,
       "command": null
     }
   ],
