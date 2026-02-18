@@ -3,7 +3,6 @@ package frc.robot.subsystems.turret.aimer;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,8 +16,6 @@ public class AimerIOKraken implements AimerIO{
     
     private Kraken aimerKraken;
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
-        .withUpdateFreqHz(0.0);
-    private final VelocityVoltage m_Velrequest = new VelocityVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
 
     // DO NOT use anything besides get pose meters we don't want conflicts

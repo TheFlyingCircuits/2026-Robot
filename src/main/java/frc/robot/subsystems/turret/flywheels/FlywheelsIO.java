@@ -2,8 +2,6 @@ package frc.robot.subsystems.turret.flywheels;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.Constants.TurretConstants;
-
 public interface FlywheelsIO {
     @AutoLog
     public class FlywheelsIOInputs {
@@ -30,6 +28,10 @@ public interface FlywheelsIO {
     public default void setFrontWheelVolts(double volts) {};
 
     public default void setHoodWheelVolts(double volts) {};
+
+    public default void setFrontWheelAmps(double amps) {};
+
+    public default void setHoodWheelAmps(double amps) {};
 
     public default void setTargetFrontWheelVelocity(double targetVelocityRPS) {};
 
