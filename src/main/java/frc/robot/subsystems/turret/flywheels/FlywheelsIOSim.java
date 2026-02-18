@@ -15,11 +15,11 @@ public class FlywheelsIOSim implements FlywheelsIO{
     @Override
     public void updateInputs(FlywheelsIOInputs inputs) {
         inputs.frontWheelVelocityRPS = frontWheelVelocityRPS;
-        inputs.frontWheelVelocityMPS = frontWheelVelocityRPS/(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
+        inputs.frontWheelVelocityMPS = frontWheelVelocityRPS*(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         inputs.targetFrontWheelVelocityMPS = inputs.frontWheelVelocityMPS;
 
         inputs.hoodWheelVelocityRPS = hoodWheelVelocityRPS;
-        inputs.hoodWheelVelocityMPS = hoodWheelVelocityRPS/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        inputs.hoodWheelVelocityMPS = hoodWheelVelocityRPS*(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
         inputs.targetHoodWheelVelocityMPS = inputs.hoodWheelVelocityMPS;
 
 

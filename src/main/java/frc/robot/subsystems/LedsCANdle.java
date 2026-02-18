@@ -121,7 +121,7 @@ public class LedsCANdle extends SubsystemBase {
         if (timeLeftMatch > 130.0) {
             // transition shift
             timeLeftShiftProportion = (timeLeftMatch - 130.0) / 10.0;
-            color = wonAuto ? Color.kYellow: Color.kPurple;
+            color = wonAuto ? Color.kGreen: Color.kRed;
         } else if (timeLeftMatch > 105.0) {
             // losers shift 1
             timeLeftShiftProportion = (timeLeftMatch - 105) / 25.0;

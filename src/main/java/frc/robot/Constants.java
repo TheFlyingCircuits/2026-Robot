@@ -182,11 +182,11 @@ public final class Constants {
         public static final double aimerInitialPositionDegrees = 0.0;
         public static final double hoodInitialPositionDegrees = 0.0;
 
-        public static final int aimerKrakenID = 5;
-        public static final int hoodKrakenID = 0;
-        public static final int frontWheelKrakenID = 0;
-        public static final int frontWheelFollowerKrakenID = 0;
-        public static final int hoodWheelKrakenID = 0;
+        public static final int aimerKrakenID = 99;
+        public static final int hoodKrakenID = 99;
+        public static final int frontWheelKrakenID = 99;
+        public static final int frontWheelFollowerKrakenID = 99;
+        public static final int hoodWheelKrakenID = 99;
 
         public static final double aimerKrakenToTurretRotationsGearRatio = 3.0; // TODO: get real ratios and set gains to 0
         public static final double hoodKrakenToTurretRotationsGearRatio = 3.0;
@@ -200,14 +200,24 @@ public final class Constants {
         public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(2);
     }
 
+    public final static class IndexerConstants {
+        public static final int bigSpinnerID = 99;
+        public static final int sideKickerID = 99;
+        public static final int kickerID = 99;
+
+        public static final double bigSpinnerGearRatio = 1.0; // positive is gear reduction
+        public static final double sideKickerGearRatio = 1.0;
+        public static final double kickerGearRatio = 1.0;
+    }
+
     public final static class IntakeConstants {
         public static final double intakePositionDegrees = 0.0;
         
-        public static final int intakeLeftKrakenID = 0;
-        public static final int intakeRightKrakenID = 0;
-        public static final int rollerTopKrakenID = 0;
-        public static final int rollerBottomKrakenID = 0;
-        public static final int leftPivotEncoderID = 0;
+        public static final int intakeLeftKrakenID = 99;
+        public static final int intakeRightKrakenID = 99;
+        public static final int rollerTopKrakenID = 99;
+        public static final int rollerBottomKrakenID = 99;
+        public static final int leftPivotEncoderID = 99;
 
 
     }
