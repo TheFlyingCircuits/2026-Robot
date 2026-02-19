@@ -181,14 +181,25 @@ public final class Constants {
     public final static class TurretConstants {
         public static final double aimerInitialPositionDegrees = 0.0;
         public static final double hoodInitialPositionDegrees = 0.0;
+        public static final double aimerCANcoderOffset = 0.0; // get from tuner
+
+        public static final double turretMaxAngle = 180; // need to change for real
+        public static final double turretMinAngle = -180;
+
 
         public static final int aimerKrakenID = 99;
+        public static final int aimerCANcoderID = 99;
         public static final int hoodKrakenID = 99;
         public static final int frontWheelKrakenID = 99;
         public static final int frontWheelFollowerKrakenID = 99;
         public static final int hoodWheelKrakenID = 99;
 
-        public static final double aimerKrakenToTurretRotationsGearRatio = 3.0; // TODO: get real ratios and set gains to 0
+        // 27:160 - ctre wants a >1 number for reductions
+        public static final double aimerKrakenToTurretRotationsGearRatio = 5.92592592593;// this is final I think and its cancoder to turret
+        // 2:1
+        public static final double aimerKrakenRotorToCANcoderGearRatio = 2.0;
+        
+        // TODO: get real ratios and set gains to 0
         public static final double hoodKrakenToTurretRotationsGearRatio = 3.0;
 
         public static final double mainWheelKrakenToTurretRotationsGearRatio = 3.0;
