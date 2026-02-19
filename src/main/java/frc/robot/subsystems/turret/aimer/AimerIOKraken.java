@@ -60,17 +60,17 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kP = 0.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 0.285;
+        config.Slot0.kV = 0.0;
 
         config.Slot1.kS = 0.22;
         config.Slot1.kP = 0.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1000.0; //rps
-        config.MotionMagic.MotionMagicAcceleration = 200.0; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 0.0; //rps
+        config.MotionMagic.MotionMagicAcceleration = 0.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.3);
 
-        double encoderGearAngleRotations = absoluteEncoder.getAbsolutePosition().getValueAsDouble();
+        double encoderGearAnglePositionInRotations = absoluteEncoder.getAbsolutePosition().getValueAsDouble();
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
@@ -82,7 +82,7 @@ public class AimerIOKraken implements AimerIO{
 
         // 0.16875 of mechanism = 1 rotation of cancoder gear so this is also the range that it can see when init
         // since range is -0.5 to 0.5 we do minTurretAngle + (0.16875/2.0 * canconder angle in rotations) is the initial turret position
-        double turretsInitialAngleRot = TurretConstants.turretMinAngle + ((0.16875/2.0) * encoderGearAngleRotations);
+        double turretsInitialAngleRot = (TurretConstants.turretMinAngle + 0.16875/2.0) + ((0.16875/2.0) * encoderGearAnglePositionInRotations);
 
         aimerKraken.setPosition(turretsInitialAngleRot);
     }
