@@ -224,12 +224,12 @@ public final class Constants {
     public final static class IntakeConstants {
         public static final double intakePositionDegrees = 0.0;
         
-        public static final int intakeLeftKrakenID = 99;
-        public static final int intakeRightKrakenID = 99;
+        public static final int pivotNeoID = 99;
         public static final int rollerTopKrakenID = 99;
         public static final int rollerBottomKrakenID = 99;
         public static final int leftPivotEncoderID = 99;
-
+        public static final double kP = 2.0;
+        public static final double kS = .5;
 
     }
 

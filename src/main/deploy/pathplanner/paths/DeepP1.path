@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 4.031616371645006,
+        "x": 3.191449016100179,
         "y": 7.385545617173523
       },
       "prevControl": {
-        "x": 4.697057504610922,
+        "x": 3.8568901490660954,
         "y": 7.398565698732599
       },
       "nextControl": null,
@@ -109,13 +109,13 @@
     },
     {
       "name": "aim",
-      "waypointRelativePos": 2.7634069400630885,
+      "waypointRelativePos": 2.3593220338983114,
       "endWaypointRelativePos": 3.85,
       "command": null
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 3.85,
+      "waypointRelativePos": 3.84,
       "endWaypointRelativePos": 4.0,
       "command": null
     }

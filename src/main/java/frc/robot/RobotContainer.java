@@ -32,7 +32,7 @@ import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOKraken;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOKraken;
+import frc.robot.subsystems.intake.IntakeIOMotors;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
@@ -83,7 +83,7 @@ public class RobotContainer {
             // drivetrain is only used for getPoseMeters method and does not do anything else
             turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer(new IndexerIOKraken());
-            intake = new Intake(new IntakeIOKraken());
+            intake = new Intake(new IntakeIOMotors());
         } else {
             drivetrain = new Drivetrain(
                 new GyroIOSim(){},

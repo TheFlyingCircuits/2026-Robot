@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LoopAndShoot"
+            "pathName": "DeepP1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DeepP2"
           }
         }
       ]
