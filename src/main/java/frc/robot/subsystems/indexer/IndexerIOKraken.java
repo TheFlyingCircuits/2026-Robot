@@ -48,6 +48,7 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.bigSpinnerGearRatio;
@@ -69,6 +70,7 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.sideKickerGearRatio;
@@ -90,6 +92,7 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.kickerGearRatio;
