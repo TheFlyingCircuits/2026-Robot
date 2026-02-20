@@ -53,6 +53,13 @@ public class Turret extends SubsystemBase{
         aimer.setAimerVolts(volts);
     }
 
+    public void setAllVolts(double aimerVolts, double hoodVolts, double mainWheelVolts, double hoodWheelVolts) {
+        aimer.setAimerVolts(aimerVolts);
+        hood.setHoodVolts(hoodVolts);
+        flywheels.setFrontWheelVolts(mainWheelVolts);
+        flywheels.setHoodWheelVolts(hoodWheelVolts);
+    }
+
     // will return a boolean for each part of turret ready to shoot
     // 0 is aimer ready, 1 is hood ready, 2 is mainFlywheel ready, and 3 is hoodFlywheel ready
     public boolean[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
@@ -101,5 +108,9 @@ public class Turret extends SubsystemBase{
         
         return this.run(() -> aimAtTargetAndShoot(targetAimerDegrees.getAsDouble(),targetHoodAngleDegrees.getAsDouble(),
             targetVelocityMetersPerSecond.getAsDouble()));
+    }
+
+    public Command turretStopDoingStuffCommand() {
+        return this.run(() -> setAllVolts(0.0,0.0,0.0,0.0));
     }
 }

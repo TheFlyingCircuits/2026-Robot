@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.UniversalConstants;
@@ -104,12 +105,16 @@ public class AimerIOKraken implements AimerIO{
 
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
-        if(targetPositionDegreesRobotToTarget > 175.0) {
-            targetPositionDegreesRobotToTarget = 175.0;
-        } else if(targetPositionDegreesRobotToTarget < -175.0) {
-            targetPositionDegreesRobotToTarget = -175.0;
+        if(targetPositionDegreesRobotToTarget > 180.0) {
+            targetPositionDegreesRobotToTarget = 180.0;
+        } else if(targetPositionDegreesRobotToTarget < -180.0) {
+            targetPositionDegreesRobotToTarget = -180.0;
         }
-        double targetAngleDegreesTurretToTarget = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
+        double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
+
+        double targetAngleDegreesTurretToTarget = (new Rotation2d(Units.degreesToRadians(targetAngleDegreesTurretToTargetIfTurretWasFront)
+            ).plus(Rotation2d.k180deg)).getDegrees();
+            
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
         if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withEnableFOC(true)

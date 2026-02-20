@@ -23,8 +23,8 @@ public class AimAndShoot extends Command{
     private boolean isShooting = false;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {0.5, 0.5, 0.25, 0.25};
-    private double[] whileShootingTolerances = new double[] {1.5, 1.0, 1.0, 1.0};
+    private double[] notShootingTolerances = new double[] {0.5, 0.5, 0.3, 0.3};
+    private double[] whileShootingTolerances = new double[] {2.0, 2.0, 4.0, 4.0};
 
     
 
