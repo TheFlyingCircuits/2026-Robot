@@ -205,7 +205,7 @@ public final class Constants {
         public static final double mainWheelKrakenToTurretRotationsGearRatio = 3.0;
         public static final double hoodWheelKrakenToTurretRotationsGearRatio = 3.0;
 
-        public static final double hoodDefaultAngleDegrees = 45.0;
+        public static final double hoodDefaultAngleDegrees = 80.0;
 
         public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3);
         public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(2);

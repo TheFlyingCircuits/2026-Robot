@@ -64,11 +64,11 @@
     },
     {
       "anchor": {
-        "x": 3.191449016100179,
+        "x": 4.031616371645006,
         "y": 7.385545617173523
       },
       "prevControl": {
-        "x": 3.8568901490660954,
+        "x": 4.697057504610925,
         "y": 7.398565698732599
       },
       "nextControl": null,
@@ -94,8 +94,8 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 2.7700534759358297,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 3.1550802139037435,
+      "rotationDegrees": -3.985657463104053
     }
   ],
   "constraintZones": [],
@@ -115,7 +115,7 @@
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 3.84,
+      "waypointRelativePos": 3.8644067796610173,
       "endWaypointRelativePos": 4.0,
       "command": null
     }

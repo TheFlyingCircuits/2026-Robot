@@ -9,8 +9,9 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,7 +29,6 @@ import frc.robot.subsystems.drivetrain.GyroIOSim;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
 import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
 import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOKraken;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.intake.Intake;
@@ -107,6 +107,11 @@ public class RobotContainer {
         new EventTrigger("intake").whileTrue(Commands.print("intaking"));
         new EventTrigger("aim").whileTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         new EventTrigger("shoot").onTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        // new EventTrigger("aim").whileTrue(Commands.print("aim"));
+        // new EventTrigger("shoot").onTrue( Commands.print("Shoot"));
+
+        // NamedCommands.registerCommand("hoodDown", turret.turretStopDoingStuffCommand().until(() -> (turret.getHoodAngleDeg() > 60)));
+        // NamedCommands.registerCommand("hoodDown", Commands.print("hood down"));
         // NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         // NamedCommands.registerCommand("shoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
         configureBindings();
@@ -123,10 +128,10 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
          try{
         // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("LoopAndShoot");
+        PathPlannerAuto deepAuto = new PathPlannerAuto("DeepAuto");
 
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
+        return AutoBuilder.buildAuto("DeepAuto");
     } catch (Exception e) {
         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
         return Commands.none();
