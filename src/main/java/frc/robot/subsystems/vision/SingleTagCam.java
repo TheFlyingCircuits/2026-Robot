@@ -21,13 +21,11 @@ import frc.robot.FlyingCircuitUtils;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.PlayingField.FieldConstants;
 
-
 public class SingleTagCam {
 
     private final PhotonCamera cam;
     private Translation3d camLocation_robotFrame;
     private Rotation3d camOrientation_robotFrame;
-
 
     public SingleTagCam(String name, Translation3d camLocation_robotFrame, Rotation3d camOrientation_robotFrame) {
         cam = new PhotonCamera(name);

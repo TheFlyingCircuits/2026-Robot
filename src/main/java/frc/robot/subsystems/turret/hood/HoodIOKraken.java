@@ -15,7 +15,7 @@ public class HoodIOKraken implements HoodIO{
     private Kraken hoodKraken;
     private double targetHoodDegrees = 0.0;
 
-    private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
+    private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
 
     public HoodIOKraken() {
@@ -37,12 +37,12 @@ public class HoodIOKraken implements HoodIO{
         config.Slot0.kV = 0.0;
 
 
-        config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.3);
+        // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.2);
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
         hoodKraken.applyConfig(config);
-        hoodKraken.setPosition(55.0);
+        hoodKraken.setPosition(TurretConstants.minHoodAngle);
     }
 
     @Override
@@ -62,6 +62,11 @@ public class HoodIOKraken implements HoodIO{
 
     @Override
     public void setTargetHoodPosition(double targetPositionDegrees) {
+        if(targetPositionDegrees < TurretConstants.minHoodAngle) {
+            targetPositionDegrees = TurretConstants.minHoodAngle;
+        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle) {
+            targetPositionDegrees = TurretConstants.maxHoodAngle;
+        }
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)));
     }
 

@@ -117,4 +117,11 @@ public class Turret extends SubsystemBase{
     public Command turretStopDoingStuffCommand() {
         return this.run(() -> setAllVolts(0.0,0.0,0.0,0.0));
     }
+
+    public Command setAllVoltsCommand(DoubleSupplier aimerVolts, DoubleSupplier hoodVolts, 
+        DoubleSupplier mainWheelVolts, DoubleSupplier hoodWheelVolts) {
+
+        return this.run(() -> setAllVolts(aimerVolts.getAsDouble(), hoodVolts.getAsDouble(), 
+        mainWheelVolts.getAsDouble(), hoodVolts.getAsDouble()));
+    }
 }

@@ -215,25 +215,6 @@ public class ColorCamera {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Originally from Drivetrain.java
     // /**
     //  * Returns closest gamepiece that is valid (within the field boundary and within a certain distance of the robot).

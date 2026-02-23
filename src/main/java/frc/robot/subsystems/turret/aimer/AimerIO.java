@@ -2,12 +2,10 @@ package frc.robot.subsystems.turret.aimer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.Constants.TurretConstants;
-
 public interface AimerIO {
     @AutoLog
     public class AimerIOInputs {
-        public double aimerPositionDegrees = TurretConstants.aimerInitialPositionDegrees;
+        public double aimerPositionDegrees = 0.0;
         public double aimerVelocityDegreesPerSecond = 0.0;
         public double aimerTargetPositionDegrees = 0.0;
 

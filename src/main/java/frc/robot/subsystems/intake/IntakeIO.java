@@ -1,48 +1,40 @@
 package frc.robot.subsystems.intake;
 
-
 import org.littletonrobotics.junction.AutoLog;
 
 import frc.robot.Constants.IntakeConstants;
 
-
 public interface IntakeIO {
    @AutoLog
    public class IntakeIOInputs {
-        public double intakePositionDegrees = IntakeConstants.intakePositionDegrees;
+      public double intakePositionDegrees = IntakeConstants.intakePositionDegrees;
 
-        public double intakeVelocityRPS = 0.0;
-        public double rollerTopVelocityRPS = 0.0;
-        public double rollerBottomVelocityRPS = 0.0;
+      public double intakeVelocityRPS = 0.0;
+      public double rollerTopVelocityRPS = 0.0;
+      public double rollerBottomVelocityRPS = 0.0;
 
-        public double intakeVelocityDegreesPerSecond = 0.0;
+      public double intakeVelocityDegreesPerSecond = 0.0;
+
+      public double intakeVolts = 0.0;
+      public double rollerTopVolts = 0.0;
+      public double rollerBottomVolts = 0.0;
+
+      public double intakeAmps = 0.0;
+      public double rollerTopAmps = 0.0;
+      public double rollerBottomAmps = 0.0;
    }
   
-   public default void updateInputs(IntakeIOInputs inputs) {
-   };
+   public default void updateInputs(IntakeIOInputs inputs) {};
       
-   public default void setRollerTopVolts(double volts) {
-   };
+   public default void setRollerTopVolts(double volts) {};
 
+   public default void setRollerBottomVolts(double volts) {};
 
-   public default void setRollerBottomVolts(double volts) {
-   };
+   public default void setIntakeVolts(double volts) {};
 
+   public default void setTargetRollerTopVelocity(double volts) {};
 
-   public default void setIntakeVolts(double volts) {
-   };
+   public default void setTargetRollerBottomVelocity(double volts) {};
 
-
-   public default void setTargetRollerTopVelocity(double volts) {
-   };
-
-
-   public default void setTargetRollerBottomVelocity(double volts) {
-   };
-
-
-   public default void setTargetIntakePositionDegrees(double degrees) {
-   };
-
-
+   public default void setTargetIntakePositionDegrees(double degrees) {};
 }

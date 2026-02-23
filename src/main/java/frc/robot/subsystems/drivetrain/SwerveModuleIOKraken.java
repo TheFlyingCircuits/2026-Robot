@@ -19,7 +19,6 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
 
     private double desiredAngleDeg = 0.0;
 
-
     final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
     final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(1).withEnableFOC(true)
@@ -85,6 +84,10 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Slot1.kP = 0.0;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
+
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        config.Feedback.SensorToMechanismRatio = SwerveModuleConstants.driveGearReduction;
+        config.ClosedLoopGeneral.ContinuousWrap = true;
         driveMotor.applyConfig(config);
     }
 
@@ -103,13 +106,14 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.Feedback.SensorToMechanismRatio = 1;
         config.ClosedLoopGeneral.ContinuousWrap = true;
+        config.Feedback.RotorToSensorRatio = SwerveModuleConstants.steerGearReduction;
         angleMotor.applyConfig(config);
     }
 
     @Override
     public void updateInputs(SwerveModuleIOInputs inputs) {
-        inputs.drivePositionMeters = driveMotor.getPosition().getValueAsDouble() * (SwerveModuleConstants.driveGearReduction * SwerveModuleConstants.wheelCircumferenceMeters);
-        inputs.driveVelocityMetersPerSecond = driveMotor.getVelocity().getValueAsDouble() * (SwerveModuleConstants.driveGearReduction * SwerveModuleConstants.wheelCircumferenceMeters);
+        inputs.drivePositionMeters = driveMotor.getPosition().getValueAsDouble() * (SwerveModuleConstants.wheelCircumferenceMeters);
+        inputs.driveVelocityMetersPerSecond = driveMotor.getVelocity().getValueAsDouble() * (SwerveModuleConstants.wheelCircumferenceMeters);
         inputs.angleAbsolutePositionDegrees = absoluteEncoder.getAbsolutePosition().getValueAsDouble()*360;
         inputs.targetAngleDegrees = desiredAngleDeg;
 
@@ -120,9 +124,9 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     @Override
     public void setDriveVelocity(double velocityMetersPerSecond) {
         double velocityRotationsPerSecondDriveWheels = velocityMetersPerSecond/SwerveModuleConstants.wheelCircumferenceMeters;
-        double velocityRotationsPerSecondDriveMotor = velocityRotationsPerSecondDriveWheels/SwerveModuleConstants.driveGearReduction;
+        // double velocityRotationsPerSecondDriveMotor = velocityRotationsPerSecondDriveWheels/SwerveModuleConstants.driveGearReduction;
 
-        driveMotor.setControl(velocityRequest.withVelocity(velocityRotationsPerSecondDriveMotor));
+        driveMotor.setControl(velocityRequest.withVelocity(velocityRotationsPerSecondDriveWheels));
     }
 
     @Override

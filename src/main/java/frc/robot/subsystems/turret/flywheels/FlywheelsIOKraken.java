@@ -21,7 +21,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     private double targetFrontWheelRPSLocal = 0.0;
     private double targetHoodWheelRPSLocal = 0.0;
 
-    private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(2)
+    private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
 
     public FlywheelsIOKraken() {

@@ -27,9 +27,9 @@ public class LedsCANdle extends SubsystemBase {
     int ledLength;
     // SolidColor color;
 
-    public LedsCANdle(int port, int ledLength) {
+    public LedsCANdle(int id, int ledLength) {
         this.ledLength=ledLength;
-        leds = new CANdle(port);
+        leds = new CANdle(id);
         CANdleConfiguration config = new CANdleConfiguration();
 
         config.LED.StripType = StripTypeValue.RGB;

@@ -2,12 +2,10 @@ package frc.robot.subsystems.turret.hood;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.Constants.TurretConstants;
-
 public interface HoodIO {
     @AutoLog
     public class HoodIOInputs {
-        public double hoodPositionDegrees = TurretConstants.aimerInitialPositionDegrees;
+        public double hoodPositionDegrees = 0.0;
         public double hoodVelocityDegreesPerSecond = 0.0;
         public double targetHoodPositionDegrees;
 
