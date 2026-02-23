@@ -38,7 +38,7 @@ public class AimerIOSim implements AimerIO{
         Translation2d aimerTranslation2d = drivetrain.getPoseMeters().getTranslation().plus(new Translation2d(Math.cos(robotYawRad)* 0.4,Math.sin(robotYawRad)*0.4));
 
         Pose3d aimerPoseOnRobotSIM = new Pose3d(new Translation3d(aimerTranslation2d.getX(),aimerTranslation2d.getY(),0.75), 
-            new Rotation3d(0,0,(drivetrain.getPoseMeters().getRotation().plus(Rotation2d.k180deg).
+            new Rotation3d(0,0,(drivetrain.getPoseMeters().getRotation().plus(new Rotation2d(Units.degreesToRadians(135))).
                 getRadians()+Units.degreesToRadians(inputs.aimerPositionDegrees))));
 
         Logger.recordOutput("aimerInputs/aimerPoseOnRobotSIM", aimerPoseOnRobotSIM);
@@ -55,7 +55,7 @@ public class AimerIOSim implements AimerIO{
         double targetPositionDegreesTurretRelative = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
         targetPositionDegreesTurretRelative = (new Rotation2d(Units.degreesToRadians(targetPositionDegreesTurretRelative)
-            ).plus(Rotation2d.k180deg)).getDegrees();
+            ).plus(new Rotation2d(Units.degreesToRadians(-135)))).getDegrees();
         targetAimerDegrees=targetPositionDegreesTurretRelative;
         Logger.recordOutput("aimerInputs/targetAngleDegreesTurretRelative", targetPositionDegreesTurretRelative);
         double simVoltageOutput;

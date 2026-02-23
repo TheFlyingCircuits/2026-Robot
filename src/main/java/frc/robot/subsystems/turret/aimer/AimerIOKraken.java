@@ -21,6 +21,8 @@ public class AimerIOKraken implements AimerIO{
     
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
+    private double turretZeroDegreesRobotRelative = -135;
+    private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
@@ -113,8 +115,8 @@ public class AimerIOKraken implements AimerIO{
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
         double targetAngleDegreesTurretToTarget = (new Rotation2d(Units.degreesToRadians(targetAngleDegreesTurretToTargetIfTurretWasFront)
-            ).plus(Rotation2d.k180deg)).getDegrees();
-            
+            ).plus(new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)))).getDegrees();
+
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
         if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withEnableFOC(true)
