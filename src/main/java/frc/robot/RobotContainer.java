@@ -105,12 +105,12 @@ public class RobotContainer {
         duncanController = duncan.getXboxController();
         new EventTrigger("intakeDown").onTrue(Commands.print("intakeDown"));
         new EventTrigger("intake").whileTrue(Commands.print("intaking"));
-        new EventTrigger("aim").whileTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
-        new EventTrigger("shoot").onTrue(aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false));
+        new EventTrigger("shoot").onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> false));
         // new EventTrigger("aim").whileTrue(Commands.print("aim"));
         // new EventTrigger("shoot").onTrue( Commands.print("Shoot"));
 
-        // NamedCommands.registerCommand("hoodDown", turret.turretStopDoingStuffCommand().until(() -> (turret.getHoodAngleDeg() > 60)));
+        NamedCommands.registerCommand("hoodDown", aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60)));
         // NamedCommands.registerCommand("hoodDown", Commands.print("hood down"));
         // NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         // NamedCommands.registerCommand("shoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
@@ -119,10 +119,10 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false));
-        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false));
-        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true))
-        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
+        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
+        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
     }
 
     public Command getAutonomousCommand() {
@@ -157,10 +157,15 @@ public class RobotContainer {
         return () -> DriverStation.isAutonomous();
     }
 
-    private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
+    private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot);
+        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, needsReqs.get());
     }
+
+    // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
+    //     return new AimAndShoot(turret, indexer, () -> new Translation3d(0,0,0), 
+    //     () -> new ChassisSpeeds(0.0,0.0,0.0), target, driverReadyToShoot);
+    // }
 
     private Command driverFullyControlDrivetrain() { return drivetrain.run(() -> {
         drivetrain.fieldOrientedDrive(duncan.getRequestedFieldOrientedVelocity());

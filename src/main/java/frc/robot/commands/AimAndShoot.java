@@ -29,7 +29,7 @@ public class AimAndShoot extends Command{
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot) {
+    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot, boolean needsReq) {
         this.turret=turret;
         this.indexer=indexer;
         this.turretTranlsation=turretTranlsation;
@@ -39,7 +39,9 @@ public class AimAndShoot extends Command{
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
 
-        addRequirements(turret, indexer);
+        if(needsReq){
+            addRequirements(turret, indexer);
+        }
     }
 
     @Override
