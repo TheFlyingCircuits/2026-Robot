@@ -7,7 +7,7 @@ import frc.robot.Constants.IntakeConstants;
 public interface IntakeIO {
    @AutoLog
    public class IntakeIOInputs {
-      public double intakePositionDegrees = IntakeConstants.intakePositionDegrees;
+      public double intakePositionDegrees = IntakeConstants.intakeStartDegrees;
 
       public double intakeVelocityRPS = 0.0;
       public double rollerTopVelocityRPS = 0.0;

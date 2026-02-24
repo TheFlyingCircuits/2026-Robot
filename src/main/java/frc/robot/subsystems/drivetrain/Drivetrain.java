@@ -57,7 +57,7 @@ public class Drivetrain extends SubsystemBase {
         new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
         new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
     };
-    private ColorCamera intakeCam = new ColorCamera("intakeCam", VisionConstants.robotToFuelCamera);
+    private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
     private boolean fullyTrustVisionNextPoseUpdate = false;
     private boolean allowTeleportsNextPoseUpdate = false;
