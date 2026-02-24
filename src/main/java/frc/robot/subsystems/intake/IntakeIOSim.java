@@ -20,6 +20,10 @@ public class IntakeIOSim implements IntakeIO {
 
     Drivetrain drivetrain;
 
+    IntakeIO io;
+    IntakeIOInputsAutoLogged inputs;
+    boolean isIntakeDown = false;
+
     public IntakeIOSim(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
     }

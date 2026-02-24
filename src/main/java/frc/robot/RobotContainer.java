@@ -103,8 +103,7 @@ public class RobotContainer {
 
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
-        new EventTrigger("intakeDown").onTrue(Commands.print("intakeDown"));
-        new EventTrigger("intake").whileTrue(Commands.print("intaking"));
+        new EventTrigger("intakeDown").onTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
         new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false));
         new EventTrigger("shoot").onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> false));
         // new EventTrigger("aim").whileTrue(Commands.print("aim"));
