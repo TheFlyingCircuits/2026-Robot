@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret.aimer;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -84,6 +85,18 @@ public class AimerIOKraken implements AimerIO{
         config.Feedback.SensorToMechanismRatio = TurretConstants.aimerKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
 
+
+        // will make it so turret will stay in range
+        SoftwareLimitSwitchConfigs limitConfigs = new SoftwareLimitSwitchConfigs();
+
+        limitConfigs.ForwardSoftLimitEnable = true;
+        limitConfigs.ReverseSoftLimitEnable = true;
+
+        limitConfigs.ForwardSoftLimitThreshold = turretMaxOneSideDeg / 360.0;
+        limitConfigs.ReverseSoftLimitThreshold = -turretMaxOneSideDeg / 360.0;
+
+        config.SoftwareLimitSwitch = limitConfigs;
+
         aimerKraken.applyConfig(config);
 
         // 0.16875 of mechanism = 1 rotation of cancoder gear so this is also the range that it can see when init
@@ -91,43 +104,6 @@ public class AimerIOKraken implements AimerIO{
         double turretsInitialAngleRot = (TurretConstants.turretMinAngle + 0.16875/2.0) + ((0.16875/2.0) * encoderGearAnglePositionInRotations);
 
         aimerKraken.setPosition(turretsInitialAngleRot);
-    }
-
-    // continous wrap is enabled because our range is over 0.5 rot on each side
-    // target will allways be within 180 to -180 deg
-    private double getSafeTravelAngleDeg(double requestedAngleDeg) {
-        double currentPositionDeg = Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble());
-        // double delta = requestedAngleDeg-currentPositionDeg;
-        
-        double delta = (new Rotation2d(Units.degreesToRotations(requestedAngleDeg)).minus(new Rotation2d(Units.degreesToRotations(currentPositionDeg)))).getDegrees();
-        // System.out.println(delta);
-        // if (delta > 180) delta -= 360;
-        // if (delta < -180) delta += 360;
-
-        double shortestPathPositionDeg = currentPositionDeg + delta;
-        // System.out.println(delta);
-
-        double safeTarget;
-        // System.out.println(Math.abs(shortestPathPositionDeg));
-        if(Math.abs(shortestPathPositionDeg) >= turretMaxOneSideDeg) {
-            // if positive
-            // if(shortestPathPositionDeg > 0){
-            //     safeTarget = shortestPathPositionDeg - 360.0;
-            //     System.out.println(safeTarget);
-            // } else {
-            //     // if negative
-            //     safeTarget = shortestPathPositionDeg + 360.0;
-            //     System.out.println(safeTarget);
-            // }
-
-           safeTarget = (shortestPathPositionDeg > 0) ? shortestPathPositionDeg - 360.0 : shortestPathPositionDeg + 360.0;
-        //    System.out.println(safeTarget);
-        } else {
-            safeTarget = requestedAngleDeg;
-        }
-
-        System.out.println(safeTarget);
-        return safeTarget;
     }
 
     @Override
@@ -147,11 +123,12 @@ public class AimerIOKraken implements AimerIO{
 
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
-        // if(targetPositionDegreesRobotToTarget > 180.0) {
-        //     targetPositionDegreesRobotToTarget = 180.0;
-        // } else if(targetPositionDegreesRobotToTarget < -180.0) {
-        //     targetPositionDegreesRobotToTarget = -180.0;
-        // }
+        // I think angle will allways be within 180 to -180 but just in case
+        if(targetPositionDegreesRobotToTarget > 180.0) {
+            targetPositionDegreesRobotToTarget = 180.0;
+        } else if(targetPositionDegreesRobotToTarget < -180.0) {
+            targetPositionDegreesRobotToTarget = -180.0;
+        }
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
 
@@ -166,9 +143,6 @@ public class AimerIOKraken implements AimerIO{
             ).plus(new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)))).getDegrees();
 
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
-
-        // MAKES ANGLE SAFE!! I THINK
-        targetAngleDegreesTurretToTarget = getSafeTravelAngleDeg(targetAngleDegreesTurretToTarget);
 
 
         if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
