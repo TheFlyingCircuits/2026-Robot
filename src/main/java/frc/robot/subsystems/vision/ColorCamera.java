@@ -36,13 +36,11 @@ public class ColorCamera {
     private List<Translation3d> invalidGamepieces_fieldCoords = new ArrayList<>();
 
     public static class Cluster {
-        public double centerX;
-        public double centerY;
+        public Translation3d centerOfCluster;
         public int fuelCount;
 
-        public Cluster(double x, double y, int fuelCount) {
-            this.centerX = x;
-            this.centerY = y;
+        public Cluster(Translation3d centerOfCluster, int fuelCount) {
+            this.centerOfCluster = centerOfCluster;
             this.fuelCount = fuelCount;
         }
     }
@@ -85,11 +83,25 @@ public class ColorCamera {
     public Optional<Translation3d> getClosestGamepieceTo(Translation2d locationOnField) {
         Optional<Translation3d> closest = Optional.empty();
         double minDistance = -1;
-        for (Translation3d gamepieceLocation_fieldCoords : this.validGamepieces_fieldCoords) {
-            double distance = gamepieceLocation_fieldCoords.toTranslation2d().getDistance(locationOnField);
+        for (Cluster cluster : this.fuelClusters) {
+            Translation3d cluster_fieldCoords = cluster.centerOfCluster;
+            double distance = cluster_fieldCoords.toTranslation2d().getDistance(locationOnField);
             if (closest.isEmpty() || (distance < minDistance)) {
                 minDistance = distance;
-                closest = Optional.of(gamepieceLocation_fieldCoords);
+                closest = Optional.of(cluster_fieldCoords);
+            }
+        }
+        return closest;
+    }
+
+    public Optional<Translation3d> getClusterTo(Translation2d locationOnField) {
+        Optional<Translation3d> closest = Optional.empty();
+        double minDistance = -1;
+        for (Translation3d cluster_fieldCoords : this.validGamepieces_fieldCoords) {
+            double distance = cluster_fieldCoords.toTranslation2d().getDistance(locationOnField);
+            if (closest.isEmpty() || (distance < minDistance)) {
+                minDistance = distance;
+                closest = Optional.of(cluster_fieldCoords);
             }
         }
         return closest;
@@ -169,6 +181,9 @@ public class ColorCamera {
         Logger.recordOutput(logPrefix+"timestampSeconds", mostRecentFrame.getTimestampSeconds());
         Logger.recordOutput(logPrefix+"validGamepieces", this.validGamepieces_fieldCoords.toArray(new Translation3d[0]));
         Logger.recordOutput(logPrefix+"invalidGamepieces", this.invalidGamepieces_fieldCoords.toArray(new Translation3d[0]));
+        for(int i = 0; i<fuelClusters.size(); i++){
+            Logger.recordOutput(logPrefix+"cluster"+i, this.fuelClusters.get(i).centerOfCluster);
+        }
 
         // AdvantageScopeDrawingUtils.drawCircle("coralTracking/minDetectionDistance", robotPoseNow.getTranslation(), 0.6);
         // AdvantageScopeDrawingUtils.drawCircle("coralTracking/maxDetectionDistance", robotPoseNow.getTranslation(), 2.0);
@@ -227,7 +242,8 @@ public class ColorCamera {
             aveX = aveX/cluster.size();
             aveY = aveY/cluster.size();
 
-            fuelClusters.add(new Cluster(aveX, aveY, cluster.size()));
+            fuelClusters.add(new Cluster(new Translation3d(aveX, aveY, FieldConstants.fuelRadiusMeters), 
+                cluster.size()));
         }
     }
 

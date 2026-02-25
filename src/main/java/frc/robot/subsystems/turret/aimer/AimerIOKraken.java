@@ -25,6 +25,8 @@ public class AimerIOKraken implements AimerIO{
     private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
     private double ksForConstantForceSpring = 0.0;
 
+    private double turretMaxOneSideDeg = 200;// TODO: get real
+
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
 
@@ -91,6 +93,43 @@ public class AimerIOKraken implements AimerIO{
         aimerKraken.setPosition(turretsInitialAngleRot);
     }
 
+    // continous wrap is enabled because our range is over 0.5 rot on each side
+    // target will allways be within 180 to -180 deg
+    private double getSafeTravelAngleDeg(double requestedAngleDeg) {
+        double currentPositionDeg = Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble());
+        // double delta = requestedAngleDeg-currentPositionDeg;
+        
+        double delta = (new Rotation2d(Units.degreesToRotations(requestedAngleDeg)).minus(new Rotation2d(Units.degreesToRotations(currentPositionDeg)))).getDegrees();
+        // System.out.println(delta);
+        // if (delta > 180) delta -= 360;
+        // if (delta < -180) delta += 360;
+
+        double shortestPathPositionDeg = currentPositionDeg + delta;
+        // System.out.println(delta);
+
+        double safeTarget;
+        // System.out.println(Math.abs(shortestPathPositionDeg));
+        if(Math.abs(shortestPathPositionDeg) >= turretMaxOneSideDeg) {
+            // if positive
+            // if(shortestPathPositionDeg > 0){
+            //     safeTarget = shortestPathPositionDeg - 360.0;
+            //     System.out.println(safeTarget);
+            // } else {
+            //     // if negative
+            //     safeTarget = shortestPathPositionDeg + 360.0;
+            //     System.out.println(safeTarget);
+            // }
+
+           safeTarget = (shortestPathPositionDeg > 0) ? shortestPathPositionDeg - 360.0 : shortestPathPositionDeg + 360.0;
+        //    System.out.println(safeTarget);
+        } else {
+            safeTarget = requestedAngleDeg;
+        }
+
+        System.out.println(safeTarget);
+        return safeTarget;
+    }
+
     @Override
     public void updateInputs(AimerIOInputs inputs) {
         inputs.aimerPositionDegrees = Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble());
@@ -108,11 +147,11 @@ public class AimerIOKraken implements AimerIO{
 
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
-        if(targetPositionDegreesRobotToTarget > 180.0) {
-            targetPositionDegreesRobotToTarget = 180.0;
-        } else if(targetPositionDegreesRobotToTarget < -180.0) {
-            targetPositionDegreesRobotToTarget = -180.0;
-        }
+        // if(targetPositionDegreesRobotToTarget > 180.0) {
+        //     targetPositionDegreesRobotToTarget = 180.0;
+        // } else if(targetPositionDegreesRobotToTarget < -180.0) {
+        //     targetPositionDegreesRobotToTarget = -180.0;
+        // }
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
 
@@ -128,7 +167,10 @@ public class AimerIOKraken implements AimerIO{
 
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
 
-        
+        // MAKES ANGLE SAFE!! I THINK
+        targetAngleDegreesTurretToTarget = getSafeTravelAngleDeg(targetAngleDegreesTurretToTarget);
+
+
         if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts)

@@ -13,7 +13,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,12 +55,8 @@ public class RobotContainer {
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
-    
-    private Translation3d aimingTarget;
-    private boolean driverReadyToShoot;
 
     public RobotContainer() {
-        aimingTarget = TurretCalculations.getHubShootingTargetTranslation();
         /**** INITIALIZE SUBSYSTEMS ****/
         if (RobotBase.isReal()) {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
