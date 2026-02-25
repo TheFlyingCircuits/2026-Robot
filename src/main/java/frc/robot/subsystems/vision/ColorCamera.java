@@ -35,6 +35,23 @@ public class ColorCamera {
     private List<Translation3d> validGamepieces_fieldCoords = new ArrayList<>();
     private List<Translation3d> invalidGamepieces_fieldCoords = new ArrayList<>();
 
+    public static class Cluster {
+        public double centerX;
+        public double centerY;
+        public int fuelCount;
+
+        public Cluster(double x, double y, int fuelCount) {
+            this.centerX = x;
+            this.centerY = y;
+            this.fuelCount = fuelCount;
+        }
+    }
+
+    private List<Cluster> fuelClusters = new ArrayList<>();
+
+    private final int minFuelInCluster = 5;
+    private final double fuelInClusterDistanceToleranceMeters = 0.3;
+
 
     public ColorCamera(String name, Translation3d camLocation_robotFrame, Rotation3d camOrientation_robotFrame) {
         this.cam = new PhotonCamera(name);
@@ -91,6 +108,8 @@ public class ColorCamera {
         // Reset for a new iteration of the main loop
         this.validGamepieces_fieldCoords = new ArrayList<>();
         this.invalidGamepieces_fieldCoords = new ArrayList<>();
+
+        this.fuelClusters = new ArrayList<>();
         // Logger.processInputs(cam.getName(), cam);
 
 
@@ -129,7 +148,7 @@ public class ColorCamera {
             }
 
             // Don't track gamepieces too far away from the robot.
-            double maxMetersFromRobot = 2.0;
+            double maxMetersFromRobot = 5.0;
             double minMetersFromRobot = DrivetrainConstants.halfBumperWidthMeters;
             double metersFromRobot = gamepieceLocation_fieldCoords.toTranslation2d().getDistance(robotPoseNow.getTranslation()); // gamepieceLocation_robotCoords.toTranslation2d().getNorm() doesn't take into account any robot travel since the pic was taken.
             if (metersFromRobot > maxMetersFromRobot || metersFromRobot < minMetersFromRobot) {
@@ -140,6 +159,8 @@ public class ColorCamera {
                       
             // The gamepiece passes all checks, so its valid.
             this.validGamepieces_fieldCoords.add(gamepieceLocation_fieldCoords);
+
+            findFuelClusters();
         }
 
 
@@ -158,6 +179,59 @@ public class ColorCamera {
         // Logger.recordOutput(cam.getName()+"/closestValidGamepiece/location_fieldCoords", (closestValidGamepiece.isPresent()) ? new Translation3d[] {closestValidGamepiece.get()} : new Translation3d[0]);
         // Logger.recordOutput(cam.getName()+"/closestValidGamepiece/distanceMeters", metersToClosestGamepiece);
     }
+
+    // just made but didn't check back to see if it will actually work
+    private void findFuelClusters() {
+        boolean[] assignedToCluster = new boolean[validGamepieces_fieldCoords.size()];
+
+        List<List<Integer>> trialClusters = new ArrayList<>();
+
+        // this loop checks all of the fuel and if its in a cluster and if not then it stars a new cluster from that new fuel
+        // and then checks all of the other non assigned fuel to see if they are close and makes a cluster
+        for(int i = 0; i < validGamepieces_fieldCoords.size(); i++) {
+            if(assignedToCluster[i]) continue;
+
+            List<Integer> currentTrialCluster = new ArrayList<>();
+            currentTrialCluster.add(i);
+            assignedToCluster[i] = true;
+        
+            // might have performance issues? O(n^2) on top of compairing distance for each fuel in cluster to each fuel
+            // this loop checks all non assigned fuel with our current trial cluser and sees if its within distance tolerance
+            for(int e = i + 1; e < validGamepieces_fieldCoords.size(); e++) {
+                if(assignedToCluster[e]) continue;
+
+                // o represents all of the fuel in the cluster so far and this for loop checks to see if current game peice that its checking
+                // is within distance tolerance of any of the cuel in the cluster and adds it if so
+                for(int o = 0; o < currentTrialCluster.size(); o++) {
+                    if(validGamepieces_fieldCoords.get(currentTrialCluster.get(o)).getDistance(validGamepieces_fieldCoords.get(e)) <= fuelInClusterDistanceToleranceMeters) {
+                        currentTrialCluster.add(e);
+                        assignedToCluster[e] = true;
+                        break;
+                    }
+                }
+            }
+            trialClusters.add(currentTrialCluster);
+        }
+
+        // filters through trial clusters and check if they have enough fuel and then adds them to the cluster list by averaging their x and y to get the center of cluster
+        for(List<Integer> cluster : trialClusters) {
+            if(cluster.size() < minFuelInCluster) continue;
+            double aveX = 0.0;
+            double aveY = 0.0;
+
+            for(int fuel : cluster) {
+                aveX += validGamepieces_fieldCoords.get(fuel).getX();
+                aveY += validGamepieces_fieldCoords.get(fuel).getY();
+            }
+
+            aveX = aveX/cluster.size();
+            aveY = aveY/cluster.size();
+
+            fuelClusters.add(new Cluster(aveX, aveY, cluster.size()));
+        }
+    }
+
+    
 
 
     /**
