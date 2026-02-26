@@ -144,12 +144,6 @@ public class AimerIOKraken implements AimerIO{
 
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
-        // I think angle will allways be within 180 to -180 but just in case
-        if(targetPositionDegreesRobotToTarget > 180.0) {
-            targetPositionDegreesRobotToTarget = 180.0;
-        } else if(targetPositionDegreesRobotToTarget < -180.0) {
-            targetPositionDegreesRobotToTarget = -180.0;
-        }
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
 
@@ -166,7 +160,7 @@ public class AimerIOKraken implements AimerIO{
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
 
         double safeAngle = getSafeOptimizedAngleDeg(targetAngleDegreesTurretToTarget);
-        
+
         if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts)
