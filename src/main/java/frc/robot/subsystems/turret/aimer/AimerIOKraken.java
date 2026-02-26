@@ -22,8 +22,8 @@ public class AimerIOKraken implements AimerIO{
     
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
-    private double turretZeroDegreesRobotRelative = -135;
-    private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
+    private double turretSpringAngleRobotRelative = -135;
+    // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
     private double ksForConstantForceSpring = 0.0;
 
     private double turretMaxOneSideDeg = 200;// TODO: get real
@@ -83,19 +83,19 @@ public class AimerIOKraken implements AimerIO{
         config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
         config.Feedback.RotorToSensorRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio;
         config.Feedback.SensorToMechanismRatio = TurretConstants.aimerKrakenToTurretRotationsGearRatio;
-        config.ClosedLoopGeneral.ContinuousWrap = false;
+        config.ClosedLoopGeneral.ContinuousWrap = true;
 
 
         // will make it so turret will stay in range
-        SoftwareLimitSwitchConfigs limitConfigs = new SoftwareLimitSwitchConfigs();
+        // SoftwareLimitSwitchConfigs limitConfigs = new SoftwareLimitSwitchConfigs();
 
-        limitConfigs.ForwardSoftLimitEnable = true;
-        limitConfigs.ReverseSoftLimitEnable = true;
+        // limitConfigs.ForwardSoftLimitThreshold = turretMaxOneSideDeg / 360.0;
+        // limitConfigs.ReverseSoftLimitThreshold = -turretMaxOneSideDeg / 360.0;
 
-        limitConfigs.ForwardSoftLimitThreshold = turretMaxOneSideDeg / 360.0;
-        limitConfigs.ReverseSoftLimitThreshold = -turretMaxOneSideDeg / 360.0;
+        // limitConfigs.ForwardSoftLimitEnable = true;
+        // limitConfigs.ReverseSoftLimitEnable = true;
 
-        config.SoftwareLimitSwitch = limitConfigs;
+        // config.SoftwareLimitSwitch = limitConfigs;
 
         aimerKraken.applyConfig(config);
 
@@ -104,6 +104,27 @@ public class AimerIOKraken implements AimerIO{
         double turretsInitialAngleRot = (TurretConstants.turretMinAngle + 0.16875/2.0) + ((0.16875/2.0) * encoderGearAnglePositionInRotations);
 
         aimerKraken.setPosition(turretsInitialAngleRot);
+    }
+
+    private double getSafeOptimizedAngleDeg(double targetAngle) {
+
+        double aimerAngleDeg = Units.radiansToDegrees(aimerKraken.getPosition().getValueAsDouble());
+
+        double optimizedAngle;
+
+        if((targetAngle*aimerAngleDeg) < 0) {
+            double signOfAimer = aimerAngleDeg > 0 ? 1.0 : -1.0;
+
+            double targetDistanceFrom180Deg = 180.0-Math.abs(targetAngle);
+            double aimerDistanceFrom180Deg = 180.0-Math.abs(aimerAngleDeg);
+            optimizedAngle = aimerAngleDeg + (targetDistanceFrom180Deg + aimerDistanceFrom180Deg) * signOfAimer;
+
+            if(Math.abs(optimizedAngle) > turretSpringAngleRobotRelative) optimizedAngle = optimizedAngle + (360.0*(signOfAimer * -1));
+        } else {
+            optimizedAngle = targetAngle;
+        }
+
+        return optimizedAngle;
     }
 
     @Override
@@ -140,17 +161,18 @@ public class AimerIOKraken implements AimerIO{
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
         double targetAngleDegreesTurretToTarget = (new Rotation2d(Units.degreesToRadians(targetAngleDegreesTurretToTargetIfTurretWasFront)
-            ).plus(new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)))).getDegrees();
+            ).plus(new Rotation2d(Units.degreesToRadians(turretSpringAngleRobotRelative)))).getDegrees();
 
         targetAimerDegrees=targetAngleDegreesTurretToTarget;
 
-
-        if(Math.abs(targetAngleDegreesTurretToTarget-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
-            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withEnableFOC(true)
+        double safeAngle = getSafeOptimizedAngleDeg(targetAngleDegreesTurretToTarget);
+        
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
+            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts)
         );
         } else {
-            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetAngleDegreesTurretToTarget)).withFeedForward(feedForwardsSpringVolts));
+            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
         }
         // aimerKraken.setControl(m_Velrequest.withVelocity(Units.degreesToRotations(targetPositionDegrees)));
     }
