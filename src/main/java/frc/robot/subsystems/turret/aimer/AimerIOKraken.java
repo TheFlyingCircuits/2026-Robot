@@ -1,7 +1,6 @@
 package frc.robot.subsystems.turret.aimer;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -22,7 +21,7 @@ public class AimerIOKraken implements AimerIO{
     
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
-    private double turretSpringAngleRobotRelative = -135;
+    private double turretSpringAngleRobotRelative = -90;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
     private double ksForConstantForceSpring = 0.0;
 
@@ -119,7 +118,7 @@ public class AimerIOKraken implements AimerIO{
             double aimerDistanceFrom180Deg = 180.0-Math.abs(aimerAngleDeg);
             optimizedAngle = aimerAngleDeg + (targetDistanceFrom180Deg + aimerDistanceFrom180Deg) * signOfAimer;
 
-            if(Math.abs(optimizedAngle) > turretSpringAngleRobotRelative) optimizedAngle = optimizedAngle + (360.0*(signOfAimer * -1));
+            if(Math.abs(optimizedAngle) > turretMaxOneSideDeg) optimizedAngle = optimizedAngle + (360.0*(signOfAimer * -1));
         } else {
             optimizedAngle = targetAngle;
         }

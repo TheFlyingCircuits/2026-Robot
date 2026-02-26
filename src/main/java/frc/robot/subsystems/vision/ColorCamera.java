@@ -1,8 +1,10 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
@@ -183,6 +185,7 @@ public class ColorCamera {
         Logger.recordOutput(logPrefix+"invalidGamepieces", this.invalidGamepieces_fieldCoords.toArray(new Translation3d[0]));
         for(int i = 0; i<fuelClusters.size(); i++){
             Logger.recordOutput(logPrefix+"cluster"+i, this.fuelClusters.get(i).centerOfCluster);
+            Logger.recordOutput(logPrefix+"cluster"+i+"count", this.fuelClusters.get(i).fuelCount);
         }
 
         // AdvantageScopeDrawingUtils.drawCircle("coralTracking/minDetectionDistance", robotPoseNow.getTranslation(), 0.6);
@@ -207,24 +210,26 @@ public class ColorCamera {
             if(assignedToCluster[i]) continue;
 
             List<Integer> currentTrialCluster = new ArrayList<>();
+            Queue<Integer> notProcessed = new LinkedList<>();
+
             currentTrialCluster.add(i);
             assignedToCluster[i] = true;
-        
-            // might have performance issues? O(n^2) on top of compairing distance for each fuel in cluster to each fuel
-            // this loop checks all non assigned fuel with our current trial cluser and sees if its within distance tolerance
-            for(int e = i + 1; e < validGamepieces_fieldCoords.size(); e++) {
-                if(assignedToCluster[e]) continue;
+            notProcessed.add(i);
 
-                // o represents all of the fuel in the cluster so far and this for loop checks to see if current game peice that its checking
-                // is within distance tolerance of any of the cuel in the cluster and adds it if so
-                for(int o = 0; o < currentTrialCluster.size(); o++) {
-                    if(validGamepieces_fieldCoords.get(currentTrialCluster.get(o)).getDistance(validGamepieces_fieldCoords.get(e)) <= fuelInClusterDistanceToleranceMeters) {
-                        currentTrialCluster.add(e);
-                        assignedToCluster[e] = true;
-                        break;
+            while(!notProcessed.isEmpty()) {
+                int currentFuel = notProcessed.poll();
+
+                for(int e = 0; e < validGamepieces_fieldCoords.size(); e++) {
+                    if(assignedToCluster[e]) continue;
+
+                    if(validGamepieces_fieldCoords.get(currentFuel) .getDistance(validGamepieces_fieldCoords
+                        .get(e)) <= fuelInClusterDistanceToleranceMeters){
+                            currentTrialCluster.add(e);
+                            assignedToCluster[e] = true;
+                            notProcessed.add(e);
+                        }
                     }
                 }
-            }
             trialClusters.add(currentTrialCluster);
         }
 
@@ -248,8 +253,6 @@ public class ColorCamera {
     }
 
     
-
-
     /**
      * Imagine a vector that points from the camera to a game piece, as viewed from the camera's perspective
      * (i.e. with the wpilib convention of +X = forward (out of the lens), +Y = left, +Z = up).
