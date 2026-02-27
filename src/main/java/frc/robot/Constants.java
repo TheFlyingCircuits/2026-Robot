@@ -142,7 +142,8 @@ public final class Constants {
 
         // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
         // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
-        public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
+        // public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
+        public static final double wheelRadiusMeters = Units.inchesToMeters(4)/2.0; 
         public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
     }
 
