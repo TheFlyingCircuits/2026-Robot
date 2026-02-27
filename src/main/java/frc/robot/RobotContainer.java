@@ -13,12 +13,15 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -56,6 +59,9 @@ public class RobotContainer {
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
+
+    private final SendableChooser<Command> autoChooser;
+
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
@@ -102,7 +108,12 @@ public class RobotContainer {
 
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         new EventTrigger("intakeDown").onTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
+        // new EventTrigger("intake").onTrue(Commands.print("aaaaa"));
         new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false));
         new EventTrigger("shoot").onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> false));
         // new EventTrigger("aim").whileTrue(Commands.print("aim"));
@@ -123,13 +134,14 @@ public class RobotContainer {
         .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
     }
 
+    @SuppressWarnings("static-access")
     public Command getAutonomousCommand() {
          try{
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerAuto deepAuto = new PathPlannerAuto("DeepAuto");
+        
 
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.buildAuto("DeepAuto");
+        // return AutoBuilder.buildAuto("DeepAuto");
+        return  autoChooser.getSelected();
     } catch (Exception e) {
         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
         return Commands.none();

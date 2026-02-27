@@ -166,7 +166,7 @@ public class Drivetrain extends SubsystemBase {
             config,
             () -> {
               // Boolean supplier that controls when the path will be mirrored
-              // We by default draw the paths on the red side of the field, mirroring them if we are on the blue alliance.
+              // We by default draw the paths on the blue side of the field, mirroring them if we are on the red alliance.
               // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
               var alliance = DriverStation.getAlliance();

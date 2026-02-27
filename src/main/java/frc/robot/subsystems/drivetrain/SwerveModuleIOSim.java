@@ -14,7 +14,7 @@ import frc.robot.Constants.SwerveModuleConstants;
 
 /** Add your docs here. */
 public class SwerveModuleIOSim implements SwerveModuleIO {
-    double steerMomentOfInertia = 0.001;
+    double steerMomentOfInertia = 0.003;
     double driveMomentOfInertia = 0.2;
     double driveVelocityMetersPerSecond = 0.0;
     double angleAbsolutePositionDegrees= 0.0;
@@ -55,10 +55,10 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     DCMotor steerMotorConstants = DCMotor.getKrakenX60Foc(1);
     
     private FlywheelSim angleSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(steerMotorConstants, 
-    steerMomentOfInertia, 1./SwerveModuleConstants.steerGearReduction), steerMotorConstants, 0.025);
+    steerMomentOfInertia, 1./(14.0 / 50.0) * (10.0 / 60.0)), steerMotorConstants, 0.025);
     
     private FlywheelSim driveSim= new FlywheelSim(LinearSystemId.createFlywheelSystem(driveMotorConstants, driveMomentOfInertia, 
-    1./SwerveModuleConstants.driveGearReduction),  driveMotorConstants , 0.004);
+    1./(15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)),  driveMotorConstants , 0.004);
 
     public SwerveModuleIOSim() {
         anglePID.enableContinuousInput(-180, 180);
