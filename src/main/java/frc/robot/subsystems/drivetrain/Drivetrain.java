@@ -20,12 +20,15 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -69,14 +72,11 @@ public class Drivetrain extends SubsystemBase {
     private SwerveDrivePoseEstimator fusedPoseEstimator;
     private SwerveDrivePoseEstimator wheelsOnlyPoseEstimator;
 
-    /**
-     * Distance between the center point of the left wheels and the center point of the right wheels.
-     */
-    double trackwidthMeters = Units.inchesToMeters(21.75);
-    /**
-     * Distance between the center point of the front wheels and the center point of the back wheels.
-     */
-    double wheelbaseMeters = Units.inchesToMeters(21.75);
+    /** error measured in degrees, output is in degrees per second. */
+    private PIDController angleController;
+
+    /** error measured in meters, output is in meters per second. */
+    private PIDController translationController;
 
     private final SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
@@ -108,6 +108,12 @@ public class Drivetrain extends SubsystemBase {
         //these values are automatically recalculated periodically depending on distance
         Matrix<N3, N1> visionStdDevs = VecBuilder.fill(0., 0., 0.);
 
+        angleController = new PIDController(5, 0, 0.0); 
+        angleController.enableContinuousInput(-180, 180);
+        angleController.setTolerance(1); // degrees, degreesPerSecond.
+
+        translationController = new PIDController(2.0, 0, 0.0); // kP has units of metersPerSecond per meter of error.
+        translationController.setTolerance(0.02, 1.0); // meters, metersPerSecond
 
         fusedPoseEstimator = new SwerveDrivePoseEstimator(
             DrivetrainConstants.swerveKinematics, 
@@ -431,6 +437,73 @@ public class Drivetrain extends SubsystemBase {
         // log the accepted and rejected tags
         Logger.recordOutput("drivetrain/acceptedTags", acceptedTags.toArray(new Pose3d[0]));
         Logger.recordOutput("drivetrain/rejectedTags", rejectedTags.toArray(new Pose3d[0]));
+    }
+
+
+    public Optional<Pose3d> getClosestCluster() {
+        if (!intakeCam.seesAnyClusters()) {
+            return Optional.empty();
+        }
+
+        return getClosestCluster();
+    }
+
+    public Pose2d getOffsetFuelPickupPose(Pose3d originalFuelPose) {
+        Transform2d toAdd = new Transform2d(new Translation2d(0.0,0.0), new Rotation2d());
+        Pose2d adjustedPose = originalFuelPose.toPose2d().plus(toAdd);
+
+        return adjustedPose;
+    }
+
+    public void fieldOrientedDriveWhileAiming(ChassisSpeeds desiredTranslationalSpeeds, Rotation2d desiredAngle) {
+        // Use PID controller to generate a desired angular velocity based on the desired angle
+        double measuredAngle = getPoseMeters().getRotation().getDegrees();
+        double desiredAngleDegrees = desiredAngle.getDegrees();
+        double desiredDegreesPerSecond = angleController.calculate(measuredAngle, desiredAngleDegrees);
+        if (angleController.atSetpoint()) {
+            desiredDegreesPerSecond = 0;
+        }
+
+        ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
+            desiredTranslationalSpeeds.vxMetersPerSecond,
+            desiredTranslationalSpeeds.vyMetersPerSecond,
+            Units.degreesToRadians(desiredDegreesPerSecond)
+        );
+
+        this.fieldOrientedDrive(desiredSpeeds);
+    }
+
+    public void pidToPose(Pose2d desired, double maxSpeedMetersPerSecond) {
+        Logger.recordOutput("drivetrain/pidSetpointMeters", desired);
+        // translationController.setP(pValue);
+
+        Pose2d current = getPoseMeters();
+
+        Translation2d error = desired.getTranslation().minus(current.getTranslation());
+
+        Logger.recordOutput("drivetrain/pidErrorMeters", error);
+        
+        double pidOutputMetersPerSecond = -translationController.calculate(error.getNorm(), 0);
+
+
+        if (translationController.atSetpoint()) {
+            pidOutputMetersPerSecond = 0;
+        }
+
+        // pidOutputMetersPerSecond = MathUtil.clamp(pidOutputMetersPerSecond, -maxSpeedMetersPerSecond, maxSpeedMetersPerSecond);
+
+        pidOutputMetersPerSecond = MathUtil.clamp(pidOutputMetersPerSecond, -maxSpeedMetersPerSecond, maxSpeedMetersPerSecond);
+        double xMetersPerSecond = pidOutputMetersPerSecond*error.getAngle().getCos();
+        double yMetersPerSecond = pidOutputMetersPerSecond*error.getAngle().getSin();
+        
+        fieldOrientedDriveWhileAiming(
+            new ChassisSpeeds(
+                xMetersPerSecond,
+                yMetersPerSecond,
+                0
+            ),
+            desired.getRotation()
+        );
     }
 
     @Override

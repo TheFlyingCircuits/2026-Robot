@@ -113,6 +113,10 @@ public class ColorCamera {
         return this.validGamepieces_fieldCoords.size() > 0;
     }
 
+    public boolean seesAnyClusters() {
+        return this.fuelClusters.size() > 0;
+    }
+
     public List<Translation3d> getValidGamepieces_fieldCoords() {
         return this.validGamepieces_fieldCoords;
     }

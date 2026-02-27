@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,6 +14,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -173,4 +177,25 @@ public class RobotContainer {
         drivetrain.allowTeleportsNextPoseUpdate();
     }).until(drivetrain::seesAcceptableTag).ignoringDisable(true);}
 
+
+    private Command driveTowardsFuelTeleop() { return drivetrain.run(() -> {
+        Optional<Pose3d> fuel = drivetrain.getClosestCluster();
+        ChassisSpeeds driverRequest = duncan.getRequestedFieldOrientedVelocity();
+        // TODO: tune override ratio
+        boolean significantRotationRequested = Math.abs(driverRequest.omegaRadiansPerSecond) > 0.5;
+        boolean driverOverridingSelectedFuel = fuel.isPresent() && significantRotationRequested;
+        Logger.recordOutput("fuelTracking/driverOverridingSelectedTarget", driverOverridingSelectedFuel);
+        if (fuel.isEmpty() || driverOverridingSelectedFuel) {
+            drivetrain.fieldOrientedDrive(duncan.getRequestedFieldOrientedVelocity());
+            return;
+        }
+
+
+        // TODO: choose level of assistance
+        Pose2d pickupPose = drivetrain.getOffsetFuelPickupPose(fuel.get());
+        // drivetrain.fieldOrientedDriveWhileAiming(duncan.getRequestedFieldOrientedVelocity(), pickupPose.getRotation());
+        // drivetrain.fieldOrientedDriveOnALine(duncan.getRequestedFieldOrientedVelocity(), pickupPose);
+        drivetrain.pidToPose(pickupPose, 1.0);
+        });
+    }
 }
