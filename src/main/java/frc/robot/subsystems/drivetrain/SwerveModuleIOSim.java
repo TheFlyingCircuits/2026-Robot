@@ -21,44 +21,28 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     double targetAngleDeg = 0.0;
     // dummy values needs to be changed!!!!
 
-        // PID + FEEDFORWARD CONSTANTS FOR MOTORS
-        // PID for drive motors.
-        private static final double drivekPVoltsPerMeterPerSecond = 0;
-        private static final double drivekIVoltsPerMeter = 0.;
-        private static final double drivekDVoltsPerMeterPerSecondSquared = 0.;
-
-        // PID for angle motors.
-        private static final double anglekPVoltsPerDegree = 0.08;
-        private static final double anglekIVoltsPerDegreeSeconds = 0.; // this might be the wrong unit idk 
-        private static final double anglekDVoltsPerDegreePerSecond = 0.;
-
-        private static final double drivekSVolts = 0.2383;
-        private static final double drivekVVoltsSecondsPerMeter = 2.52;
-        private static final double drivekAVoltsSecondsSquaredPerMeter = 0.;
-        
-
     private PIDController drivePID = new PIDController(
-        drivekPVoltsPerMeterPerSecond, 
-        drivekIVoltsPerMeter, 
-        drivekDVoltsPerMeterPerSecondSquared);
+        SwerveModuleConstants.drivekPVoltsPerMeterPerSecond, 
+        SwerveModuleConstants.drivekIVoltsPerMeter, 
+        SwerveModuleConstants.drivekDVoltsPerMeterPerSecondSquared);
     private PIDController anglePID = new PIDController(
-        anglekPVoltsPerDegree,
-        anglekIVoltsPerDegreeSeconds,
-        anglekDVoltsPerDegreePerSecond);
+        SwerveModuleConstants.anglekPVoltsPerDegree,
+        SwerveModuleConstants.anglekIVoltsPerDegreeSeconds,
+        SwerveModuleConstants.anglekDVoltsPerDegreePerSecond);
 
     private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(
-        drivekSVolts, 
-        drivekVVoltsSecondsPerMeter, 
-        drivekAVoltsSecondsSquaredPerMeter);
+        SwerveModuleConstants.drivekSVolts, 
+        SwerveModuleConstants.drivekVVoltsSecondsPerMeter, 
+        SwerveModuleConstants.drivekAVoltsSecondsSquaredPerMeter);
 
     DCMotor driveMotorConstants = DCMotor.getKrakenX60Foc(1);
     DCMotor steerMotorConstants = DCMotor.getKrakenX60Foc(1);
     
     private FlywheelSim angleSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(steerMotorConstants, 
-    steerMomentOfInertia, 1./(14.0 / 50.0) * (10.0 / 60.0)), steerMotorConstants, 0.025);
+    steerMomentOfInertia, 1./SwerveModuleConstants.steerGearReduction), steerMotorConstants, 0.025);
     
     private FlywheelSim driveSim= new FlywheelSim(LinearSystemId.createFlywheelSystem(driveMotorConstants, driveMomentOfInertia, 
-    1./(15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)),  driveMotorConstants , 0.004);
+    1./SwerveModuleConstants.driveGearReduction),  driveMotorConstants , 0.004);
 
     public SwerveModuleIOSim() {
         anglePID.enableContinuousInput(-180, 180);

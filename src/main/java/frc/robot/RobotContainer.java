@@ -10,8 +10,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -24,7 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.Leds;
@@ -60,7 +61,7 @@ public class RobotContainer {
     public final Indexer indexer;
     public final Intake intake;
 
-    private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<String> autoChooser;
 
     
     protected final HumanDriver duncan = new HumanDriver(0);
@@ -109,17 +110,29 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
         duncanController = duncan.getXboxController();
 
-        autoChooser = AutoBuilder.buildAutoChooser();
+        // AUTO ---------------
+
+        autoChooser = new SendableChooser<>();
+        autoChooser.addOption("Deep", "Deep");
+        autoChooser.addOption("Shallow", "Shallow");
+        autoChooser.addOption("DeepShallow", "DeepShallow");
+        autoChooser.addOption("ShallowDeep", "ShallowDeep");
+
+        autoChooser.setDefaultOption("Deep", "Deep");
+
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        new EventTrigger("intakeDown").onTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
-        // new EventTrigger("intake").onTrue(Commands.print("aaaaa"));
-        new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false));
-        new EventTrigger("shoot").onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> false));
+        new EventTrigger("intakeDown").onTrue(new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand())));
+        new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
+        // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
+        new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
+        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> true, true)));
+
+        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)));
         // new EventTrigger("aim").whileTrue(Commands.print("aim"));
         // new EventTrigger("shoot").onTrue( Commands.print("Shoot"));
 
-        NamedCommands.registerCommand("hoodDown", aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60)));
+        // NamedCommands.registerCommand("hoodDown", aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60)));
         // NamedCommands.registerCommand("hoodDown", Commands.print("hood down"));
         // NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
         // NamedCommands.registerCommand("shoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
@@ -132,20 +145,6 @@ public class RobotContainer {
         duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
         duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
         .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
-    }
-
-    @SuppressWarnings("static-access")
-    public Command getAutonomousCommand() {
-         try{
-        
-
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        // return AutoBuilder.buildAuto("DeepAuto");
-        return  autoChooser.getSelected();
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
-    }
     }
 
     // public Command normalAuto() {
@@ -209,5 +208,58 @@ public class RobotContainer {
         // drivetrain.fieldOrientedDriveOnALine(duncan.getRequestedFieldOrientedVelocity(), pickupPose);
         drivetrain.pidToPose(pickupPose, 1.0);
         });
+    }
+
+// AUTOS -------------------------------------------------------------------------------
+
+public Command getAutonomousCommand() {
+    return trenchAutos();
+}
+
+    private Command trenchAutos() {
+        try{
+        // choose which paths to run
+        String firstString, secondString;
+        switch (autoChooser.getSelected()) {
+            case "Deep":
+                firstString = "DeepP1";
+                secondString = "DeepP2";
+            case "Shallow":
+                firstString = "ShallowP1";
+                secondString = "ShallowP2";
+            case "DeepShallow":
+                firstString = "DeepP1";
+                secondString = "ShallowP2";
+            case "ShallowDeep":
+                firstString = "ShallowP1";
+                secondString = "DeepP2";
+            default:
+                firstString = "DeepP1";
+                secondString = "DeepP2";
+        }
+
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile(firstString);
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile(secondString);
+
+        // flip based on left or right
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        if ( distFromRightTrench < distFromLeftTrench) {
+            firstPath = firstPath.mirrorPath();
+            secondPath = secondPath.mirrorPath();
+
+        }
+
+        return new SequentialCommandGroup(
+            new ProxyCommand(AutoBuilder.followPath(firstPath)),
+            Commands.waitSeconds(3),
+            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60))),
+            new ProxyCommand(AutoBuilder.followPath(secondPath))
+        );
+    } catch (Exception e) {
+        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        return Commands.none();
+    }
     }
 }

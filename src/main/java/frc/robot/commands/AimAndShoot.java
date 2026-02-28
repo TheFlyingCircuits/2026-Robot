@@ -39,9 +39,8 @@ public class AimAndShoot extends Command{
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
 
-        if(needsReq){
-            addRequirements(turret, indexer);
-        }
+        addRequirements(turret, indexer);
+
     }
 
     @Override

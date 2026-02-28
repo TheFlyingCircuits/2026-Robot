@@ -135,16 +135,49 @@ public final class Constants {
 
     public final static class SwerveModuleConstants {
         /** Rotations of the drive wheel per rotations of the drive motor. */
-        public static final double driveGearReduction = (50.0 / 15.0) * (17.0 / 27.0) * (45.0 / 15.0);
+        // public static final double driveGearReduction = (50.0 / 15.0) * (17.0 / 27.0) * (45.0 / 15.0);
+
+        // /** Rotations of the steering column per rotations of the angle motor. */
+        // public static final double steerGearReduction = (50.0 / 14.0) * (60.0 / 10.0);
+
+        // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
+        // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
+        // public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
+        // public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
+
+                /** Rotations of the drive wheel per rotations of the drive motor. */
+        public static final double driveGearReduction = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
         /** Rotations of the steering column per rotations of the angle motor. */
-        public static final double steerGearReduction = (50.0 / 14.0) * (60.0 / 10.0);
+        public static final double steerGearReduction = (14.0 / 50.0) * (10.0 / 60.0);
 
         // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
         // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
         // public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
         public static final double wheelRadiusMeters = Units.inchesToMeters(4)/2.0; 
         public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
+
+        // PID + FEEDFORWARD CONSTANTS FOR MOTORS
+        // PID for drive motors.
+        public static final double drivekPVoltsPerMeterPerSecond = 0;
+        public static final double drivekIVoltsPerMeter = 0.;
+        public static final double drivekDVoltsPerMeterPerSecondSquared = 0.;
+
+        // PID for angle motors.
+        public static final double anglekPVoltsPerDegree = 0.08;
+        public static final double anglekIVoltsPerDegreeSeconds = 0.; // this might be the wrong unit idk 
+        public static final double anglekDVoltsPerDegreePerSecond = 0.;
+
+        public static final double drivekSVolts = 0.2383;
+        public static final double drivekVVoltsSecondsPerMeter = 2.52;
+        public static final double drivekAVoltsSecondsSquaredPerMeter = 0.;
+        
+        // Motor configs
+        public static final int angleContinuousCurrentLimit = 50;
+        public static final boolean angleInvert = true;
+        
+        public static final int driveContinuousCurrentLimit = 60;
+        public static final boolean driveInvert = true;
     }
 
 
