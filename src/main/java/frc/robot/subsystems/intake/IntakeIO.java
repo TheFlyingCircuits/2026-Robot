@@ -32,9 +32,9 @@ public interface IntakeIO {
 
    public default void setIntakeVolts(double volts) {};
 
-   public default void setTargetRollerTopVelocity(double volts) {};
+   public default void setTargetRollerTopVelocity(double velocityRPS) {};
 
-   public default void setTargetRollerBottomVelocity(double volts) {};
+   public default void setTargetRollerBottomVelocity(double velocityRPS) {};
 
    public default void setTargetIntakePositionDegrees(double degrees) {};
 }

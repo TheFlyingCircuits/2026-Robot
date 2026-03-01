@@ -100,13 +100,13 @@ public class IntakeIOMotors implements IntakeIO{
     }
 
     @Override
-    public void setTargetRollerTopVelocity(double velocity) {
-        rollerTopKraken.setControl(velocityRequest.withVelocity(velocity));
+    public void setTargetRollerTopVelocity(double velocityRPS) {
+        rollerTopKraken.setControl(velocityRequest.withVelocity(velocityRPS));
     }
 
     @Override
-    public void setTargetRollerBottomVelocity(double velocity) {
-        rollerBottomKraken.setControl(velocityRequest.withVelocity(velocity));
+    public void setTargetRollerBottomVelocity(double velocityRPS) {
+        rollerBottomKraken.setControl(velocityRequest.withVelocity(velocityRPS));
     }
 
     @Override

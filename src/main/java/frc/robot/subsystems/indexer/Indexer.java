@@ -49,7 +49,10 @@ public class Indexer extends SubsystemBase {
         return(this.run(() -> setAllTargetVelocity(30.0,30.0,2.0)));
     }
 
-    
+    public Command reverseIndexerCommand() {
+        return(this.run(() -> setAllTargetVelocity(-30.0,-30.0,-2.0)));
+    }
+
     public Command stopIndexingCommand() {
         return(this.run(() -> setAllTargetVelocity(0.0,0.0,0.0)));
     }

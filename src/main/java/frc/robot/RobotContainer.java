@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -141,10 +142,23 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
-        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
-        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
-        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
+        // duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
+        // duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
+        // duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
+        // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
+
+        // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
+        // duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
+
+        // duncanController.y().onTrue(reSeedRobotPose());
+        // duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
+
+        // // reset everything
+        // duncanController.x().onTrue(Commands.runOnce(() -> {
+        //     CommandScheduler.getInstance().cancelAll();
+        // }));
+
+        // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
     }
 
     // public Command normalAuto() {
@@ -152,12 +166,12 @@ public class RobotContainer {
     // }
 
     public void setDefaultCommands() {
-        drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
-        // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
-        turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
-        indexer.setDefaultCommand(indexer.stopIndexingCommand());
-        canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
-        intake.setDefaultCommand(intake.noVoltageCommand());
+        // drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
+        // // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
+        // turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
+        // indexer.setDefaultCommand(indexer.stopIndexingCommand());
+        // canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
+        // intake.setDefaultCommand(intake.noVoltageCommand());
 
     }
 
