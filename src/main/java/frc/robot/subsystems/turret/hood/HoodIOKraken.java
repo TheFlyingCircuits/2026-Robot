@@ -27,11 +27,11 @@ public class HoodIOKraken implements HoodIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 25;
+        config.CurrentLimits.StatorCurrentLimit = 35;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 0.0; // Add 0.1 V output to overcome static friction
-        config.Slot0.kP = 0.0; // An error of 1 rotation results in 0.5 V output
+        config.Slot0.kS = 0.6; // Add 0.6 V output to overcome static friction
+        config.Slot0.kP = 90.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
@@ -42,7 +42,7 @@ public class HoodIOKraken implements HoodIO{
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
         hoodKraken.applyConfig(config);
-        hoodKraken.setPosition(TurretConstants.maxHoodAngle);
+        hoodKraken.setPosition(Units.degreesToRotations(TurretConstants.maxHoodAngle));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package frc.robot.subsystems.turret;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -66,14 +66,19 @@ public class Turret extends SubsystemBase{
 
     // will return a boolean for each part of turret ready to shoot
     // 0 is aimer ready, 1 is hood ready, 2 is mainFlywheel ready, and 3 is hoodFlywheel ready
-    public boolean[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
+    public Supplier<Boolean>[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
     double mainWheelToleranceMPS, double hoodWheelToleranceMPS) {
 
-        boolean aimerReady = Math.abs(aimerInputs.aimerTargetPositionDegrees-aimerInputs.aimerPositionDegrees) <= aimerToleranceDegrees;
-        boolean hoodReady = Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
-        boolean mainWheelReady = Math.abs(flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS) <= mainWheelToleranceMPS;
-        boolean hoodWheelReady = Math.abs(flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS) <= hoodWheelToleranceMPS;
-        return new boolean[]{aimerReady, hoodReady, mainWheelReady, hoodWheelReady};
+        Supplier<Boolean> aimerReady = () -> Math.abs(aimerInputs.aimerTargetPositionDegrees-aimerInputs.aimerPositionDegrees) <= aimerToleranceDegrees;
+        Supplier<Boolean> hoodReady = () ->Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
+        Supplier<Boolean> mainWheelReady = () ->Math.abs(flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS) <= mainWheelToleranceMPS;
+        Supplier<Boolean> hoodWheelReady = () ->Math.abs(flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS) <= hoodWheelToleranceMPS;
+        Supplier<Boolean>[] outputList = new Supplier[4];
+        outputList[0] = aimerReady;
+        outputList[1] = hoodReady;
+        outputList[2] = mainWheelReady;
+        outputList[3] = hoodWheelReady;
+        return outputList;
     }
 
     public void aimAtTargetNoShoot(double targetAimerDegrees) {
@@ -95,33 +100,44 @@ public class Turret extends SubsystemBase{
         flywheels.setTargetHoodWheelVelocity(hoodWheelRPSOutput);
     }
 
-    public Command aimAtTargetCommand(DoubleSupplier targetAngleDegrees) {
-        return this.run(() -> aimAtTarget(targetAngleDegrees.getAsDouble()));
+    public void setWheelsAmps(double mainWheelAmps, double hoodWheelAmps) {
+
+        flywheels.setFrontWheelAmps(mainWheelAmps);
+        flywheels.setHoodWheelAmps(hoodWheelAmps);
+    }
+
+    public Command aimAtTargetCommand(Supplier<Double> targetAngleDegrees) {
+        return this.run(() -> aimAtTarget(targetAngleDegrees.get()));
     }
     
-    public Command setAimerVoltsCommand(DoubleSupplier volts) {
-        return this.run(() -> setAimerVolts(volts.getAsDouble()));
+    public Command setAimerVoltsCommand(Supplier<Double> volts) {
+        return this.run(() -> setAimerVolts(volts.get()));
     }
 
-    public Command aimAtTargetNoShootCommand(DoubleSupplier targetAimerDegrees) {
-        return this.run(() -> aimAtTargetNoShoot(targetAimerDegrees.getAsDouble()));
+    public Command aimAtTargetNoShootCommand(Supplier<Double> targetAimerDegrees) {
+        return this.run(() -> aimAtTargetNoShoot(targetAimerDegrees.get()));
     }
 
-    public Command aimAtTargetAndShootCommand(DoubleSupplier targetAimerDegrees, 
-    DoubleSupplier targetHoodAngleDegrees, DoubleSupplier targetVelocityMetersPerSecond) {
+    public Command aimAtTargetAndShootCommand(Supplier<Double> targetAimerDegrees, 
+    Supplier<Double> targetHoodAngleDegrees, Supplier<Double> targetVelocityMetersPerSecond) {
         
-        return this.run(() -> aimAtTargetAndShoot(targetAimerDegrees.getAsDouble(),targetHoodAngleDegrees.getAsDouble(),
-            targetVelocityMetersPerSecond.getAsDouble()));
+        return this.run(() -> aimAtTargetAndShoot(targetAimerDegrees.get(),targetHoodAngleDegrees.get(),
+            targetVelocityMetersPerSecond.get()));
     }
 
     public Command turretStopDoingStuffCommand() {
         return this.run(() -> setAllVolts(0.0,0.0,0.0,0.0));
     }
 
-    public Command setAllVoltsCommand(DoubleSupplier aimerVolts, DoubleSupplier hoodVolts, 
-        DoubleSupplier mainWheelVolts, DoubleSupplier hoodWheelVolts) {
+    public Command setAllVoltsCommand(Supplier<Double> aimerVolts, Supplier<Double> hoodVolts, 
+        Supplier<Double> mainWheelVolts, Supplier<Double> hoodWheelVolts) {
 
-        return this.run(() -> setAllVolts(aimerVolts.getAsDouble(), hoodVolts.getAsDouble(), 
-        mainWheelVolts.getAsDouble(), hoodVolts.getAsDouble()));
+        return this.run(() -> setAllVolts(aimerVolts.get(), hoodVolts.get(), 
+        mainWheelVolts.get(), hoodWheelVolts.get()));
+    }
+
+    public Command setWheelsAmpsCommand(Supplier<Double> mainWheelAmps,
+     Supplier<Double> hoodWheelAmps) {
+        return this.run(() -> setWheelsAmps(mainWheelAmps.get(), hoodWheelAmps.get()));
     }
 }

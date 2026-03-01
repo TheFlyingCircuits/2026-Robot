@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
@@ -16,8 +18,8 @@ public class ShootWithParams extends Command{
     private Supplier<Double> targetShotMetersPerSecond;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {0.5, 0.5, 0.3, 0.3};
-    private double[] whileShootingTolerances = new double[] {2.0, 2.0, 4.0, 4.0};
+    private double[] notShootingTolerances = new double[] {5.0, 5.0, 1.0, 1.0};
+    private double[] whileShootingTolerances = new double[] {5.0, 5.0, 4.0, 4.0};
 
     
 
@@ -43,7 +45,7 @@ public class ShootWithParams extends Command{
     public void execute() {
 
         // if we are shooting vs not shooting we have different tolerances
-        boolean[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
+        Supplier<Boolean>[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
         : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
 
         // driverReadyToShoot is a boolean based off driver button
@@ -52,7 +54,7 @@ public class ShootWithParams extends Command{
         turret.aimAtTargetAndShoot(aimerAngleDeg.get(), hoodAngleDeg.get(), targetShotMetersPerSecond.get());
 
         // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
-        if(readyToShoot[0] && readyToShoot[1] && readyToShoot[2] && readyToShoot[3]) {
+        if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
             indexer.indexFuelCommand();
             isShooting = true;
         } else {
@@ -60,6 +62,11 @@ public class ShootWithParams extends Command{
             indexer.stopIndexingCommand();
             isShooting = false;
         }
+
+        Logger.recordOutput("AimAndShoot/aimerReady", readyToShoot[0].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/hoodReady", readyToShoot[1].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/mainWheel", readyToShoot[2].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/hoodWheel", readyToShoot[3].get().booleanValue());
     } 
         
 }

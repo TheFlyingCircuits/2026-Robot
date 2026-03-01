@@ -29,7 +29,7 @@ public final class Constants {
         public final static double gravityMetersPerSecondSquared = 9.81;
         public final static double defaultPeriodSeconds = 0.02;
 
-        public final static String canivoreName = "CTRENetwork";
+        public final static String canivoreName = "CTRENetwork2";
 
         public enum Direction {
             left,
@@ -182,7 +182,7 @@ public final class Constants {
 
 
     public final static class GyroConstants {
-        public static final int pigeonID = 0;
+        public static final int pigeonID = 50;
 
 
         //Follow the mount calibration process in Phoenix Tuner to determine these
@@ -192,7 +192,7 @@ public final class Constants {
     }
 
     public final static class TurretConstants {
-        public static final double aimerCANcoderOffset = 0.0; // get from tuner
+        public static final double aimerCANcoderOffset = -0.117676; // get from tuner
 
         public static final double turretMaxAngle = 180; // need to change for real
         public static final double turretMinAngle = -180;
@@ -201,12 +201,12 @@ public final class Constants {
         public static final double minHoodAngle = 45.5;
 
 
-        public static final int aimerKrakenID = 99;
-        public static final int aimerCANcoderID = 99;
-        public static final int hoodKrakenID = 99;
-        public static final int frontWheelKrakenID = 99;
-        public static final int frontWheelFollowerKrakenID = 99;
-        public static final int hoodWheelKrakenID = 99;
+        public static final int aimerKrakenID = 9;
+        public static final int aimerCANcoderID = 5;
+        public static final int hoodKrakenID = 12;
+        public static final int frontWheelKrakenID = 10;
+        public static final int frontWheelFollowerKrakenID = 11;
+        public static final int hoodWheelKrakenID = 13;
 
         // 27:160 - ctre wants a >1 number for reductions
         public static final double aimerKrakenToTurretRotationsGearRatio = 5.92592592593;// this is final I think and its cancoder to turret
@@ -214,7 +214,7 @@ public final class Constants {
         public static final double aimerKrakenRotorToCANcoderGearRatio = 2.0;
         
         // TODO: get real ratios and set gains to 0
-        public static final double hoodKrakenToTurretRotationsGearRatio = 3.0;
+        public static final double hoodKrakenToTurretRotationsGearRatio = 39.0625;
 
         public static final double mainWheelKrakenToTurretRotationsGearRatio = 1.0;
         public static final double hoodWheelKrakenToTurretRotationsGearRatio = 1.0;
@@ -226,9 +226,9 @@ public final class Constants {
     }
 
     public final static class IndexerConstants {
-        public static final int bigSpinnerID = 17;
-        public static final int sideKickerID = 15;
-        public static final int kickerID = 16;
+        public static final int bigSpinnerID = 16;
+        public static final int sideKickerID = 18;
+        public static final int kickerID = 17;
 
         public static final double bigSpinnerGearRatio = 2.0; // positive is gear reduction
         public static final double sideKickerGearRatio = 2.0;
@@ -237,11 +237,11 @@ public final class Constants {
 
     public final static class IntakeConstants {
 
-        public static final int pivotNeoID = 99;
-        public static final int rollerTopKrakenID = 99;
-        public static final int rollerBottomKrakenID = 99;
-        public static final double kP = 0.0;
-        public static final double kS = 0.0;
+        public static final int pivotNeoID = 19;
+        public static final int rollerTopKrakenID = 14;
+        public static final int rollerBottomKrakenID = 15;
+        public static final double kP = 0.3;
+        public static final double kS = 0.7;
 
         public static final double intakeStartDegrees = 0.0; 
     }

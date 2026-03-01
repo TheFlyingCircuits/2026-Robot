@@ -35,18 +35,18 @@ public class FlywheelsIOKraken implements FlywheelsIO {
 
     private void configFrontWheelKrakens() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 70;
+        config.CurrentLimits.StatorCurrentLimit = 60;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 0.0;
-        config.Slot0.kP = 0.0;
+        config.Slot0.kS = 4.0; // 4.0 amps to get over friction
+        config.Slot0.kP = 8.0; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -60,18 +60,18 @@ public class FlywheelsIOKraken implements FlywheelsIO {
 
     private void configHoodWheelKrakens() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 70;
+        config.CurrentLimits.StatorCurrentLimit = 60;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 0.0;
-        config.Slot0.kP = 0.0;
+        config.Slot0.kS = 5.0; // 5.0 amps to get over friction
+        config.Slot0.kP = 8.0; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 70;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -70;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;

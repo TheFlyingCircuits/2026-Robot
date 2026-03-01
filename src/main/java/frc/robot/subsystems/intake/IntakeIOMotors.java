@@ -39,7 +39,7 @@ public class IntakeIOMotors implements IntakeIO{
         SparkMaxConfig pivotConfig = new SparkMaxConfig();
 
         pivotConfig.idleMode(IdleMode.kCoast);
-        pivotConfig.smartCurrentLimit(25);
+        pivotConfig.smartCurrentLimit(40);
         pivotConfig.inverted(true);
         pivotConfig.closedLoop.positionWrappingEnabled(false);
 
@@ -53,33 +53,35 @@ public class IntakeIOMotors implements IntakeIO{
   
     private void configRollerTopKraken() {
        TalonFXConfiguration config = new TalonFXConfiguration();
-       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+       config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
        config.CurrentLimits.StatorCurrentLimit = 25;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-       config.Slot0.kS = 0.0;
-       config.Slot0.kP = 0.0;
+       config.Slot0.kS = 0.36;
+       config.Slot0.kV = 8.25;
+       config.Slot0.kP = 3.0;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.ClosedLoopGeneral.ContinuousWrap = true;
-       config.Feedback.RotorToSensorRatio = 1;
+       config.Feedback.RotorToSensorRatio = 2.0;
        rollerTopKraken.applyConfig(config);
     }
 
 
     private void configRollerBottomKraken() {
        TalonFXConfiguration config = new TalonFXConfiguration();
-       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+       config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
        config.CurrentLimits.StatorCurrentLimit = 25;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-       config.Slot0.kS = 0.0;
-       config.Slot0.kP = 0.0;
+       config.Slot0.kS = 0.53;
+       config.Slot0.kV = 9.9;
+       config.Slot0.kP = 3.0;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
-       config.Feedback.RotorToSensorRatio = 1;
+       config.Feedback.RotorToSensorRatio = 1.25;
        config.ClosedLoopGeneral.ContinuousWrap = true;
        rollerBottomKraken.applyConfig(config);
     }

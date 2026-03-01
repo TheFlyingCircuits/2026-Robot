@@ -46,7 +46,7 @@ public class Indexer extends SubsystemBase {
 
     // EDIT THIS FOR DIFFERENT INDEXER SPEEDS
     public Command indexFuelCommand() {
-        return(this.run(() -> setAllTargetVelocity(30.0,30.0,2.0)));
+        return(this.run(() -> setAllTargetVelocity(30.0,30.0,0.5)));
     }
 
     public Command reverseIndexerCommand() {

@@ -28,9 +28,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
-import frc.robot.subsystems.Leds;
-import frc.robot.subsystems.LedsCANdle;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
@@ -55,9 +54,9 @@ import frc.robot.subsystems.turret.hood.HoodIOSim;
 public class RobotContainer {
 
     public final Drivetrain drivetrain;
-    public final Leds leds;
-    public final LedsCANdle canLeds;
-    public final LedsCANdle canLedsCounter;
+    // public final Leds leds;
+    // public final LedsCANdle canLeds;
+    // public final LedsCANdle canLedsCounter;
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
@@ -74,10 +73,10 @@ public class RobotContainer {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
-                new SwerveModuleIOKraken(0, 1, -0.377686, 0, "FL"), 
-                new SwerveModuleIOKraken(2, 3, 0.397705, 1, "FR"),
-                new SwerveModuleIOKraken(4, 5, 0.238281, 2, "BL"),
-                new SwerveModuleIOKraken(6, 7,  -0.370850, 3, "BR") 
+                new SwerveModuleIOKraken(1, 2, -0.377686, 1, "FL"), 
+                new SwerveModuleIOKraken(3, 4, 0.397705, 2, "FR"),
+                new SwerveModuleIOKraken(5, 6, 0.238281, 3, "BL"),
+                new SwerveModuleIOKraken(7, 8,  -0.370850, 4, "BR") 
             );
             // drivetrain = new Drivetrain(
             //     new GyroIOSim(){},
@@ -86,7 +85,7 @@ public class RobotContainer {
             //     new SwerveModuleIOSim(){},
             //     new SwerveModuleIOSim(){}
             // );
-            leds = new Leds(0,60);
+            // leds = new Leds(0,60);
             // drivetrain is only used for getPoseMeters method and does not do anything else
             turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer(new IndexerIOKraken());
@@ -100,15 +99,23 @@ public class RobotContainer {
                 new SwerveModuleIOSim(){}
             );
             turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
-            leds = new Leds(0,60);
+            // leds = new Leds(0,60);
             indexer = new Indexer(new IndexerIOSim());
             intake = new Intake(new IntakeIOSim(drivetrain));
         }
 
-        canLeds = new LedsCANdle(0, 60);
-        canLedsCounter = new LedsCANdle(1, 60);
+        // canLeds = new LedsCANdle(0, 60);
+        // canLedsCounter = new LedsCANdle(1, 60);
 
-        FlyingCircuitUtils.putNumberOnDashboard("target Turret Deg", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("targetMainWheelMPS", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("targetHoodWheelMPS", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("kicker", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("sideKicker", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("bigSpinner", 0.0);
+
+
         duncanController = duncan.getXboxController();
 
         // AUTO ---------------
@@ -130,13 +137,8 @@ public class RobotContainer {
         () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> true, true)));
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)));
-        // new EventTrigger("aim").whileTrue(Commands.print("aim"));
-        // new EventTrigger("shoot").onTrue( Commands.print("Shoot"));
 
-        // NamedCommands.registerCommand("hoodDown", aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60)));
-        // NamedCommands.registerCommand("hoodDown", Commands.print("hood down"));
-        // NamedCommands.registerCommand("aim",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> false));
-        // NamedCommands.registerCommand("shoot",aimAndShoot( () -> TurretCalculations.possibeTargets.hub, () -> true));
+        Commands.runOnce(drivetrain::setRobotFacingForward);
         configureBindings();
         setDefaultCommands();
     }
@@ -154,11 +156,44 @@ public class RobotContainer {
         // duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
 
         // // reset everything
-        // duncanController.x().onTrue(Commands.runOnce(() -> {
-        //     CommandScheduler.getInstance().cancelAll();
-        // }));
+        duncanController.x().onTrue(Commands.runOnce(() -> {
+            CommandScheduler.getInstance().cancelAll();
+        }));
+
+        duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
+        ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
+        ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
+        ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
 
         // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
+
+        // duncanController.rightBumper().whileTrue(turret.setAllVoltsCommand(
+        // ()-> FlyingCircuitUtils.getNumberFromDashboard("aimerVolts", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodVolts", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("mainWheelVolts", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodWheelVolts", 0.0)))
+        // .whileFalse(
+        // turret.setAllVoltsCommand(()-> 0.0, ()-> 0.0, ()-> 0.0, ()-> 0.0)
+        // );  
+
+        // duncanController.rightBumper().whileTrue(turret.setWheelsAmpsCommand(
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("mainWheelAmps", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodWheelAmps", 0.0)))
+        // .whileFalse(
+        // turret.setWheelsAmpsCommand(()-> 0.0, ()-> 0.0)
+        // );  
+
+
+        // duncanController.rightBumper().whileTrue(turret.aimAtTargetAndShootCommand(
+        // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)))
+        // .whileFalse(
+        // turret.setAllVoltsCommand(()-> 0.0, ()-> 0.0, ()-> 0.0, ()-> 0.0)
+        // );  
+
+        
+
     }
 
     // public Command normalAuto() {
@@ -168,8 +203,8 @@ public class RobotContainer {
     public void setDefaultCommands() {
         // drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
         // // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
-        // turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
-        // indexer.setDefaultCommand(indexer.stopIndexingCommand());
+        turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
+        indexer.setDefaultCommand(indexer.stopIndexingCommand());
         // canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
         // intake.setDefaultCommand(intake.noVoltageCommand());
 
@@ -227,7 +262,7 @@ public class RobotContainer {
 // AUTOS -------------------------------------------------------------------------------
 
 public Command getAutonomousCommand() {
-    return trenchAutos();
+    return null;
 }
 
     private Command trenchAutos() {
