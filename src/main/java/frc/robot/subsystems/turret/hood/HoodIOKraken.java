@@ -42,7 +42,7 @@ public class HoodIOKraken implements HoodIO{
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
         hoodKraken.applyConfig(config);
-        hoodKraken.setPosition(TurretConstants.minHoodAngle);
+        hoodKraken.setPosition(TurretConstants.maxHoodAngle);
     }
 
     @Override
@@ -62,10 +62,10 @@ public class HoodIOKraken implements HoodIO{
 
     @Override
     public void setTargetHoodPosition(double targetPositionDegrees) {
-        if(targetPositionDegrees < TurretConstants.minHoodAngle) {
-            targetPositionDegrees = TurretConstants.minHoodAngle;
-        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle) {
-            targetPositionDegrees = TurretConstants.maxHoodAngle;
+        if(targetPositionDegrees < TurretConstants.minHoodAngle + 1.0) {
+            targetPositionDegrees = TurretConstants.minHoodAngle + 1.0;
+        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -1.0) {
+            targetPositionDegrees = TurretConstants.maxHoodAngle - 1.0;
         }
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)));
     }

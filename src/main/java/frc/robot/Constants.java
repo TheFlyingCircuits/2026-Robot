@@ -197,8 +197,8 @@ public final class Constants {
         public static final double turretMaxAngle = 180; // need to change for real
         public static final double turretMinAngle = -180;
 
-        public static final double maxHoodAngle = 85.0;
-        public static final double minHoodAngle = 45.7;
+        public static final double maxHoodAngle = 85.5;
+        public static final double minHoodAngle = 45.5;
 
 
         public static final int aimerKrakenID = 99;
@@ -216,8 +216,8 @@ public final class Constants {
         // TODO: get real ratios and set gains to 0
         public static final double hoodKrakenToTurretRotationsGearRatio = 3.0;
 
-        public static final double mainWheelKrakenToTurretRotationsGearRatio = 3.0;
-        public static final double hoodWheelKrakenToTurretRotationsGearRatio = 3.0;
+        public static final double mainWheelKrakenToTurretRotationsGearRatio = 1.0;
+        public static final double hoodWheelKrakenToTurretRotationsGearRatio = 1.0;
 
         public static final double hoodDefaultAngleDegrees = 80.0;
 
@@ -243,7 +243,7 @@ public final class Constants {
         public static final double kP = 0.0;
         public static final double kS = 0.0;
 
-        public static final double intakeStartDegrees = 45.0; 
+        public static final double intakeStartDegrees = 0.0; 
     }
 
     public final static class VisionConstants {
