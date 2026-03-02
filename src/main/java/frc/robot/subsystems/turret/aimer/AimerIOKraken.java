@@ -23,9 +23,9 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 0.9;
+    private double ksForConstantForceSpring = 1.0;
 
-    private double turretMaxOneSideDeg = 190;// TODO: get real
+    private double turretMaxOneSideDeg = 200;// TODO: get real
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);
@@ -63,16 +63,16 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
-        config.Slot0.kP = 3.0;
+        config.Slot0.kP = 50.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 2.5; // rps/volts
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 32.0; 
+        config.Slot1.kP = 130.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
-        config.MotionMagic.MotionMagicAcceleration = 1.5; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 2.5; //rps
+        config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -82,7 +82,7 @@ public class AimerIOKraken implements AimerIO{
         config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
         config.Feedback.RotorToSensorRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio;
         config.Feedback.SensorToMechanismRatio = TurretConstants.canCoderToTurretRotationsGearRatio;
-        config.ClosedLoopGeneral.ContinuousWrap = true;
+        config.ClosedLoopGeneral.ContinuousWrap = false;
 
 
         // will make it so turret will stay in range
@@ -167,7 +167,8 @@ public class AimerIOKraken implements AimerIO{
 
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
-        double targetAngleDeg180Clamped = Rotation2d.fromDegrees(targetAngleDegreesTurretToTargetIfTurretWasFront).getDegrees();
+        double targetAngleDeg180Clamped = Rotation2d.fromDegrees(targetAngleDegreesTurretToTargetIfTurretWasFront)
+            .rotateBy(Rotation2d.kZero).getDegrees();
 
         // double targetAngleDegreesTurretToTarget = (new Rotation2d(Units.degreesToRadians(targetAngleDegreesTurretToTargetIfTurretWasFront)
         //     ).plus(new Rotation2d(Units.degreesToRadians(turretSpringAngleRobotRelative)))).getDegrees();

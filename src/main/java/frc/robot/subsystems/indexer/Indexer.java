@@ -28,9 +28,9 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setAllTargetVolts(double kickerVolts, double sideKickerVolts, double bigSpinnerVolts) {
-        indexerIO.setKickerAmps(kickerVolts);
-        indexerIO.setSideKickerAmps(sideKickerVolts);
-        indexerIO.setBigSpinnerAmps(bigSpinnerVolts);
+        indexerIO.setBigSpinnerVolts(kickerVolts);
+        indexerIO.setBigSpinnerVolts(sideKickerVolts);
+        indexerIO.setBigSpinnerVolts(bigSpinnerVolts);
     }
 
     public void setAllTargetVelocity(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
