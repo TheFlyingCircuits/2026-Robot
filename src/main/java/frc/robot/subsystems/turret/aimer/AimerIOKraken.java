@@ -59,7 +59,7 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 50;
+        config.CurrentLimits.StatorCurrentLimit = 60;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
@@ -71,7 +71,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot1.kS = 0.0;
         config.Slot1.kP = 130.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 2.5; //rps
+        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
         config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
