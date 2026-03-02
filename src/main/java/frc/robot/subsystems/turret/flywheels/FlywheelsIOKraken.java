@@ -18,8 +18,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     private Kraken frontWheelKrakenFollower;
     private Kraken hoodWheelKraken;
 
-    private double targetFrontWheelRPSLocal = 0.0;
-    private double targetHoodWheelRPSLocal = 0.0;
+    private double targetFrontWheelMPSLocal = 0.0;
+    private double targetHoodWheelMPSLocal = 0.0;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
@@ -87,8 +87,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         inputs.frontWheelVelocityMPS = inputs.frontWheelVelocityRPS*(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         inputs.hoodWheelVelocityMPS = inputs.hoodWheelVelocityRPS*(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
 
-        inputs.targetFrontWheelVelocityMPS = targetFrontWheelRPSLocal;
-        inputs.targetHoodWheelVelocityMPS = targetHoodWheelRPSLocal;
+        inputs.targetFrontWheelVelocityMPS = targetFrontWheelMPSLocal;
+        inputs.targetHoodWheelVelocityMPS = targetHoodWheelMPSLocal;
 
         inputs.frontWheelAppliedVoltage = frontWheelKraken.getMotorVoltage().getValueAsDouble();
         inputs.frontWheelFollowerAppliedVoltage = frontWheelKrakenFollower.getMotorVoltage().getValueAsDouble();
@@ -118,14 +118,14 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     }
 
     public void setTargetFrontWheelVelocity(double targetVelocityRPS) {
-        targetFrontWheelRPSLocal = targetVelocityRPS;
+        targetFrontWheelMPSLocal = targetVelocityRPS * (Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         frontWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS));
         // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
         frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
     }
 
     public void setTargetHoodWheelVelocity(double targetVelocityRPS) {
-        targetHoodWheelRPSLocal = targetVelocityRPS;
+        targetHoodWheelMPSLocal = targetVelocityRPS * (Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
         hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS));
     }
     

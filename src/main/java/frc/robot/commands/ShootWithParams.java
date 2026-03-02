@@ -55,11 +55,11 @@ public class ShootWithParams extends Command{
 
         // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
         if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
-            indexer.indexFuelCommand();
+            indexer.indexFuel();
             isShooting = true;
         } else {
             // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
-            indexer.stopIndexingCommand();
+            indexer.stopIndexing();
             isShooting = false;
         }
 

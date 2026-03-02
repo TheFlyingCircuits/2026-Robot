@@ -39,6 +39,18 @@ public class Indexer extends SubsystemBase {
         indexerIO.setTargetBigSpinnerVelocity(bigSpinnerVelRPS);
     }
 
+    public void indexFuel() {
+        setAllTargetVelocity(30.0,30.0,2.0);
+    }
+
+    public void reverseIndexer() {
+        setAllTargetVelocity(-30.0,-30.0,-2.0);
+    }
+
+    public void stopIndexing() {
+        setAllTargetVelocity(0.0,0.0,0.0);
+    }
+
     public Command setAllTargetVelocityCommand(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
         return(this.run(() -> setAllTargetVelocity(kickerVelRPS, sideKickerVelRPS, bigSpinnerVelRPS)));
     }

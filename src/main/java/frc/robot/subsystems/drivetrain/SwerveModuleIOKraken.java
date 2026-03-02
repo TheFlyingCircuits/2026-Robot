@@ -86,7 +86,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Slot1.kD = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        config.Feedback.SensorToMechanismRatio = SwerveModuleConstants.driveGearReduction;
+        config.Feedback.SensorToMechanismRatio = 5.27;
         config.ClosedLoopGeneral.ContinuousWrap = true;
         driveMotor.applyConfig(config);
     }
@@ -106,7 +106,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.Feedback.SensorToMechanismRatio = 1;
         config.ClosedLoopGeneral.ContinuousWrap = true;
-        config.Feedback.RotorToSensorRatio = SwerveModuleConstants.steerGearReduction;
+        config.Feedback.RotorToSensorRatio = 26.09;
         angleMotor.applyConfig(config);
     }
 

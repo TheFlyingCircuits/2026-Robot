@@ -13,7 +13,7 @@ import frc.robot.VendorWrappers.Kraken;
 
 public class HoodIOKraken implements HoodIO{
     private Kraken hoodKraken;
-    private double targetHoodDegrees = 0.0;
+    private double targetHoodDegreesLocal = 0.0;
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
@@ -49,7 +49,7 @@ public class HoodIOKraken implements HoodIO{
     public void updateInputs(HoodIOInputs inputs) {
         inputs.hoodPositionDegrees = Units.rotationsToDegrees(hoodKraken.getPosition().getValueAsDouble());
         inputs.hoodVelocityDegreesPerSecond = Units.rotationsToDegrees(hoodKraken.getVelocity().getValueAsDouble());
-        inputs.targetHoodPositionDegrees = targetHoodDegrees;
+        inputs.targetHoodPositionDegrees = targetHoodDegreesLocal;
 
         inputs.hoodAppliedVoltage = hoodKraken.getMotorVoltage().getValueAsDouble();
         inputs.hoodAmps = hoodKraken.getStatorCurrent().getValueAsDouble();
@@ -67,6 +67,7 @@ public class HoodIOKraken implements HoodIO{
         } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -1.0) {
             targetPositionDegrees = TurretConstants.maxHoodAngle - 1.0;
         }
+        targetHoodDegreesLocal = targetPositionDegrees;
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)));
     }
 

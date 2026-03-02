@@ -66,8 +66,8 @@ public class AimAndShoot extends Command{
         double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranlsation.get().toTranslation2d());
 
         // if we are shooting vs not shooting we have different tolerances
-        // boolean[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
-        // : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
+        Supplier<Boolean>[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
+        : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
 
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
@@ -76,28 +76,28 @@ public class AimAndShoot extends Command{
             turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]);
 
             // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
-            // if(readyToShoot[0] && readyToShoot[1] && readyToShoot[2] && readyToShoot[3]) {
-            //     indexer.indexFuelCommand();
-            //     isShooting = true;
-            // } else {
-            //     // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
-            //     indexer.stopIndexingCommand();
-            //     isShooting = false;
-            // }
+            if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
+                indexer.indexFuel();
+                isShooting = true;
+            } else {
+                // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
+                indexer.stopIndexing();
+                isShooting = false;
+            }
         } else {
             // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
             turret.aimAtTargetNoShoot(robotToTargetAngle);
-            indexer.stopIndexingCommand();
+            indexer.stopIndexing();
             isShooting = false;
         }
 
         // log values
-        // Logger.recordOutput("AimAndShoot/shooting", isShooting);
-        // Logger.recordOutput("AimAndShoot/driverReadyToShoot", driverReadyToShoot.get());
-        // Logger.recordOutput("AimAndShoot/aimerReady", readyToShoot[0]);
-        // Logger.recordOutput("AimAndShoot/hoodReady", readyToShoot[1]);
-        // Logger.recordOutput("AimAndShoot/mainWheel", readyToShoot[2]);
-        // Logger.recordOutput("AimAndShoot/hoodWheel", readyToShoot[3]);
+        Logger.recordOutput("AimAndShoot/shooting", isShooting);
+        Logger.recordOutput("AimAndShoot/driverReadyToShoot", driverReadyToShoot.get());
+        Logger.recordOutput("AimAndShoot/aimerReady", readyToShoot[0].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/hoodReady", readyToShoot[1].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/mainWheel", readyToShoot[2].get().booleanValue());
+        Logger.recordOutput("AimAndShoot/hoodWheel", readyToShoot[3].get().booleanValue());
         Logger.recordOutput("AimAndShoot/angleOfAttack", angleOfAttack);
 
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
