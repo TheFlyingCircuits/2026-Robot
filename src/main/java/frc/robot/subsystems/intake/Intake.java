@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeUp() {
-        io.setTargetIntakePositionDegrees(30);
+        io.setTargetIntakePositionDegrees(45);
     }
 
     public void intakeDefault() {

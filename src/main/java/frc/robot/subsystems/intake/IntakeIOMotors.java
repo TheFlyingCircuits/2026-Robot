@@ -59,8 +59,8 @@ public class IntakeIOMotors implements IntakeIO{
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.36;
-       config.Slot0.kV = 8.25;
-       config.Slot0.kP = 3.0;
+       config.Slot0.kV = 0.121212121212;
+       config.Slot0.kP = 0.0;//3
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.ClosedLoopGeneral.ContinuousWrap = true;
@@ -77,8 +77,8 @@ public class IntakeIOMotors implements IntakeIO{
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.53;
-       config.Slot0.kV = 9.9;
-       config.Slot0.kP = 3.0;
+       config.Slot0.kV = 0.10101010101;
+       config.Slot0.kP = 0.0;//3
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.Feedback.RotorToSensorRatio = 1.25;
@@ -103,6 +103,7 @@ public class IntakeIOMotors implements IntakeIO{
 
     @Override
     public void setTargetRollerTopVelocity(double velocityRPS) {
+        System.out.println(rollerTopKraken.getClosedLoopReference().getValueAsDouble());
         rollerTopKraken.setControl(velocityRequest.withVelocity(velocityRPS));
     }
 
@@ -123,7 +124,7 @@ public class IntakeIOMotors implements IntakeIO{
         inputs.intakeVelocityRPS = pivotNeo.getVelocity();
         inputs.rollerTopVelocityRPS = rollerTopKraken.getVelocity().getValueAsDouble();
         inputs.rollerBottomVelocityRPS = rollerBottomKraken.getVelocity().getValueAsDouble();
-        inputs.intakePositionDegrees = pivotNeo.getAbsoluteEncoder().getPosition();
+        inputs.intakePositionDegrees = pivotNeo.getEncoder().getPosition();
         
         inputs.intakeVolts = pivotNeo.getAppliedOutput()*pivotNeo.getBusVoltage();
         inputs.rollerTopVolts = rollerTopKraken.getMotorVoltage().getValueAsDouble();

@@ -29,23 +29,23 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     private Kraken driveMotor;
 
 
-    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetDegrees, int cancoderID, String name) {
-        this(driveMotorID, angleMotorID, angleOffsetDegrees, cancoderID, false, false, name);
+    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetRotations, int cancoderID, String name) {
+        this(driveMotorID, angleMotorID, angleOffsetRotations, cancoderID, false, false, name);
     }
 
     /**
      * 
      * @param driveMotorID - ID of the drive motor
      * @param angleMotorID - ID of the angle motor
-     * @param angleOffsetDegrees - Offset of the angle motor, in degrees
+     * @param angleOffsetRotations - Offset of the angle motor, in degrees
      * @param cancoderID - ID of the absolute CANcoder mounted ontop of the swerve
      * @param isDriveMotorOnTop - Is drive motor mounted on top
      * @param isAngleMotorOnTop - Is angle motor mounted on top
      */
-    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetDegrees, int cancoderID, boolean isDriveMotorOnTop, boolean isAngleMotorOnTop, String name){
+    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetRotations, int cancoderID, boolean isDriveMotorOnTop, boolean isAngleMotorOnTop, String name){
         /* Angle Encoder Config */
         absoluteEncoder = new CANcoder(cancoderID, UniversalConstants.canivoreName);
-        configCANCoder(angleOffsetDegrees);
+        configCANCoder(angleOffsetRotations);
 
         /* Angle Motor Config */
         angleMotor = new Kraken(name+"Steer", angleMotorID, UniversalConstants.canivoreName);
@@ -64,10 +64,10 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         }
     }
 
-    private void configCANCoder(double angleOffsetDegrees) {
+    private void configCANCoder(double angleOffsetRotations) {
         CANcoderConfiguration cancoderConfigs = new CANcoderConfiguration();
         cancoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        cancoderConfigs.MagnetSensor.MagnetOffset = angleOffsetDegrees;
+        cancoderConfigs.MagnetSensor.MagnetOffset = angleOffsetRotations;
         cancoderConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
         absoluteEncoder.getConfigurator().apply(cancoderConfigs);
@@ -99,11 +99,11 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0;
-        config.Slot0.kP = 28.8;
+        config.Slot0.kP = 3.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Feedback.FeedbackRemoteSensorID = cancoderID;
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         config.Feedback.SensorToMechanismRatio = 1;
         config.ClosedLoopGeneral.ContinuousWrap = true;
         config.Feedback.RotorToSensorRatio = 26.09;

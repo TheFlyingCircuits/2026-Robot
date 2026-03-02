@@ -48,7 +48,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public void stopIndexing() {
-        setAllTargetVelocity(0.0,0.0,0.0);
+        setAllTargetVolts(0.0,0.0,0.0);
     }
 
     public Command setAllTargetVelocityCommand(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
@@ -58,14 +58,14 @@ public class Indexer extends SubsystemBase {
 
     // EDIT THIS FOR DIFFERENT INDEXER SPEEDS
     public Command indexFuelCommand() {
-        return(this.run(() -> setAllTargetVelocity(30.0,30.0,0.5)));
+        return(this.run(() -> indexFuel()));
     }
 
     public Command reverseIndexerCommand() {
-        return(this.run(() -> setAllTargetVelocity(-30.0,-30.0,-2.0)));
+        return(this.run(() -> reverseIndexer()));
     }
 
     public Command stopIndexingCommand() {
-        return(this.run(() -> setAllTargetVelocity(0.0,0.0,0.0)));
+        return(this.run(() -> stopIndexing()));
     }
 }
