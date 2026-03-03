@@ -15,7 +15,7 @@ public class HoodIOKraken implements HoodIO{
     private Kraken hoodKraken;
     private double targetHoodDegreesLocal = 0.0;
 
-    private double hoodFeedForwardGravity = 0.65;
+    private double hoodFeedForwardGravity = -0.6;
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
@@ -29,19 +29,19 @@ public class HoodIOKraken implements HoodIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 35;
+        config.CurrentLimits.StatorCurrentLimit = 65;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // replaced kS with a constant volts feed forward for gravity because ks would switch if going down
         // to negative volts and I don't want that
         config.Slot0.kS = 0.0; // Add 0.6 V output to overcome static friction
-        config.Slot0.kP = 280.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
+        config.Slot0.kP = 150.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
 
-        // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.2);
+        config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodKrakenToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;

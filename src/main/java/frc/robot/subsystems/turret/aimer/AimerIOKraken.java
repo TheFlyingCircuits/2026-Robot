@@ -63,15 +63,15 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
-        config.Slot0.kP = 60.0;
+        config.Slot0.kP = 70.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 2.0; // rps/volts
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 120.0; 
+        config.Slot1.kP = 130.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
+        config.MotionMagic.MotionMagicCruiseVelocity = 5.0; //rps
         config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);

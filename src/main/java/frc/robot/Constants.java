@@ -87,7 +87,7 @@ public final class Constants {
         public static final double krakenFreeSpeedRPM = 5800;
         public static final double krakenFreeSpeedRotationsPerSecond = krakenFreeSpeedRPM / 60.;
         public static final double maxAchievableVelocityMetersPerSecond = krakenFreeSpeedRotationsPerSecond *
-            (1.0/SwerveModuleConstants.driveGearReduction) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
+            (1.0/5.27) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
                                                                                                        // ~5.06 when adding 1/16 of an inch of wheel sink into the carpet.
                                                                                                        // ~5.10 using an emperical measurement of wheel radius on fresh wheels.
                                                                                                        // Actual top speed based on testing is ~4.7 m/s
@@ -186,9 +186,9 @@ public final class Constants {
 
 
         //Follow the mount calibration process in Phoenix Tuner to determine these
-        public static final double mountPoseYawDegrees = 92.07196807861328;
-        public static final double mountPosePitchDegrees = -0.24960607290267944;
-        public static final double mountPoseRollDegrees = -0.591957151889801;
+        public static final double mountPoseYawDegrees = -90.45111083984375;
+        public static final double mountPosePitchDegrees = -16.21670913696289;
+        public static final double mountPoseRollDegrees = 89.97844696044922;
     }
 
     public final static class TurretConstants {
@@ -198,7 +198,7 @@ public final class Constants {
         public static final double turretMinAngle = -180;
 
         public static final double maxHoodAngle = 85.5;
-        public static final double minHoodAngle = 45.5;
+        public static final double minHoodAngle = 50.0;
 
 
         public static final int aimerKrakenID = 9;

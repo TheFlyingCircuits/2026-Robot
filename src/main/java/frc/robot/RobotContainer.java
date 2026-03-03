@@ -73,10 +73,10 @@ public class RobotContainer {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
-                new SwerveModuleIOKraken(1, 2, -0.259766, 1, "FL"), 
-                new SwerveModuleIOKraken(3, 4, -0.001953, 2, "FR"),
-                new SwerveModuleIOKraken(5, 6, 0.464844, 3, "BL"),
-                new SwerveModuleIOKraken(7, 8,  0.100830, 4, "BR") 
+                new SwerveModuleIOKraken(1, 2, -0.259766, 1, "FL", true), 
+                new SwerveModuleIOKraken(3, 4, -0.001953, 2, "FR", true),
+                new SwerveModuleIOKraken(5, 6, 0.464844, 3, "BL", false),
+                new SwerveModuleIOKraken(7, 8,  0.100830, 4, "BR", false) 
             );
             // drivetrain = new Drivetrain(
             //     new GyroIOSim(){},
@@ -149,10 +149,10 @@ public class RobotContainer {
         // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
-        // duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
+        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
 
-        // duncanController.y().onTrue(reSeedRobotPose());
-        duncanController.y().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
+        duncanController.y().onTrue(reSeedRobotPose());
+        duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
 
         // // reset everything
         duncanController.x().onTrue(Commands.runOnce(() -> {
@@ -203,12 +203,12 @@ public class RobotContainer {
     // }
 
     public void setDefaultCommands() {
-        // drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
+        drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
         // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
         turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
         indexer.setDefaultCommand(indexer.stopIndexingCommand());
         // canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
-        // intake.setDefaultCommand(intake.noVoltageCommand());
+        intake.setDefaultCommand(intake.noVoltageCommand());
 
     }
 

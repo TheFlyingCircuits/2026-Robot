@@ -29,8 +29,8 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     private Kraken driveMotor;
 
 
-    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetRotations, int cancoderID, String name) {
-        this(driveMotorID, angleMotorID, angleOffsetRotations, cancoderID, false, false, name);
+    public SwerveModuleIOKraken(int driveMotorID, int angleMotorID, double angleOffsetRotations, int cancoderID, String name, boolean isInverted) {
+        this(driveMotorID, angleMotorID, angleOffsetRotations, cancoderID, isInverted, false, name);
     }
 
     /**
@@ -50,9 +50,9 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         /* Angle Motor Config */
         angleMotor = new Kraken(name+"Steer", angleMotorID, UniversalConstants.canivoreName);
         if(isAngleMotorOnTop) {
-            configAngleMotor(InvertedValue.CounterClockwise_Positive,cancoderID);
-        } else {
             configAngleMotor(InvertedValue.Clockwise_Positive,cancoderID);
+        } else {
+            configAngleMotor(InvertedValue.CounterClockwise_Positive,cancoderID);
         }
 
         /* Drive Motor Config */
@@ -80,7 +80,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.CurrentLimits.StatorCurrentLimit = 45; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
 
         config.Slot1.kS = 0.2383; 
-        config.Slot1.kV = 0.12437965961;
+        config.Slot1.kV = 0.53714347102;// 2.1volts - 0.8 mps
         config.Slot1.kP = 0.0;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
@@ -95,18 +95,19 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
         config.CurrentLimits.StatorCurrentLimit = 60;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0;
-        config.Slot0.kP = 3.0;
+        config.Slot0.kP = 30.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Feedback.FeedbackRemoteSensorID = cancoderID;
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.Feedback.SensorToMechanismRatio = 1;
         config.ClosedLoopGeneral.ContinuousWrap = true;
-        config.Feedback.RotorToSensorRatio = 26.09;
+        // config.Feedback.RotorToSensorRatio = 26.09;
         angleMotor.applyConfig(config);
     }
 
