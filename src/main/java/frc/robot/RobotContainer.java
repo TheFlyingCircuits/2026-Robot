@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -109,8 +110,7 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetMainWheelMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("targetHoodWheelMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("kicker", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("aimerVolts", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("sideKicker", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("bigSpinner", 0.0);
 
@@ -152,17 +152,17 @@ public class RobotContainer {
         // duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
 
         // duncanController.y().onTrue(reSeedRobotPose());
-        // duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
+        duncanController.y().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
 
         // // reset everything
         duncanController.x().onTrue(Commands.runOnce(() -> {
             CommandScheduler.getInstance().cancelAll();
         }));
 
-        // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
-        // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
+        duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
+        ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
+        ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
+        ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
 
         // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
 
@@ -187,9 +187,6 @@ public class RobotContainer {
         // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
         // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
         // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
-        // .whileFalse(
-        // turret.setAllVoltsCommand(()-> 0.0, ()-> 0.0, ()-> 0.0, ()-> 0.0)
-        // );  
 
         // duncanController.rightBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
 
@@ -206,10 +203,10 @@ public class RobotContainer {
     // }
 
     public void setDefaultCommands() {
-        drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
-        // // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
-        // turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
-        // indexer.setDefaultCommand(indexer.stopIndexingCommand());
+        // drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
+        // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
+        turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
+        indexer.setDefaultCommand(indexer.stopIndexingCommand());
         // canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
         // intake.setDefaultCommand(intake.noVoltageCommand());
 

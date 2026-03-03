@@ -40,11 +40,11 @@ public class Indexer extends SubsystemBase {
     }
 
     public void indexFuel() {
-        setAllTargetVelocity(30.0,30.0,2.0);
+        setAllTargetVelocity(40.0,40.0,2.5);
     }
 
     public void reverseIndexer() {
-        setAllTargetVelocity(-30.0,-30.0,-2.0);
+        setAllTargetVelocity(-40.0,-40.0,-2.5);
     }
 
     public void stopIndexing() {

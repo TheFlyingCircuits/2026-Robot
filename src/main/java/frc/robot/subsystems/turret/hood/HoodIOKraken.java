@@ -35,7 +35,7 @@ public class HoodIOKraken implements HoodIO{
         // replaced kS with a constant volts feed forward for gravity because ks would switch if going down
         // to negative volts and I don't want that
         config.Slot0.kS = 0.0; // Add 0.6 V output to overcome static friction
-        config.Slot0.kP = 200.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
+        config.Slot0.kP = 280.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
