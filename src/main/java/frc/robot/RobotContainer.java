@@ -140,10 +140,10 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
-        // duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
-        // duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
-        // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
+        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
+        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
         duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
@@ -156,10 +156,10 @@ public class RobotContainer {
             CommandScheduler.getInstance().cancelAll();
         }));
 
-        duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
-        ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
-        ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
-        ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
+        // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
+        // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
+        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
 
         // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
 

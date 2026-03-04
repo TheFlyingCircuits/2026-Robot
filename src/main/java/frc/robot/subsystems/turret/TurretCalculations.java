@@ -151,7 +151,7 @@ public class TurretCalculations {
 
     // change z based off cad model once done
     public static Translation3d getTurretTranslation(Translation2d robotTranslation) {
-        return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), 0.6);
+        return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), Units.inchesToMeters(20.0));
     }
 
     public static Translation3d getTargetFromEnum(possibeTargets target, Supplier<Translation2d> robotTranslation) {
@@ -182,7 +182,7 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-55.0, -48.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-55.0, -45.0, distanceToTargetMeters, 5.65);
         } else {
             return getAdjustedAngleOfAttack(-65.0, -57.0, distanceToTargetMeters, 7.5);
         }

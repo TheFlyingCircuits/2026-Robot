@@ -197,8 +197,8 @@ public final class Constants {
         public static final double turretMaxAngle = 180; // need to change for real
         public static final double turretMinAngle = -180;
 
-        public static final double maxHoodAngle = 85.5;
-        public static final double minHoodAngle = 50.0;
+        public static final double maxHoodAngle = 78.5;
+        public static final double minHoodAngle = 43.0;
 
 
         public static final int aimerKrakenID = 9;
