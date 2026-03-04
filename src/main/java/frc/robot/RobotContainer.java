@@ -110,9 +110,6 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetMainWheelMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("aimerVolts", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("sideKicker", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("bigSpinner", 0.0);
 
 
         duncanController = duncan.getXboxController();
