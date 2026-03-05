@@ -53,11 +53,11 @@ public final class Constants {
         /**
          * Distance between the center point of the left wheels and the center point of the right wheels.
          */
-        public static final double trackwidthMeters = Units.inchesToMeters(21.75);
+        public static final double trackwidthMeters = Units.inchesToMeters(22.0);
         /**
          * Distance between the center point of the front wheels and the center point of the back wheels.
          */
-        public static final double wheelbaseMeters = Units.inchesToMeters(21.75);
+        public static final double wheelbaseMeters = Units.inchesToMeters(22.0);
         /**
          * Distance from the center of the robot to each swerve module.
          */
@@ -71,7 +71,7 @@ public final class Constants {
             new Translation2d(-wheelbaseMeters / 2.0, -trackwidthMeters / 2.0)
         );
 
-        public static final double frameWidthMeters = Units.inchesToMeters(27);
+        public static final double frameWidthMeters = Units.inchesToMeters(27.0);
 
         public static final double bumperWidthMeters = Units.inchesToMeters(27 + 7);
         public static final double halfBumperWidthMeters = bumperWidthMeters / 2.0;
@@ -197,8 +197,8 @@ public final class Constants {
         public static final double turretMaxAngle = 180; // need to change for real
         public static final double turretMinAngle = -180;
 
-        public static final double maxHoodAngle = 78.5;
-        public static final double minHoodAngle = 43.0;
+        public static final double maxHoodAngle = 85.5-13.4;
+        public static final double minHoodAngle = 50.0-13.4;//54.4
 
 
         public static final int aimerKrakenID = 9;
@@ -214,7 +214,7 @@ public final class Constants {
         public static final double aimerKrakenRotorToCANcoderGearRatio = 2.0;
         
         // TODO: get real ratios and set gains to 0
-        public static final double hoodKrakenToTurretRotationsGearRatio = 39.0625;
+        public static final double hoodKrakenToTurretRotationsGearRatio = (50.0/16.0)*(160.0/12.0);
 
         public static final double mainWheelKrakenToTurretRotationsGearRatio = 1.0;
         public static final double hoodWheelKrakenToTurretRotationsGearRatio = 1.0;
@@ -252,13 +252,13 @@ public final class Constants {
         //http://10.17.87.11:5800/ this is for left/BW3, right/BW4, and back/BW1                                           
 
         public final static Transform3d robotToFront = new Transform3d(
-            new Translation3d(Units.inchesToMeters(7.248), Units.inchesToMeters(11.275), Units.inchesToMeters(7.281)),
-            new Rotation3d(0, -Math.toRadians(8), -Math.toRadians(17.772))
-        );
+            new Translation3d(0.268, 0.004, Units.inchesToMeters(21)),
+            new Rotation3d(-Math.toRadians(0.9), Math.toRadians(25), Math.toRadians(2.2))
+        );// 10.5 forward in 0.5 in to right/left, 21.5 in height
 
         public final static Transform3d robotToLeft = new Transform3d(
             new Translation3d(Units.inchesToMeters(7.248), -Units.inchesToMeters(11.275), Units.inchesToMeters(7.281)),
-            new Rotation3d(0, -Math.toRadians(8), Math.toRadians(17.772))
+            new Rotation3d(0, -Math.toRadians(25), Math.toRadians(17.772))
         );
 
         public final static Transform3d robotToRight = new Transform3d(
@@ -277,17 +277,17 @@ public final class Constants {
         );
 
         public final static String[] tagCameraNames = {
-            "front",
-            "left",
-            "right",
-            "back"
+            "frontHD"
+            // "left",
+            // "right",
+            // "back"
         };
 
         public final static Transform3d[] tagCameraTransforms = {
-            robotToFront,
-            robotToLeft,
-            robotToRight,
-            robotToBack
+            robotToFront
+            // robotToLeft,
+            // robotToRight,
+            // robotToBack
         };
 
     }

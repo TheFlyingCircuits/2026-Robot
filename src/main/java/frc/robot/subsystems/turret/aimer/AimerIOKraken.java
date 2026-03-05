@@ -23,7 +23,7 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 0.6;
+    private double ksForConstantForceSpring = 1.4;
 
     private double turretMaxOneSideDeg = 200;// TODO: get real
 
@@ -59,20 +59,20 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 60;
+        config.CurrentLimits.StatorCurrentLimit = 90;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
-        config.Slot0.kP = 70.0;
+        config.Slot0.kP = 200.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 2.0; // rps/volts
+        config.Slot0.kV = 1.72413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 130.0; 
+        config.Slot1.kP = 270.0; 
 
         config.MotionMagic.MotionMagicCruiseVelocity = 5.0; //rps
-        config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
+        config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 

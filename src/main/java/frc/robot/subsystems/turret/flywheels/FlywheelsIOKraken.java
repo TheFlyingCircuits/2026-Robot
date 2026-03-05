@@ -37,16 +37,16 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 60;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 4.0; // 4.0 amps to get over friction
-        config.Slot0.kP = 8.0; // 8 amps per erreor of 1 rps
+        config.Slot0.kP = 9.0; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -62,16 +62,16 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 60;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 5.0; // 5.0 amps to get over friction
-        config.Slot0.kP = 8.0; // 8 amps per erreor of 1 rps
+        config.Slot0.kP = 10.0; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -118,15 +118,15 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     }
 
     public void setTargetFrontWheelVelocity(double targetVelocityRPS) {
-        targetFrontWheelMPSLocal = targetVelocityRPS * (Math.PI*TurretConstants.mainFlywheelDiameterMeters);
-        frontWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS));
+        targetFrontWheelMPSLocal = targetVelocityRPS*1.0 * (Math.PI*TurretConstants.mainFlywheelDiameterMeters);
+        frontWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
         // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
         frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
     }
 
     public void setTargetHoodWheelVelocity(double targetVelocityRPS) {
-        targetHoodWheelMPSLocal = targetVelocityRPS * (Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
-        hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS));
+        targetHoodWheelMPSLocal = targetVelocityRPS*1.0 * (Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
     }
     
 }

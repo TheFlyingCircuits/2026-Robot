@@ -55,10 +55,10 @@ public class Drivetrain extends SubsystemBase {
     private GyroIOInputsAutoLogged gyroInputs;
 
     private SingleTagCam[] tagCams = {
-        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front left
-        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
-        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
-        new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
+        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]) // front left
+        // new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
+        // new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
+        // new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
     };
     private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
@@ -361,6 +361,7 @@ public class Drivetrain extends SubsystemBase {
         return this.hasAcceptablePoseObservationsThisLoop;
     }
     private void updatePoseEstimator() {
+        // setFocus(FieldElement.HUB);
         // log flags that were set in between last pose update and now
         Logger.recordOutput("drivetrain/fullyTrustingVision", this.fullyTrustVisionNextPoseUpdate);
         Logger.recordOutput("drivetrain/allowingPoseTeleports", this.allowTeleportsNextPoseUpdate);
@@ -391,13 +392,13 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 5) {
+            if (poseObservation.tagToCamMeters() >14.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
 
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.2) {
+            if (poseObservation.ambiguity() > 0.5) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -413,10 +414,10 @@ public class Drivetrain extends SubsystemBase {
             }
 
             // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
-            if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
-                rejectedTags.add(poseObservation.getTagPose());
-                continue;
-            }
+            // if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
+            //     rejectedTags.add(poseObservation.getTagPose());
+            //     continue;
+            // }
 
             // This measurment passes all our checks, so we add it to the fusedPoseEstimator
             acceptedTags.add(poseObservation.getTagPose());

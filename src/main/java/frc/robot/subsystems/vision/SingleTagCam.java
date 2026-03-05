@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.FlyingCircuitUtils;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.PlayingField.FieldConstants;
 
@@ -57,6 +56,7 @@ public class SingleTagCam {
     
     public List<SingleTagPoseObservation> getFreshPoseObservations() {
         List<SingleTagPoseObservation> output = new ArrayList<>();
+        calibrateCamPose_robotFrame();
 
         // advantage scope viz hacks
         List<Pose3d> justRobotPoses = new ArrayList<>();
@@ -124,17 +124,18 @@ public class SingleTagCam {
 
 
     private void calibrateCamPose_robotFrame() {
-        int calibrationTagID = 5; // random placeholder for now
+        int calibrationTagID = 16; // random placeholder for now
 
-        double tagX_robotFrame = DrivetrainConstants.halfBumperWidthMeters + FlyingCircuitUtils.getNumberFromDashboard("bumperToWallMeters", 0);
-        double tagY_robotFrame = 0; // this will prob stay 0
-        double tagZ_robotFrame = 0; // this will be prob be the height of the calibration tag
+        double frameXDistanceFrameTag = Units.inchesToMeters(15.0);
+        double tagX_robotFrame = (DrivetrainConstants.frameWidthMeters/2.0) + frameXDistanceFrameTag;
+        double tagY_robotFrame = Units.inchesToMeters(0.0); // this will prob stay 0
+        double tagZ_robotFrame = -Units.inchesToMeters(15.0); // this will be prob be the height of the calibration tag
 
-        boolean facingTag = FlyingCircuitUtils.getBooleanFromDashboard("facingCalibrationTag", false);
-        Rotation3d tagOrientation_robotFrame = Rotation3d.kZero;
-        if (facingTag) {
-            tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg);
-        }
+        // boolean facingTag = FlyingCircuitUtils.getBooleanFromDashboard("facingCalibrationTag", false);
+        Rotation3d tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg); // change based off cam
+        // if (facingTag) {
+        //     tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg);
+        // }
         this.calibrateCamPose_robotFrame(calibrationTagID, new Pose3d(tagX_robotFrame, tagY_robotFrame, tagZ_robotFrame, tagOrientation_robotFrame));
     }
 

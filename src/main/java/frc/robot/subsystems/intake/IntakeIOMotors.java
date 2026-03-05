@@ -55,7 +55,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       config.CurrentLimits.StatorCurrentLimit = 25;
+       config.CurrentLimits.StatorCurrentLimit = 60;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.36;
@@ -73,7 +73,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       config.CurrentLimits.StatorCurrentLimit = 25;
+       config.CurrentLimits.StatorCurrentLimit = 60;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.53;
@@ -103,7 +103,6 @@ public class IntakeIOMotors implements IntakeIO{
 
     @Override
     public void setTargetRollerTopVelocity(double velocityRPS) {
-        System.out.println(rollerTopKraken.getClosedLoopReference().getValueAsDouble());
         rollerTopKraken.setControl(velocityRequest.withVelocity(velocityRPS));
     }
 
