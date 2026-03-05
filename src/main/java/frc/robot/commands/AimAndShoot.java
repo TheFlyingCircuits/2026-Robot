@@ -58,7 +58,7 @@ public class AimAndShoot extends Command{
         Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(originalTargetTranlsation, 
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
 
-        // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
+        // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
         double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(targetMovmentCompensated, 
             angleOfAttack, turretTranlsation.get());
 
