@@ -23,7 +23,7 @@ public class AimAndShoot extends Command{
     private boolean isShooting = false;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {0.6, 0.4, 0.3, 0.3};
+    private double[] notShootingTolerances = new double[] {1.0, 1.0, 0.5, 0.5};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
@@ -71,7 +71,7 @@ public class AimAndShoot extends Command{
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]*1.45);
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]); //*1.45 
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);

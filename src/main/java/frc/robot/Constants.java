@@ -252,7 +252,7 @@ public final class Constants {
         //http://10.17.87.11:5800/ this is for left/BW3, right/BW4, and back/BW1                                           
 
         public final static Transform3d robotToFront = new Transform3d(
-            new Translation3d(0.268, 0.004, Units.inchesToMeters(21)),
+            new Translation3d(0.268, 0.000, Units.inchesToMeters(21)),
             new Rotation3d(Math.toRadians(0.9), -Math.toRadians(25), -Math.toRadians(2.2))
         );// 10.5 forward in 0.5 in to right/left, 21.5 in height
 

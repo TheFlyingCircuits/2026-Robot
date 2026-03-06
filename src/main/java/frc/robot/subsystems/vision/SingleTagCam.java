@@ -56,7 +56,6 @@ public class SingleTagCam {
     
     public List<SingleTagPoseObservation> getFreshPoseObservations() {
         List<SingleTagPoseObservation> output = new ArrayList<>();
-        calibrateCamPose_robotFrame();
 
         // advantage scope viz hacks
         List<Pose3d> justRobotPoses = new ArrayList<>();

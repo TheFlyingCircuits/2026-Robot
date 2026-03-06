@@ -69,7 +69,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kV = 1.72413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 270.0; 
+        config.Slot1.kP = 240.0; 
 
         config.MotionMagic.MotionMagicCruiseVelocity = 5.0; //rps
         config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
@@ -160,9 +160,9 @@ public class AimerIOKraken implements AimerIO{
 
         feedForwardsSpringVolts = 0.0;
 
-        // if((turretPosition < 5.0) && (turretPosition > -15.0)) {
-        //         feedForwardsSpringVolts = 0.0;
-        // }
+        if((Units.rotationsToDegrees(turretPositionRotations) < 2.0) && (Units.rotationsToDegrees(turretPositionRotations) > -30.0)) {
+                feedForwardsSpringVolts = 0.0;
+        }
         
 
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
