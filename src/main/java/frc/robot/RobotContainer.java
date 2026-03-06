@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -134,7 +133,6 @@ public class RobotContainer {
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)));
 
-        Commands.runOnce(drivetrain::setRobotFacingForward);
         configureBindings();
         setDefaultCommands();
     }
@@ -142,7 +140,7 @@ public class RobotContainer {
     private void configureBindings() {
         duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
-        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true))
+        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()))
         .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());

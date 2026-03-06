@@ -24,7 +24,7 @@ public class AimAndShoot extends Command{
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
     private double[] notShootingTolerances = new double[] {0.6, 0.4, 0.3, 0.3};
-    private double[] whileShootingTolerances = new double[] {20.0, 10.0, 8.0, 8.0};
+    private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
 
@@ -66,8 +66,7 @@ public class AimAndShoot extends Command{
         double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranlsation.get().toTranslation2d());
 
         // if we are shooting vs not shooting we have different tolerances
-        Supplier<Boolean>[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
-        : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
+        Supplier<Boolean>[] readyToShoot;
 
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
@@ -75,7 +74,7 @@ public class AimAndShoot extends Command{
             turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]*1.45);
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
-            : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
+            : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
             // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
             if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
@@ -87,6 +86,9 @@ public class AimAndShoot extends Command{
                 isShooting = false;
             }
         } else {
+            readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
+            : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
+
             // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
             turret.aimAtTargetNoShoot(robotToTargetAngle);
             indexer.stopIndexing();

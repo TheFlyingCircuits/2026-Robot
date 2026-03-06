@@ -46,14 +46,14 @@ public class ShootWithParams extends Command{
     @Override
     public void execute() {
 
-        // if we are shooting vs not shooting we have different tolerances
-        Supplier<Boolean>[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
-        : turret.isReadyToShoot(notShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]);
-
         // driverReadyToShoot is a boolean based off driver button
 
         // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
         turret.aimAtTargetAndShoot(aimerAngleDeg.get(), hoodAngleDeg.get(), targetShotMetersPerSecond.get());
+
+        // if we are shooting vs not shooting we have different tolerances
+        Supplier<Boolean>[] readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
+        : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
         // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
         if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {

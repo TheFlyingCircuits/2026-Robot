@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
@@ -69,7 +70,8 @@ public class Turret extends SubsystemBase{
     public Supplier<Boolean>[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
     double mainWheelToleranceMPS, double hoodWheelToleranceMPS) {
 
-        Supplier<Boolean> aimerReady = () -> Math.abs(aimerInputs.aimerTargetPositionDegrees-aimerInputs.aimerPositionDegrees) <= aimerToleranceDegrees;
+        Supplier<Boolean> aimerReady = () -> Math.abs(Rotation2d.fromDegrees(aimerInputs.aimerTargetPositionDegrees).minus(Rotation2d.fromDegrees(aimerInputs.aimerPositionDegrees))
+        .getDegrees()) <= aimerToleranceDegrees;
         Supplier<Boolean> hoodReady = () ->Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
         Supplier<Boolean> mainWheelReady = () ->Math.abs(flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS) <= mainWheelToleranceMPS;
         Supplier<Boolean> hoodWheelReady = () ->Math.abs(flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS) <= hoodWheelToleranceMPS;
@@ -84,8 +86,8 @@ public class Turret extends SubsystemBase{
     public void aimAtTargetNoShoot(double targetAimerDegrees) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(TurretConstants.hoodDefaultAngleDegrees);
-        flywheels.setTargetFrontWheelVelocity(0.0);
-        flywheels.setTargetHoodWheelVelocity(0.0);
+        flywheels.setFrontWheelVolts(0.0);
+        flywheels.setFrontWheelVolts(0.0);
     }
 
     public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecond) {
@@ -101,7 +103,6 @@ public class Turret extends SubsystemBase{
     }
 
     public void setWheelsAmps(double mainWheelAmps, double hoodWheelAmps) {
-
         flywheels.setFrontWheelAmps(mainWheelAmps);
         flywheels.setHoodWheelAmps(hoodWheelAmps);
     }

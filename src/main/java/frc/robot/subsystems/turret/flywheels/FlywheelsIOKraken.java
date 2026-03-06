@@ -41,7 +41,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 4.0; // 4.0 amps to get over friction
-        config.Slot0.kP = 9.0; // 8 amps per erreor of 1 rps
+        config.Slot0.kP = 8.0; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
@@ -66,7 +66,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 5.0; // 5.0 amps to get over friction
-        config.Slot0.kP = 10.0; // 8 amps per erreor of 1 rps
+        config.Slot0.kP = 8.5; // 8 amps per erreor of 1 rps
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
