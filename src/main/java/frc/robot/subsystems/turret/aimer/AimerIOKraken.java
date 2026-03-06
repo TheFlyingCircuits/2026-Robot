@@ -69,7 +69,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kV = 1.72413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 240.0; 
+        config.Slot1.kP = 220.0; 
 
         config.MotionMagic.MotionMagicCruiseVelocity = 5.0; //rps
         config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
@@ -177,7 +177,7 @@ public class AimerIOKraken implements AimerIO{
         double safeAngle = getSafeOptimizedAngleDeg(targetAngleDeg180Clamped);
         targetAimerDegrees = safeAngle;
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 7.5) {
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 10.0) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {

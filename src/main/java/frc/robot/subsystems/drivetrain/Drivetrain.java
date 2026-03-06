@@ -392,7 +392,6 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            System.out.println(poseObservation.tagToCamMeters());
             if (poseObservation.tagToCamMeters() >14.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
@@ -409,7 +408,7 @@ public class Drivetrain extends SubsystemBase {
             // (used at driver's discretion (typically via y-button)). Also useful for seeding the robot pose
             // at the beginning of a match.
             double teleportToleranceMeters = 4.0;
-            if (observedLocation.getDistance(locationNow) > teleportToleranceMeters && (!this.allowTeleportsNextPoseUpdate)) {
+            if ((observedLocation.getDistance(locationNow) > teleportToleranceMeters) && (!this.allowTeleportsNextPoseUpdate)) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }

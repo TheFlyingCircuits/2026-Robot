@@ -71,7 +71,7 @@ public class AimAndShoot extends Command{
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], shootingValues[0]); //*1.45 
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.33333)-0.666667); //*1.45 
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
