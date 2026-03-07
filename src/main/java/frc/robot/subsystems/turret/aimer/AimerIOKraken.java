@@ -23,9 +23,9 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 1.35;
+    private double ksForConstantForceSpring = 1.45;
 
-    private double turretMaxOneSideDeg = 200;// TODO: get real
+    private double turretMaxOneSideDeg = 190;// TODO: get real
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);
@@ -59,20 +59,20 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 95;
+        config.CurrentLimits.StatorCurrentLimit = 90;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
-        config.Slot0.kP = 280.0;
+        config.Slot0.kP = 210.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 1.92413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         config.Slot1.kS = 0.0;
-        config.Slot1.kP = 180.0; 
+        config.Slot1.kP = 195.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 5.0; //rps
-        config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 2.0; //rps
+        config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -160,7 +160,7 @@ public class AimerIOKraken implements AimerIO{
 
         feedForwardsSpringVolts = 0.0;
 
-        if((Units.rotationsToDegrees(turretPositionRotations) < 2.0) && (Units.rotationsToDegrees(turretPositionRotations) > -30.0)) {
+        if((Units.rotationsToDegrees(turretPositionRotations) < -5.0) && (Units.rotationsToDegrees(turretPositionRotations) > -20.0)) {
                 feedForwardsSpringVolts = 0.0;
         }
         
@@ -177,7 +177,7 @@ public class AimerIOKraken implements AimerIO{
         double safeAngle = getSafeOptimizedAngleDeg(targetAngleDeg180Clamped);
         targetAimerDegrees = safeAngle;
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 35.0) {
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 40.0) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {

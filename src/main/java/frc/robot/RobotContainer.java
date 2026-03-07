@@ -317,8 +317,8 @@ public Command getAutonomousCommand() {
         return new SequentialCommandGroup(
             new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
-            Commands.waitSeconds(3),
-            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle+4.0))),
+            Commands.waitSeconds(4),
+            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath))
         );
     } catch (Exception e) {

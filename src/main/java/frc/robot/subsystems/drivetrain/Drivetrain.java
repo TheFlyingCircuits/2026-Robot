@@ -57,8 +57,8 @@ public class Drivetrain extends SubsystemBase {
     private SingleTagCam[] tagCams = {
         new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front left
         new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
-        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]) // back left
-        // new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
+        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
+        new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
     };
     private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
@@ -227,15 +227,16 @@ public class Drivetrain extends SubsystemBase {
      * @param closedLoop - Whether or not to used closed loop PID control to control the speed of the drive wheels.
     */
     public void robotOrientedDrive(ChassisSpeeds desiredChassisSpeeds) {
-        // SwerveModuleState[] swerveModuleStates = DrivetrainConstants.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
+        SwerveModuleState[] swerveModuleStates = DrivetrainConstants.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
         // Note: it is important to not discretize speeds before or after
         // using the setpoint generator, as it will discretize them for you
-        previousSetpoint = setpointGenerator.generateSetpoint(
-            previousSetpoint, // The previous setpoint
-            desiredChassisSpeeds, // The desired target speeds
-            0.02 // The loop time of the robot code, in seconds
-        );
-        setModuleStates(previousSetpoint.moduleStates());
+        // previousSetpoint = setpointGenerator.generateSetpoint(
+        //     previousSetpoint, // The previous setpoint
+        //     desiredChassisSpeeds, // The desired target speeds
+        //     0.02 // The loop time of the robot code, in seconds
+        // );
+        // setModuleStates(previousSetpoint.moduleStates());
+        setModuleStates(swerveModuleStates);
     }
 
     /**
@@ -509,6 +510,47 @@ public class Drivetrain extends SubsystemBase {
         );
     }
 
+    private double getShiftTeleTimer() {
+        double timeLeftMatch = DriverStation.getMatchTime();
+        if(timeLeftMatch == -1) {
+            timeLeftMatch = 140.0;
+        }
+        double timeLeftShiftProportion;
+        String gameData = DriverStation.getGameSpecificMessage();
+
+        double shiftTime = 0.0;
+
+        // garbage if statement but im too lazy to clean up and make algorithm
+        if (timeLeftMatch > 130.0) {
+            // transition shift
+            timeLeftShiftProportion = (timeLeftMatch - 130.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 105.0) {
+            // losers shift 1
+            timeLeftShiftProportion = (timeLeftMatch - 105);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 80.0) {
+            // winners shift 1
+            timeLeftShiftProportion = (timeLeftMatch - 80.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 55.0) {
+            // losers shift 2
+            timeLeftShiftProportion = (timeLeftMatch - 55.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 30.0) {
+            // winners shift 2
+            timeLeftShiftProportion = (timeLeftMatch - 30.0);
+            shiftTime = timeLeftShiftProportion;
+        } else {
+            // end game
+            shiftTime = timeLeftMatch;
+        }
+
+        return shiftTime;
+    
+    }
+    
+
     @Override
     public void periodic() {
         for (SwerveModule mod : swerveModules)
@@ -530,6 +572,7 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("drivetrain/swerveModuleStates", getModuleStates());
         Logger.recordOutput("drivetrain/swerveModulePositions", getModulePositions());
 
+        Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // this.compareCamPoses();
     }
 

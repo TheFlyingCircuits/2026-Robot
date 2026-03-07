@@ -54,7 +54,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer.drivetrain.allowTeleportsNextPoseUpdate();
     m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
   }
 
   @Override
