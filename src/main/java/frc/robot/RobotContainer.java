@@ -279,22 +279,21 @@ public Command getAutonomousCommand() {
         try{
         // choose which paths to run
         String firstString, secondString;
-        switch (autoChooser.getSelected()) {
-            case "Deep":
-                firstString = "DeepP1";
-                secondString = "DeepP2";
-            case "Shallow":
-                firstString = "ShallowP1";
-                secondString = "ShallowP2";
-            case "DeepShallow":
-                firstString = "DeepP1";
-                secondString = "ShallowP2";
-            case "ShallowDeep":
-                firstString = "ShallowP1";
-                secondString = "DeepP2";
-            default:
-                firstString = "DeepP1";
-                secondString = "DeepP2";
+        if (autoChooser.getSelected().equals("Deep")) {
+            firstString = "DeepP1";
+            secondString = "DeepP2";
+        } else if (autoChooser.getSelected().equals("Shallow")) {
+            firstString = "ShallowP1";
+            secondString = "ShallowP2";
+        } else if (autoChooser.getSelected().equals("DeepShallow")) {
+            firstString = "DeepP1";
+            secondString = "ShallowP2";
+        } else if (autoChooser.getSelected().equals("ShallowDeep")) {
+            firstString = "ShallowP1";
+            secondString = "DeepP2";
+        } else {
+            firstString = "DeepP1";
+            secondString = "DeepP2";
         }
 
         PathPlannerPath firstPath = PathPlannerPath.fromPathFile(firstString);
