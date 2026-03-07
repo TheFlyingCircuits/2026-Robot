@@ -131,9 +131,11 @@ public class RobotContainer {
         new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true)));
+        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true)
+        .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
-        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)));
+        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)
+        .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
         configureBindings();
         setDefaultCommands();
@@ -160,6 +162,9 @@ public class RobotContainer {
         }));
 
         duncanController.a().whileTrue(intake.intakeDownCommand());
+
+        duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->4.0));
+        duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-4.0));
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
         // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),

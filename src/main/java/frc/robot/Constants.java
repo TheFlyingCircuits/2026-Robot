@@ -257,13 +257,13 @@ public final class Constants {
         );// 10.5 forward in 0.5 in to right/left, 21.5 in height
 
         public final static Transform3d robotToLeft = new Transform3d(
-            new Translation3d(Units.inchesToMeters(7.248), -Units.inchesToMeters(11.275), Units.inchesToMeters(7.281)),
-            new Rotation3d(0, -Math.toRadians(25), Math.toRadians(17.772))
+            new Translation3d(0.0, 0.268, Units.inchesToMeters(21)),
+            new Rotation3d(0, -Math.toRadians(25), Math.toRadians(90))
         );
 
         public final static Transform3d robotToRight = new Transform3d(
-            new Translation3d(-0.184, Units.inchesToMeters(11.275), Units.inchesToMeters(7.281)),
-            new Rotation3d(0, Math.toRadians(-8), Math.toRadians(17.772-180))
+            new Translation3d(0.0, -0.268, Units.inchesToMeters(21)),
+            new Rotation3d(0, -Math.toRadians(8), Math.toRadians(-90))
         );
 
         public final static Transform3d robotToBack = new Transform3d(
@@ -277,16 +277,16 @@ public final class Constants {
         );
 
         public final static String[] tagCameraNames = {
-            "front"
-            // "left",
-            // "right",
+            "front",
+            "left",
+            "right",
             // "back"
         };
 
         public final static Transform3d[] tagCameraTransforms = {
-            robotToFront
-            // robotToLeft,
-            // robotToRight,
+            robotToFront,
+            robotToLeft,
+            robotToRight,
             // robotToBack
         };
 

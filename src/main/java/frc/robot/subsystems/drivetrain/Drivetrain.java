@@ -55,9 +55,9 @@ public class Drivetrain extends SubsystemBase {
     private GyroIOInputsAutoLogged gyroInputs;
 
     private SingleTagCam[] tagCams = {
-        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]) // front left
-        // new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
-        // new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
+        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front left
+        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
+        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]) // back left
         // new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
     };
     private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
