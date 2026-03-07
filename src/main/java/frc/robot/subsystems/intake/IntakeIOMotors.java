@@ -55,12 +55,12 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       config.CurrentLimits.StatorCurrentLimit = 60;
+       config.CurrentLimits.StatorCurrentLimit = 65;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.36;
        config.Slot0.kV = 0.121212121212 * 1.0625;
-       config.Slot0.kP = 0.0;//3
+       config.Slot0.kP = 0.1;//3
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.ClosedLoopGeneral.ContinuousWrap = true;
@@ -73,12 +73,12 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       config.CurrentLimits.StatorCurrentLimit = 60;
+       config.CurrentLimits.StatorCurrentLimit = 65;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.53;
        config.Slot0.kV = 0.10101010101;
-       config.Slot0.kP = 0.0;//3
+       config.Slot0.kP = 0.2;//3
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.Feedback.RotorToSensorRatio = 1.25;

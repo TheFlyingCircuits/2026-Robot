@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("intakeInputs", inputs);
-        isIntakeDown = inputs.intakePositionDegrees < 10.0;
+        isIntakeDown = inputs.intakePositionDegrees < 30.0;
     }
 
     public boolean isIntakeDown() {

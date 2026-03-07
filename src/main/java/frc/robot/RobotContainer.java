@@ -15,7 +15,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,9 +27,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -132,7 +131,7 @@ public class RobotContainer {
         new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> true, true)));
+        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true)));
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)));
 
@@ -159,6 +158,8 @@ public class RobotContainer {
         duncanController.x().onTrue(Commands.runOnce(() -> {
             CommandScheduler.getInstance().cancelAll();
         }));
+
+        duncanController.a().whileTrue(intake.intakeDownCommand());
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
         // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
@@ -271,7 +272,7 @@ public class RobotContainer {
 // AUTOS -------------------------------------------------------------------------------
 
 public Command getAutonomousCommand() {
-    return null;
+    return trenchAutos();
 }
 
     private Command trenchAutos() {
@@ -310,9 +311,10 @@ public Command getAutonomousCommand() {
         }
 
         return new SequentialCommandGroup(
+            new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(3),
-            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > 60))),
+            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle+4.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath))
         );
     } catch (Exception e) {

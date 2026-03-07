@@ -221,7 +221,7 @@ public final class Constants {
 
         public static final double hoodDefaultAngleDegrees = 80.0;
 
-        public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3);
+        public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3.2);
         public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(2);
     }
 
@@ -243,7 +243,7 @@ public final class Constants {
         public static final double kP = 0.3;
         public static final double kS = 0.7;
 
-        public static final double intakeStartDegrees = 0.0; 
+        public static final double intakeStartDegrees = 68.0; 
     }
 
     public final static class VisionConstants {

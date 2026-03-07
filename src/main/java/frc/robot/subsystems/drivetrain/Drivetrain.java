@@ -392,13 +392,13 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() >14.0) {
+            if (poseObservation.tagToCamMeters() > 6.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
 
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.5) {
+            if (poseObservation.ambiguity() > 0.3) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -413,11 +413,13 @@ public class Drivetrain extends SubsystemBase {
                 continue;
             }
 
+            // setFocus(FieldElement.HUB);
+
             // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
-            // if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
-            //     rejectedTags.add(poseObservation.getTagPose());
-            //     continue;
-            // }
+            if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
+                rejectedTags.add(poseObservation.getTagPose());
+                continue;
+            }
 
             // This measurment passes all our checks, so we add it to the fusedPoseEstimator
             acceptedTags.add(poseObservation.getTagPose());

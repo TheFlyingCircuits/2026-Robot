@@ -9,12 +9,12 @@ import frc.robot.PlayingField.FieldConstants;;
 
 public record SingleTagPoseObservation (String camName, Pose3d robotPose, double timestampSeconds, int tagUsed, double tagToCamMeters, double ambiguity) {
     public Matrix<N3, N1> getStandardDeviations() {
-        double slopeStdDevMeters_PerMeter = 0.003;
+        double slopeStdDevMeters_PerMeter = 0.006;
 
         if (tagToCamMeters < 1.5) {
-            slopeStdDevMeters_PerMeter = 0.005;
-        } else if(tagToCamMeters < 2.5) {
             slopeStdDevMeters_PerMeter = 0.002;
+        } else if(tagToCamMeters < 2.5) {
+            slopeStdDevMeters_PerMeter = 0.005;
         }
 
         return VecBuilder.fill(
