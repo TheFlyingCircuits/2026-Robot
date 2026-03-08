@@ -80,13 +80,13 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.CurrentLimits.StatorCurrentLimit = 50; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
 
         config.Slot1.kS = 0.25; 
-        config.Slot1.kV = 0.53714347102;// 2.1volts - 0.8 mps
+        config.Slot1.kV = 0.738;// 2.1volts - 0.8 mps
         config.Slot1.kP = 0.2;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        config.Feedback.SensorToMechanismRatio = 5.27;
+        config.Feedback.SensorToMechanismRatio = SwerveModuleConstants.driveGearReduction;  //stage 2 is 6.03:1, stage 1 is 5.27:1, 
         config.ClosedLoopGeneral.ContinuousWrap = true;
         driveMotor.applyConfig(config);
     }
