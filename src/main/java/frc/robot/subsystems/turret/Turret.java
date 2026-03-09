@@ -87,7 +87,7 @@ public class Turret extends SubsystemBase{
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(TurretConstants.hoodDefaultAngleDegrees);
         flywheels.setFrontWheelVolts(0.0);
-        flywheels.setFrontWheelVolts(0.0);
+        flywheels.setHoodWheelVolts(0.0);
     }
 
     public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecond) {
@@ -107,6 +107,8 @@ public class Turret extends SubsystemBase{
         flywheels.setHoodWheelAmps(hoodWheelAmps);
     }
 
+
+
     public Command aimAtTargetCommand(Supplier<Double> targetAngleDegrees) {
         return this.run(() -> aimAtTarget(targetAngleDegrees.get()));
     }
@@ -114,6 +116,11 @@ public class Turret extends SubsystemBase{
     public Command setAimerVoltsCommand(Supplier<Double> volts) {
         return this.run(() -> setAimerVolts(volts.get()));
     }
+
+    public Command setAimerAmpsCommand(Supplier<Double> amps) {
+        return this.run(() -> aimer.setAimerAmps(amps.get()));
+    }
+
 
     public Command aimAtTargetNoShootCommand(Supplier<Double> targetAimerDegrees) {
         return this.run(() -> aimAtTargetNoShoot(targetAimerDegrees.get()));

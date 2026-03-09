@@ -25,8 +25,8 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 1.45;
-    private double ksForConstantForceSpringAmps = 0.0;
+    private double ksForConstantForceSpring = 1.0;
+    private double ksForConstantForceSpringAmps = 20.0;
 
     private double turretMaxOneSideDeg = 190;// TODO: get real
 
@@ -70,10 +70,10 @@ public class AimerIOKraken implements AimerIO{
 
         // motion magic
         config.Slot0.kS = 0.1; 
-        config.Slot0.kP = 210.0;
+        config.Slot0.kP = 150.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 1.92413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
+        config.Slot0.kV = 1.52413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         // close voltage feedback
         // ks is over 0.0 because in either direction 0.001 volts of feedback pid is not enough
@@ -84,12 +84,17 @@ public class AimerIOKraken implements AimerIO{
         // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
         // for tuning
         // torque foc
-        config.Slot2.kS = 0.0;
-        config.Slot2.kP = 0.0;
-        config.Slot2.kD = 0.0;
+        config.Slot2.kS = 35.0;
+        config.Slot2.kP = 3400.0;
+        config.Slot2.kD = 100.0;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 3.0; //rps
-        config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 90;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -90;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
+        config.ClosedLoopGeneral.GainSchedErrorThreshold = 0.0;
+
+        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
+        config.MotionMagic.MotionMagicAcceleration = 2.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -181,11 +186,12 @@ public class AimerIOKraken implements AimerIO{
             feedForwardsSpringAmps = feedForwardsSpringAmps*-1.0;
         }
 
-        if((Units.rotationsToDegrees(turretPositionRotations) < -5.0) && (Units.rotationsToDegrees(turretPositionRotations) > -20.0)) {
+        if(((Units.rotationsToDegrees(turretPositionRotations) < 7.0) && (Units.rotationsToDegrees(turretPositionRotations) > -35.0))) {
             feedForwardsSpringVolts = 0.0;
             feedForwardsSpringAmps = 0.0;
         }
-        
+        //|| (turretPositionRotations*targetPositionDegreesRobotToTarget < 0.0) 
+        //|| Units.degreesToRotations(targetPositionDegreesRobotToTarget)-turretPositionRotations < 0.0)
 
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
@@ -199,7 +205,9 @@ public class AimerIOKraken implements AimerIO{
         double safeAngle = getSafeOptimizedAngleDeg(targetAngleDeg180Clamped);
         targetAimerDegrees = safeAngle;
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 40.0) {
+        // aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
+
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 80.0) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {

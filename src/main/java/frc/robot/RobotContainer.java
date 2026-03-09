@@ -114,7 +114,7 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("targetMainWheelMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("aimerVolts", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("aimerAmps", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -150,8 +150,10 @@ public class RobotContainer {
     private void configureBindings() {
         duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()))
-        .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
+
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+
+        // duncanController.rightBumper().whileTrue(turret.setAimerAmpsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("aimerAmps", 0.0)));
 
         // duncanController.rightBumper().whileTrue(aimAndShootManual(() -> TurretCalculations.currentTarget, () -> true, () -> TurretCalculations.getTurretTranslation(new Translation2d(14.028,4.093))).alongWith(intake.intakeDefualtAndIntakeCommand()))
         // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
@@ -259,12 +261,13 @@ public class RobotContainer {
     }).until(drivetrain::seesAcceptableTag).ignoringDisable(true);}
 
     // private Command reSeedRobotPoseOnTimeInterval(double timeIntervalSec) {return new ConditionalCommand(
-    //     new InstantCommand(),
+    //     new InstantCommand(() -> trustCamerasTimer.reset()).alongWith(new InstantCommand(() -> System.out.println("lllllllllllllllllllllllllllllllllll"))),
     //     Commands.run(() -> {
     //     drivetrain.fullyTrustVisionNextPoseUpdate();
     //     drivetrain.allowTeleportsNextPoseUpdate();
+    //     // System.out.println("trusting Vision");
     // }).until(drivetrain::seesAcceptableTag).ignoringDisable(true)
-    // , () -> (trustCamerasTimer.get() < timeIntervalSec))}
+    // , () -> (trustCamerasTimer.get() < timeIntervalSec));}
 
 
     private Command driveTowardsFuelTeleop() { return drivetrain.run(() -> {
