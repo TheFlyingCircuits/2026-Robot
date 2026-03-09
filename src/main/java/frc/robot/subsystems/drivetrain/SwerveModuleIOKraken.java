@@ -86,7 +86,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.Slot1.kD = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        config.Feedback.SensorToMechanismRatio = SwerveModuleConstants.driveGearReduction;  //stage 2 is 6.03:1, stage 1 is 5.27:1, 
+        config.Feedback.SensorToMechanismRatio = 1.0/SwerveModuleConstants.driveGearReduction;  //stage 2 is 6.03:1, stage 1 is 5.27:1, 
         config.ClosedLoopGeneral.ContinuousWrap = true;
         driveMotor.applyConfig(config);
     }
