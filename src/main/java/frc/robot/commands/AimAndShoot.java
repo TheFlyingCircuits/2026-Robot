@@ -13,7 +13,7 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 
-public class AimAndShoot extends Command{
+public class AimAndShoot extends Command {
 
     private Turret turret;
     private Indexer indexer;

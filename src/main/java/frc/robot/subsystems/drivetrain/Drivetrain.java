@@ -55,10 +55,10 @@ public class Drivetrain extends SubsystemBase {
     private GyroIOInputsAutoLogged gyroInputs;
 
     private SingleTagCam[] tagCams = {
-        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front left
-        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // front right
-        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // back left
-        new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // back right
+        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front
+        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // back
+        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // left
+        new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // right
     };
     private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
@@ -101,7 +101,10 @@ public class Drivetrain extends SubsystemBase {
 
         gyroIO.setRobotYaw(0);
 
-        //corresponds to x, y, and rotation standard deviations (meters and radians)
+        // corresponds to x, y, and rotation standard deviations (meters and radians)
+        // TODO: could use this experiment as a way to measure these, or we could just
+        //       assume their values are fairly representative of what we'd get:
+        //       https://docs.advantagekit.org/theory/high-frequency-odometry
         Matrix<N3, N1> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.005);
 
         //corresponds to x, y, and rotation standard deviations (meters and radians)
@@ -274,7 +277,7 @@ public class Drivetrain extends SubsystemBase {
     public Command followPath(String pathName) {
         System.out.println("getting path: " + pathName);
         try {
-             return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName)).withName(pathName);
+            return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName)).withName(pathName);
         }
         catch (IOException e) {
             System.out.println("IOException when reading path name");
@@ -444,19 +447,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
 
-    public Optional<Pose3d> getClosestCluster() {
-        if (!intakeCam.seesAnyClusters()) {
-            return Optional.empty();
-        }
-
-        return getClosestCluster();
-    }
-
-    public Pose2d getOffsetFuelPickupPose(Pose3d originalFuelPose) {
-        Transform2d toAdd = new Transform2d(new Translation2d(0.0,0.0), new Rotation2d());
-        Pose2d adjustedPose = originalFuelPose.toPose2d().plus(toAdd);
-
-        return adjustedPose;
+    public Optional<Translation3d> getClosestCluster() {
+        return intakeCam.getClosestClusterTo(getPoseMeters().getTranslation());
     }
 
     public void fieldOrientedDriveWhileAiming(ChassisSpeeds desiredTranslationalSpeeds, Rotation2d desiredAngle) {
@@ -494,8 +486,6 @@ public class Drivetrain extends SubsystemBase {
             pidOutputMetersPerSecond = 0;
         }
 
-        // pidOutputMetersPerSecond = MathUtil.clamp(pidOutputMetersPerSecond, -maxSpeedMetersPerSecond, maxSpeedMetersPerSecond);
-
         pidOutputMetersPerSecond = MathUtil.clamp(pidOutputMetersPerSecond, -maxSpeedMetersPerSecond, maxSpeedMetersPerSecond);
         double xMetersPerSecond = pidOutputMetersPerSecond*error.getAngle().getCos();
         double yMetersPerSecond = pidOutputMetersPerSecond*error.getAngle().getSin();
@@ -508,46 +498,6 @@ public class Drivetrain extends SubsystemBase {
             ),
             desired.getRotation()
         );
-    }
-
-    private double getShiftTeleTimer() {
-        double timeLeftMatch = DriverStation.getMatchTime();
-        if(timeLeftMatch == -1) {
-            timeLeftMatch = 140.0;
-        }
-        double timeLeftShiftProportion;
-        String gameData = DriverStation.getGameSpecificMessage();
-
-        double shiftTime = 0.0;
-
-        // garbage if statement but im too lazy to clean up and make algorithm
-        if (timeLeftMatch > 130.0) {
-            // transition shift
-            timeLeftShiftProportion = (timeLeftMatch - 130.0);
-            shiftTime = timeLeftShiftProportion;
-        } else if (timeLeftMatch > 105.0) {
-            // losers shift 1
-            timeLeftShiftProportion = (timeLeftMatch - 105);
-            shiftTime = timeLeftShiftProportion;
-        } else if (timeLeftMatch > 80.0) {
-            // winners shift 1
-            timeLeftShiftProportion = (timeLeftMatch - 80.0);
-            shiftTime = timeLeftShiftProportion;
-        } else if (timeLeftMatch > 55.0) {
-            // losers shift 2
-            timeLeftShiftProportion = (timeLeftMatch - 55.0);
-            shiftTime = timeLeftShiftProportion;
-        } else if (timeLeftMatch > 30.0) {
-            // winners shift 2
-            timeLeftShiftProportion = (timeLeftMatch - 30.0);
-            shiftTime = timeLeftShiftProportion;
-        } else {
-            // end game
-            shiftTime = timeLeftMatch;
-        }
-
-        return shiftTime;
-    
     }
     
 
@@ -572,7 +522,6 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("drivetrain/swerveModuleStates", getModuleStates());
         Logger.recordOutput("drivetrain/swerveModulePositions", getModulePositions());
 
-        Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // this.compareCamPoses();
     }
 

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
 
-public class ShootWithParams extends Command{
+public class ShootWithParams extends Command {
 
     private Turret turret;
     private Indexer indexer;

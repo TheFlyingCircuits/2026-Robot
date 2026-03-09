@@ -90,6 +90,8 @@ public class SingleTagCam {
                 justRobotPoses.add(robotPose);
                 Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
                 Pose3d tagPoseOnField = FieldConstants.tagPose(tagID);
+                // TODO: Maybe add a segment that brings the line under the field, so we can hide
+                //       the little connection between different pose estimates?
                 sightlines.addAll(Arrays.asList(camPoseOnfield.getTranslation(), tagPoseOnField.getTranslation(), camPoseOnfield.getTranslation()));
             }
         }

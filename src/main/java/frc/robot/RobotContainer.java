@@ -15,6 +15,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -254,7 +255,7 @@ public class RobotContainer {
 
 
     private Command driveTowardsFuelTeleop() { return drivetrain.run(() -> {
-        Optional<Pose3d> fuel = drivetrain.getClosestCluster();
+        Optional<Translation3d> fuel = drivetrain.getClosestCluster();
         ChassisSpeeds driverRequest = duncan.getRequestedFieldOrientedVelocity();
         // TODO: tune override ratio
         boolean significantRotationRequested = Math.abs(driverRequest.omegaRadiansPerSecond) > 0.5;
@@ -267,7 +268,8 @@ public class RobotContainer {
 
 
         // TODO: choose level of assistance
-        Pose2d pickupPose = drivetrain.getOffsetFuelPickupPose(fuel.get());
+        Translation2d robotToFuel = fuel.get().toTranslation2d().minus(drivetrain.getPoseMeters().getTranslation());
+        Pose2d pickupPose = new Pose2d(fuel.get().toTranslation2d(), robotToFuel.getAngle());
         // drivetrain.fieldOrientedDriveWhileAiming(duncan.getRequestedFieldOrientedVelocity(), pickupPose.getRotation());
         // drivetrain.fieldOrientedDriveOnALine(duncan.getRequestedFieldOrientedVelocity(), pickupPose);
         drivetrain.pidToPose(pickupPose, 1.0);
