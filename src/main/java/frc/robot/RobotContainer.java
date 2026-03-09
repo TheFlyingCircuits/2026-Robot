@@ -131,7 +131,7 @@ public class RobotContainer {
         new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true)
+        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true, drivetrain)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)
@@ -144,7 +144,7 @@ public class RobotContainer {
     private void configureBindings() {
         duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
-        duncanController.rightBumper().whileTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()))
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()))
         .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.rightBumper().whileTrue(aimAndShootManual(() -> TurretCalculations.currentTarget, () -> true, () -> TurretCalculations.getTurretTranslation(new Translation2d(14.028,4.093))).alongWith(intake.intakeDefualtAndIntakeCommand()))
@@ -225,13 +225,13 @@ public class RobotContainer {
 
     private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, needsReqs.get());
+        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, needsReqs.get(), drivetrain);
     }
 
     private Command aimAndShootManual(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot,
     Supplier<Translation3d> manualTurretPose) {
         return new AimAndShoot(turret, indexer, manualTurretPose, 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, true);
+        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, true, drivetrain);
     }
 
     // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {

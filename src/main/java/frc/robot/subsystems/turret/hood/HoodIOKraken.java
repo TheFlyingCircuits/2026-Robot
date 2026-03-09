@@ -1,7 +1,9 @@
 package frc.robot.subsystems.turret.hood;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,6 +22,9 @@ public class HoodIOKraken implements HoodIO{
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(0.0);
 
+    private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(1)
+    .withUpdateFreqHz(0.0);
+
     public HoodIOKraken() {
         hoodKraken = new Kraken(TurretConstants.hoodKrakenID, UniversalConstants.canivoreName);
         configHoodKraken();
@@ -34,11 +39,15 @@ public class HoodIOKraken implements HoodIO{
 
         // replaced kS with a constant volts feed forward for gravity because ks would switch if going down
         // to negative volts and I don't want that
-        config.Slot0.kS = 0.0; // Add 0.6 V output to overcome static friction
+        config.Slot0.kS = 0.1; // Add 0.6 V output to overcome static friction
         config.Slot0.kP = 165.0; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
+
+        config.Slot0.kS = 0.1;
+        config.Slot1.kP = 0.0;
+        config.Slot1.kD = 0.0;
 
 
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
@@ -65,6 +74,11 @@ public class HoodIOKraken implements HoodIO{
     }
 
     @Override
+    public void setHoodAmps(double amps) {
+        hoodKraken.setControl(new TorqueCurrentFOC(amps));
+    }
+
+    @Override
     public void setTargetHoodPosition(double targetPositionDegrees) {
         targetHoodDegreesLocal = targetPositionDegrees;
         if(targetPositionDegrees < TurretConstants.minHoodAngle + 1.0) {
@@ -73,6 +87,7 @@ public class HoodIOKraken implements HoodIO{
             targetPositionDegrees = TurretConstants.maxHoodAngle - 1.0;
         }
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));
+        // hoodKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));
     }
 
 }

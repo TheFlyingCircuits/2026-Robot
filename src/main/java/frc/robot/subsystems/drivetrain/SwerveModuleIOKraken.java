@@ -81,7 +81,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
 
         config.Slot1.kS = 0.25; 
         config.Slot1.kV = 0.738;// 2.1volts - 0.8 mps
-        config.Slot1.kP = 0.2;
+        config.Slot1.kP = 0.1;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
 

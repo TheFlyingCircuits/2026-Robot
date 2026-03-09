@@ -3,6 +3,7 @@ package frc.robot.subsystems.turret.aimer;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -24,11 +25,15 @@ public class AimerIOKraken implements AimerIO{
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
     private double ksForConstantForceSpring = 1.45;
+    private double ksForConstantForceSpringAmps = 0.0;
 
     private double turretMaxOneSideDeg = 190;// TODO: get real
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);
+
+    private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(2)
+    .withUpdateFreqHz(0.0);
 
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;
@@ -62,16 +67,27 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimit = 90;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 0.0; // ks will be 0 because will acount for outside of talon fx control loop
+        // motion magic
+        config.Slot0.kS = 0.1; 
         config.Slot0.kP = 210.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 1.92413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
-        config.Slot1.kS = 0.0;
+        // close voltage feedback
+        // ks is over 0.0 because in either direction 0.001 volts of feedback pid is not enough
+        // to overcome spring feed forward because its kidnda an estimate
+        config.Slot1.kS = 0.1;
         config.Slot1.kP = 195.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 2.0; //rps
+        // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
+        // for tuning
+        // torque foc
+        config.Slot2.kS = 0.0;
+        config.Slot2.kP = 0.0;
+        config.Slot2.kD = 0.0;
+
+        config.MotionMagic.MotionMagicCruiseVelocity = 3.0; //rps
         config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
@@ -150,11 +166,13 @@ public class AimerIOKraken implements AimerIO{
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
+        double feedForwardsSpringAmps = ksForConstantForceSpringAmps;
 
         double turretPositionRotations = aimerKraken.getPosition().getValueAsDouble();
 
         if(turretPositionRotations < 0) {
             feedForwardsSpringVolts = feedForwardsSpringVolts*-1.0;
+            feedForwardsSpringAmps = feedForwardsSpringAmps*-1.0;
             // range is 5 to -15
         }
 
@@ -182,6 +200,7 @@ public class AimerIOKraken implements AimerIO{
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {
             aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
+            aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
         }
         // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)));
         // aimerKraken.setControl(m_Velrequest.withVelocity(Units.degreesToRotations(targetPositionDegrees)));

@@ -7,6 +7,8 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.PlayingField.FieldElement;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
@@ -21,23 +23,26 @@ public class AimAndShoot extends Command{
     private Supplier<Boolean> driverReadyToShoot;
     private double angleOfAttack;
     private boolean isShooting = false;
+    private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.0, 0.8, 0.35, 0.35};;
+    private double[] notShootingTolerances = new double[] {1.0, 0.8, 0.35, 0.35};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot, boolean needsReq) {
+    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain) {
         this.turret=turret;
         this.indexer=indexer;
         this.turretTranlsation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
         this.shootingTarget=shootingTarget;
         this.driverReadyToShoot=driverReadyToShoot;
+        this.drivetrain=drivetrain;
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
+        drivetrain.setFocus(FieldElement.HUB);
 
         addRequirements(turret, indexer);
 
@@ -46,6 +51,7 @@ public class AimAndShoot extends Command{
     @Override
     public void initialize() {
         isShooting = false;
+        drivetrain.setFocus(FieldElement.HUB);
         TurretCalculations.currentTarget = shootingTarget.get();
     }
 
@@ -108,6 +114,11 @@ public class AimAndShoot extends Command{
         TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
         
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.resetFocus();
     }
     
     

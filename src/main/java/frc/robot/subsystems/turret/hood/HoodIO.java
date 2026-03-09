@@ -17,5 +17,7 @@ public interface HoodIO {
 
     public default void setHoodVolts(double volts) {};
 
+    public default void setHoodAmps(double amps) {};
+
     public default void setTargetHoodPosition(double targetPositionDegrees) {};
 }
