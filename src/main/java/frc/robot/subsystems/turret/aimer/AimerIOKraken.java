@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -163,6 +164,11 @@ public class AimerIOKraken implements AimerIO{
     }
 
     @Override
+    public void setAimerAmps(double amps) {
+        aimerKraken.setControl(new TorqueCurrentFOC(amps).withUpdateFreqHz(0.0));
+    }
+
+    @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
@@ -173,13 +179,11 @@ public class AimerIOKraken implements AimerIO{
         if(turretPositionRotations < 0) {
             feedForwardsSpringVolts = feedForwardsSpringVolts*-1.0;
             feedForwardsSpringAmps = feedForwardsSpringAmps*-1.0;
-            // range is 5 to -15
         }
 
-        feedForwardsSpringVolts = 0.0;
-
         if((Units.rotationsToDegrees(turretPositionRotations) < -5.0) && (Units.rotationsToDegrees(turretPositionRotations) > -20.0)) {
-                feedForwardsSpringVolts = 0.0;
+            feedForwardsSpringVolts = 0.0;
+            feedForwardsSpringAmps = 0.0;
         }
         
 
@@ -199,8 +203,8 @@ public class AimerIOKraken implements AimerIO{
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {
-            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
-            aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
+            // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
+            aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
         }
         // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)));
         // aimerKraken.setControl(m_Velrequest.withVelocity(Units.degreesToRotations(targetPositionDegrees)));

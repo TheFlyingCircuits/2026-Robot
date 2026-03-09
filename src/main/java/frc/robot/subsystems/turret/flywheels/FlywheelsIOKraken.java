@@ -24,7 +24,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
 
     private double bangBangControllerVolts = 11.0;
     private double bangBangControllerDeadzoneMPS = 0.1;
-    private boolean runningBangBangController = false;
+    private boolean runningBangBangController = true;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
@@ -96,6 +96,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         hoodWheelKraken.applyConfig(config);
     }
 
+    @Override
     public void updateInputs(FlywheelsIOInputs inputs) {
         inputs.frontWheelVelocityRPS = frontWheelKraken.getVelocity().getValueAsDouble();
         inputs.hoodWheelVelocityRPS = hoodWheelKraken.getVelocity().getValueAsDouble();
@@ -115,24 +116,29 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         inputs.hoodWheelAmps = hoodWheelKraken.getStatorCurrent().getValueAsDouble();
     }
 
+    @Override
     public void setFrontWheelVolts(double volts) {
         frontWheelKraken.setVoltage(volts);
         frontWheelKrakenFollower.setVoltage(volts);
     }
 
+    @Override
     public void setHoodWheelVolts(double volts) {
         hoodWheelKraken.setVoltage(volts);
     }
 
+    @Override
     public void setFrontWheelAmps(double amps) {
         frontWheelKraken.setControl(new TorqueCurrentFOC(amps).withUpdateFreqHz(0.0));
         frontWheelKrakenFollower.setControl(new TorqueCurrentFOC(amps));
     }
 
+    @Override
     public void setHoodWheelAmps(double amps) {
         hoodWheelKraken.setControl(new TorqueCurrentFOC(amps));
     }
 
+    @Override
     public void setTargetFrontWheelVelocity(double targetVelocityRPS) {
         targetFrontWheelMPSLocal = targetVelocityRPS*1.0 * (Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         if(!(runningBangBangController)) {
@@ -140,6 +146,13 @@ public class FlywheelsIOKraken implements FlywheelsIO {
             // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
             frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
         } else {
+            if(0.0 < (targetVelocityRPS - frontWheelKraken.getVelocity().getValueAsDouble())) {
+                frontWheelKraken.setVoltage(bangBangControllerVolts);
+                frontWheelKrakenFollower.setVoltage(bangBangControllerVolts);
+            } else {
+                frontWheelKraken.setVoltage(0.0);
+                frontWheelKrakenFollower.setVoltage(0.0);
+            }
             // // if error is above deadzone apply bang bang controller voltage
             // if(bangBangControllerDeadzoneMPS < Math.abs(targetFrontWheelMPSLocal - 
             //     frontWheelKraken.getVelocity().getValueAsDouble()* (Math.PI*TurretConstants.mainFlywheelDiameterMeters))) {
@@ -153,12 +166,18 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         }
     }
 
+    @Override
     public void setTargetHoodWheelVelocity(double targetVelocityRPS) {
         targetHoodWheelMPSLocal = targetVelocityRPS*1.0 * (Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
 
         if(!(runningBangBangController)) {
             hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
         } else {
+            if(0.0 < (targetVelocityRPS - hoodWheelKraken.getVelocity().getValueAsDouble())) {
+                hoodWheelKraken.setVoltage(bangBangControllerVolts);
+            } else {
+                hoodWheelKraken.setVoltage(0.0);
+            }
             // // if error is above deadzone apply bang bang controller voltage
             // if(bangBangControllerDeadzoneMPS < Math.abs(targetFrontWheelMPSLocal - 
             //     hoodWheelKraken.getVelocity().getValueAsDouble()* (Math.PI*TurretConstants.hoodFlywheelDiameterMeters))) {

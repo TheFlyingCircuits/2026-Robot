@@ -146,7 +146,9 @@ public final class Constants {
         // public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
 
                 /** Rotations of the drive wheel per rotations of the drive motor. */
-        public static final double driveGearReduction = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+        public static final double driveGearReductionSIM = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+
+        public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
         /** Rotations of the steering column per rotations of the angle motor. */
         public static final double steerGearReduction = (14.0 / 50.0) * (10.0 / 60.0);

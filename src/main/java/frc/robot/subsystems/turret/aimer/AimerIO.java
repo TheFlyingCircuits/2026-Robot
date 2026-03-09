@@ -20,6 +20,8 @@ public interface AimerIO {
 
     public default void setAimerVolts(double volts) {};
 
+    public default void setAimerAmps(double amps) {};
+
     public default void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {};
 
 }

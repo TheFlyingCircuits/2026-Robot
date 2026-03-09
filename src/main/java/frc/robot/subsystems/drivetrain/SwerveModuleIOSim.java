@@ -42,7 +42,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     steerMomentOfInertia, 1./SwerveModuleConstants.steerGearReduction), steerMotorConstants, 0.025);
     
     private FlywheelSim driveSim= new FlywheelSim(LinearSystemId.createFlywheelSystem(driveMotorConstants, driveMomentOfInertia, 
-    1./SwerveModuleConstants.driveGearReduction),  driveMotorConstants , 0.004);
+    1./SwerveModuleConstants.driveGearReductionSIM),  driveMotorConstants , 0.004);
 
     public SwerveModuleIOSim() {
         anglePID.enableContinuousInput(-180, 180);

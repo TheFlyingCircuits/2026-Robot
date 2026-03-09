@@ -14,12 +14,12 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,6 +68,8 @@ public class RobotContainer {
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
+
+    private final Timer trustCamerasTimer;
 
     public RobotContainer() {
         /**** INITIALIZE SUBSYSTEMS ****/
@@ -137,6 +139,9 @@ public class RobotContainer {
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
+
+        trustCamerasTimer = new Timer();
+        trustCamerasTimer.start();
 
         configureBindings();
         setDefaultCommands();
@@ -252,6 +257,14 @@ public class RobotContainer {
         drivetrain.fullyTrustVisionNextPoseUpdate();
         drivetrain.allowTeleportsNextPoseUpdate();
     }).until(drivetrain::seesAcceptableTag).ignoringDisable(true);}
+
+    // private Command reSeedRobotPoseOnTimeInterval(double timeIntervalSec) {return new ConditionalCommand(
+    //     new InstantCommand(),
+    //     Commands.run(() -> {
+    //     drivetrain.fullyTrustVisionNextPoseUpdate();
+    //     drivetrain.allowTeleportsNextPoseUpdate();
+    // }).until(drivetrain::seesAcceptableTag).ignoringDisable(true)
+    // , () -> (trustCamerasTimer.get() < timeIntervalSec))}
 
 
     private Command driveTowardsFuelTeleop() { return drivetrain.run(() -> {
