@@ -85,8 +85,8 @@ public class AimerIOKraken implements AimerIO{
         // for tuning
         // torque foc
         config.Slot2.kS = 35.0;
-        config.Slot2.kP = 3400.0;
-        config.Slot2.kD = 100.0;
+        config.Slot2.kP = 6800.0;
+        config.Slot2.kD = 80.0;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 90;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -90;

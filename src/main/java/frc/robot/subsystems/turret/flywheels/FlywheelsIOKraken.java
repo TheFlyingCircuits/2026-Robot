@@ -24,7 +24,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
 
     private double bangBangControllerVolts = 11.0;
     private double bangBangControllerDeadzoneMPS = 0.1;
-    private boolean runningBangBangController = true;
+    private boolean runningBangBangController = false;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
