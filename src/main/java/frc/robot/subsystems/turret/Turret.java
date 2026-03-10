@@ -98,7 +98,7 @@ public class Turret extends SubsystemBase{
         double frontWheelRPSOutput = targetVelocityMetersPerSecond/(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         flywheels.setTargetFrontWheelVelocity(frontWheelRPSOutput);
 
-        double hoodWheelRPSOutput = (targetVelocityMetersPerSecond*0.9)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        double hoodWheelRPSOutput = (targetVelocityMetersPerSecond)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
         flywheels.setTargetHoodWheelVelocity(hoodWheelRPSOutput);
     }
 

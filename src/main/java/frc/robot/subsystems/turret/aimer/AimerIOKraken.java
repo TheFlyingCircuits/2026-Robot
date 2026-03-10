@@ -65,7 +65,7 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 90;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // motion magic
@@ -84,14 +84,14 @@ public class AimerIOKraken implements AimerIO{
         // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
         // for tuning
         // torque foc
-        config.Slot2.kS = 35.0;
+        config.Slot2.kS = 37.0;
         config.Slot2.kP = 6800.0;
-        config.Slot2.kD = 80.0;
+        config.Slot2.kD = 50.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 90;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -90;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
-        config.ClosedLoopGeneral.GainSchedErrorThreshold = 0.0;
+        config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.2);
 
         config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
         config.MotionMagic.MotionMagicAcceleration = 2.0; //rotations per second squared

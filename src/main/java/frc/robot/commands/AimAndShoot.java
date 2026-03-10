@@ -25,6 +25,9 @@ public class AimAndShoot extends Command {
     private boolean isShooting = false;
     private Drivetrain drivetrain;
 
+    private boolean isTrustingVisionOnInterval = true;
+    private int loopCounter;
+
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
     private double[] notShootingTolerances = new double[] {1.0, 0.8, 0.35, 0.35};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
@@ -43,6 +46,7 @@ public class AimAndShoot extends Command {
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
+        loopCounter = 0;
 
         addRequirements(turret, indexer);
 
@@ -50,6 +54,7 @@ public class AimAndShoot extends Command {
 
     @Override
     public void initialize() {
+        loopCounter = 0;
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
         TurretCalculations.currentTarget = shootingTarget.get();
@@ -57,6 +62,15 @@ public class AimAndShoot extends Command {
 
     @Override
     public void execute() {
+        // reset odometry on loop interval
+        if(isTrustingVisionOnInterval) {
+            if(loopCounter>30) {
+                drivetrain.fullyTrustVisionNextPoseUpdate();
+                loopCounter = 0;
+            }
+        }
+
+
         Translation3d originalTargetTranlsation = TurretCalculations.getTargetFromEnum(shootingTarget.get(), () -> turretTranlsation.get().toTranslation2d());
 
         angleOfAttack = TurretCalculations.getAngleOfAttackFromTargetEnum(shootingTarget.get(), (originalTargetTranlsation.toTranslation2d().minus(turretTranlsation.get().toTranslation2d())).getNorm());
@@ -77,7 +91,7 @@ public class AimAndShoot extends Command {
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.49)-0.4); //*1.33333)-0.666667
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.54)-1.35); //*1.33333)-0.666667
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);

@@ -420,7 +420,7 @@ public class Drivetrain extends SubsystemBase {
             // setFocus(FieldElement.HUB);
 
             // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
-            if (focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) {
+            if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed())) && !poseObservation.usingMultiTag()) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }

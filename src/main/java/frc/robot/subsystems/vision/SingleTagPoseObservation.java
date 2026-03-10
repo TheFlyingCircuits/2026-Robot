@@ -12,15 +12,16 @@ import frc.robot.PlayingField.FieldConstants;;
 //The only thing we take into accound is that the spread of the data increases at larger distances
 //Plot standard deviation and distance in desmos
 
-public record SingleTagPoseObservation (String camName, Pose3d robotPose, double timestampSeconds, int tagUsed, double tagToCamMeters, double ambiguity) {
+public record SingleTagPoseObservation (String camName, Pose3d robotPose, double timestampSeconds, int tagUsed, double tagToCamMeters, double ambiguity, boolean usingMultiTag) {
     public Matrix<N3, N1> getStandardDeviations() {
-        double slopeStdDevMeters_PerMeter = 0.0023;
+        // double slopeStdDevMeters_PerMeter = 0.0023;
 
-        if (tagToCamMeters < 1.5) {
-            slopeStdDevMeters_PerMeter = 0.0010;
-        } else if(tagToCamMeters < 2.5) {
-            slopeStdDevMeters_PerMeter = 0.0017;
-        }
+        double slopeStdDevMeters_PerMeter = 0.00;
+        // if (tagToCamMeters < 1.5) {
+        //     slopeStdDevMeters_PerMeter = 0.0010;
+        // } else if(tagToCamMeters < 2.5) {
+        //     slopeStdDevMeters_PerMeter = 0.0017;
+        // }
 
         return VecBuilder.fill(
             slopeStdDevMeters_PerMeter*tagToCamMeters,

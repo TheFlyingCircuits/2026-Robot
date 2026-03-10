@@ -25,6 +25,7 @@ public class SingleTagCam {
     private final PhotonCamera cam;
     private Translation3d camLocation_robotFrame;
     private Rotation3d camOrientation_robotFrame;
+    private boolean usingMultiTag = false;
 
     public SingleTagCam(String name, Translation3d camLocation_robotFrame, Rotation3d camOrientation_robotFrame) {
         cam = new PhotonCamera(name);
@@ -75,24 +76,57 @@ public class SingleTagCam {
 
         // For each frame, get pose info for all tags seen in that frame.
         for (PhotonPipelineResult frame : freshFrames) {
-            for (PhotonTrackedTarget tag : frame.targets) {
-                // Extract data from PhotonVision.
-                int tagID = tag.fiducialId;
-                Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
-                double timestamp = frame.getTimestampSeconds();
-                double tagToCamDistance = tag.getBestCameraToTarget().getTranslation().getNorm();
-                double ambiguity = tag.poseAmbiguity;
+            if(usingMultiTag) {
+                if(frame.multitagResult.isPresent()) {
+                    // Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
+                    Transform3d cameraTransformEstimate = frame.multitagResult.get().estimatedPose.best;
+                    Pose3d robotPose = getRobotPoseFromSingleMutliTag(cameraTransformEstimate);
+                    double timestamp = frame.getTimestampSeconds();
 
-                SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(cam.getName(), robotPose, timestamp, tagID, tagToCamDistance, ambiguity);
-                output.add(poseObservation);
+                    List<Short> tagsUsed = frame.multitagResult.get().fiducialIDsUsed;
+                    double tagToCamDistance = tagsUsed.get(0);
+                    
+                    for(Short tagID : tagsUsed) {
+                        double currentTagDistance = Math.abs(robotPose.getTranslation().minus(
+                            FieldConstants.tagPose(tagID).getTranslation()).getNorm());
+                        if(currentTagDistance < tagToCamDistance) {
+                            tagToCamDistance = currentTagDistance;
+                        }
+                    }
+                    double ambiguity = 0.0;
 
-                // advantage scope viz
-                justRobotPoses.add(robotPose);
-                Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
-                Pose3d tagPoseOnField = FieldConstants.tagPose(tagID);
-                // TODO: Maybe add a segment that brings the line under the field, so we can hide
-                //       the little connection between different pose estimates?
-                sightlines.addAll(Arrays.asList(camPoseOnfield.getTranslation(), tagPoseOnField.getTranslation(), camPoseOnfield.getTranslation()));
+                    SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(cam.getName(), robotPose, timestamp, 0, tagToCamDistance, ambiguity, true);
+                    output.add(poseObservation);
+
+                    // advantage scope viz
+                    justRobotPoses.add(robotPose);
+                    Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+                    int oneOfTheTags = tagsUsed.indexOf(0);
+                    Pose3d tagPoseOnField = FieldConstants.tagPose(oneOfTheTags);
+                    // TODO: Maybe add a segment that brings the line under the field, so we can hide
+                    //       the little connection between different pose estimates?
+                    sightlines.addAll(Arrays.asList(camPoseOnfield.getTranslation(), tagPoseOnField.getTranslation(), camPoseOnfield.getTranslation()));
+                }
+            } else {
+                for (PhotonTrackedTarget tag : frame.targets) {
+                    // Extract data from PhotonVision.
+                    int tagID = tag.fiducialId;
+                    Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
+                    double timestamp = frame.getTimestampSeconds();
+                    double tagToCamDistance = tag.getBestCameraToTarget().getTranslation().getNorm();
+                    double ambiguity = tag.poseAmbiguity;
+
+                    SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(cam.getName(), robotPose, timestamp, tagID, tagToCamDistance, ambiguity, false);
+                    output.add(poseObservation);
+
+                    // advantage scope viz
+                    justRobotPoses.add(robotPose);
+                    Pose3d camPoseOnfield = robotPose.plus(new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+                    Pose3d tagPoseOnField = FieldConstants.tagPose(tagID);
+                    // TODO: Maybe add a segment that brings the line under the field, so we can hide
+                    //       the little connection between different pose estimates?
+                    sightlines.addAll(Arrays.asList(camPoseOnfield.getTranslation(), tagPoseOnField.getTranslation(), camPoseOnfield.getTranslation()));
+                }
             }
         }
 
@@ -117,6 +151,17 @@ public class SingleTagCam {
         Transform3d tagPose_fieldFrame = FieldConstants.tagPoseAsTransform(singleTag.fiducialId);
         Transform3d camPose_tagFrame = singleTag.getBestCameraToTarget().inverse();
         Transform3d camPose_fieldFrame = tagPose_fieldFrame.plus(camPose_tagFrame);
+        Transform3d robotPose_fieldFrame = camPose_fieldFrame.plus(robotPose_camFrame);
+
+        return new Pose3d(robotPose_fieldFrame.getTranslation(), robotPose_fieldFrame.getRotation());
+    }
+
+    private Pose3d getRobotPoseFromSingleMutliTag(Transform3d resultTransform) {
+
+        Transform3d camPose_robotFrame = new Transform3d(camLocation_robotFrame, camOrientation_robotFrame);
+        Transform3d robotPose_camFrame = camPose_robotFrame.inverse();
+
+        Transform3d camPose_fieldFrame = resultTransform;
         Transform3d robotPose_fieldFrame = camPose_fieldFrame.plus(robotPose_camFrame);
 
         return new Pose3d(robotPose_fieldFrame.getTranslation(), robotPose_fieldFrame.getRotation());

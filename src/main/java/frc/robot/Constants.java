@@ -150,9 +150,9 @@ public final class Constants {
         public static final double driveGearReductionSIM = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
         // max torque ratio
-        // public static final double driveGearReductionSIM = (12.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
+        public static final double driveGearReduction = (12.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
-        public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
+        // public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
         /** Rotations of the steering column per rotations of the angle motor. */
         public static final double steerGearReduction = (14.0 / 50.0) * (10.0 / 60.0);
