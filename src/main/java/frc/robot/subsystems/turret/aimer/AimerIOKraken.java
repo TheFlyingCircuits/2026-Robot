@@ -207,7 +207,7 @@ public class AimerIOKraken implements AimerIO{
 
         // aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 80.0) {
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 50.0) {
             aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
         } else {

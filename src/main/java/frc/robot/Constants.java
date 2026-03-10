@@ -26,6 +26,7 @@ public final class Constants {
     public final static boolean atCompetition = false;
 
     public final class UniversalConstants {
+        // robot weight 131.6 lbs
         public final static double gravityMetersPerSecondSquared = 9.81;
         public final static double defaultPeriodSeconds = 0.02;
 
@@ -87,7 +88,7 @@ public final class Constants {
         public static final double krakenFreeSpeedRPM = 5800;
         public static final double krakenFreeSpeedRotationsPerSecond = krakenFreeSpeedRPM / 60.;
         public static final double maxAchievableVelocityMetersPerSecond = krakenFreeSpeedRotationsPerSecond *
-            (1.0/5.27) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
+            (SwerveModuleConstants.driveGearReduction) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
                                                                                                        // ~5.06 when adding 1/16 of an inch of wheel sink into the carpet.
                                                                                                        // ~5.10 using an emperical measurement of wheel radius on fresh wheels.
                                                                                                        // Actual top speed based on testing is ~4.7 m/s
@@ -148,6 +149,9 @@ public final class Constants {
                 /** Rotations of the drive wheel per rotations of the drive motor. */
         public static final double driveGearReductionSIM = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
+        // max torque ratio
+        // public static final double driveGearReductionSIM = (12.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
+
         public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
         /** Rotations of the steering column per rotations of the angle motor. */
@@ -156,9 +160,11 @@ public final class Constants {
         // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
         // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
         // public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
-        public static final double wheelRadiusMeters = Units.inchesToMeters(4)/2.0; 
+        public static final double wheelRadiusMeters = Units.inchesToMeters(2.015434249374315); 
         public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
 
+        //0.05128784124270502
+        //0.0511920299341076
         // PID + FEEDFORWARD CONSTANTS FOR MOTORS
         // PID for drive motors.
         public static final double drivekPVoltsPerMeterPerSecond = 0;

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.MeasureWheelDiameter;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -77,10 +78,10 @@ public class RobotContainer {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
-                new SwerveModuleIOKraken(1, 2, -0.259766, 1, "FL", true), 
-                new SwerveModuleIOKraken(3, 4, -0.001953, 2, "FR", true),
-                new SwerveModuleIOKraken(5, 6, 0.464844, 3, "BL", false),
-                new SwerveModuleIOKraken(7, 8,  0.100830, 4, "BR", false) 
+                new SwerveModuleIOKraken(1, 2, -0.260498, 1, "FL", true), 
+                new SwerveModuleIOKraken(3, 4, 0.429199, 2, "FR", false),
+                new SwerveModuleIOKraken(5, 6, -0.033203, 3, "BL", true),
+                new SwerveModuleIOKraken(7, 8,  0.098389, 4, "BR", false) 
             );
             // drivetrain = new Drivetrain(
             //     new GyroIOSim(){},
@@ -295,7 +296,8 @@ public class RobotContainer {
 // AUTOS -------------------------------------------------------------------------------
 
 public Command getAutonomousCommand() {
-    return trenchAutos();
+    return new MeasureWheelDiameter(drivetrain);
+    // return trenchAutos();
 }
 
     private Command trenchAutos() {
