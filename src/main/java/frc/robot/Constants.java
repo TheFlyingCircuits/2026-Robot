@@ -219,7 +219,7 @@ public final class Constants {
         // 27:160 - ctre wants a >1 number for reductions
         public static final double canCoderToTurretRotationsGearRatio = 5.92592592593;// this is final I think and its cancoder to turret
         // 2:1
-        public static final double aimerKrakenRotorToCANcoderGearRatio = 2.0;
+        public static final double aimerKrakenRotorToCANcoderGearRatio = 22.0/10.0;
         
         // TODO: get real ratios and set gains to 0
         public static final double hoodKrakenToTurretRotationsGearRatio = (50.0/16.0)*(160.0/12.0);
