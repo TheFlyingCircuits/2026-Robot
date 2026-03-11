@@ -84,7 +84,8 @@ public class SingleTagCam {
                     double timestamp = frame.getTimestampSeconds();
 
                     List<Short> tagsUsed = frame.multitagResult.get().fiducialIDsUsed;
-                    double tagToCamDistance = tagsUsed.get(0);
+                    double tagToCamDistance = Math.abs(robotPose.getTranslation().minus(
+                            FieldConstants.tagPose(tagsUsed.get(0)).getTranslation()).getNorm());;
                     
                     for(Short tagID : tagsUsed) {
                         double currentTagDistance = Math.abs(robotPose.getTranslation().minus(
