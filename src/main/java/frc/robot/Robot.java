@@ -14,7 +14,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.PlayingField.MatchPeriod;
+import frc.robot.PlayingField.ShiftTracker;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -44,7 +44,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
-    MatchPeriod.updateCurrentMatchPeriod();
     CommandScheduler.getInstance().run();
   }
 
@@ -79,6 +78,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    ShiftTracker.signalStartOfTeleop();
+    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
