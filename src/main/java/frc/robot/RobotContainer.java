@@ -160,7 +160,7 @@ public class RobotContainer {
         // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
-        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand());//.alongWith(driveTowardsFuelTeleop()));
+        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
 
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));

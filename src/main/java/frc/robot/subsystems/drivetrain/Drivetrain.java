@@ -55,11 +55,11 @@ public class Drivetrain extends SubsystemBase {
 
     private SingleTagCam[] tagCams = {
         new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front
-        // new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // back
+        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // back
         new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // left
         new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // right
     };
-    // private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
+    private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
     private boolean fullyTrustVisionNextPoseUpdate = false;
     private boolean allowTeleportsNextPoseUpdate = false;
@@ -448,8 +448,7 @@ public class Drivetrain extends SubsystemBase {
 
 
     public Optional<Translation3d> getClosestCluster() {
-        return null;
-        // return intakeCam.getClosestClusterTo(getPoseMeters().getTranslation());
+        return intakeCam.getClosestClusterTo(getPoseMeters().getTranslation());
     }
 
     public void fieldOrientedDriveWhileAiming(ChassisSpeeds desiredTranslationalSpeeds, Rotation2d desiredAngle) {
@@ -504,7 +503,6 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
             mod.periodic();
         
@@ -515,7 +513,7 @@ public class Drivetrain extends SubsystemBase {
 
         updatePoseEstimator();
 
-        // intakeCam.periodic(fusedPoseEstimator);
+        intakeCam.periodic(fusedPoseEstimator);
 
         Logger.recordOutput("drivetrain/fusedPose", fusedPoseEstimator.getEstimatedPosition());
         Logger.recordOutput("drivetrain/wheelsOnlyPose", wheelsOnlyPoseEstimator.getEstimatedPosition());
