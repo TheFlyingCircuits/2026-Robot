@@ -77,8 +77,13 @@ public class AimerIOKraken implements AimerIO{
         // close voltage feedback
         // ks is over 0.0 because in either direction 0.001 volts of feedback pid is not enough
         // to overcome spring feed forward because its kidnda an estimate
-        config.Slot1.kS = 0.1;
-        config.Slot1.kP = 195.0; 
+        // config.Slot1.kS = 0.1;
+        // config.Slot1.kP = 195.0; 
+
+        config.Slot1.kS = 10.0;
+        config.Slot1.kP = 3000.0;
+        config.Slot1.kD = 0.0;
+
 
         // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
         // for tuning
@@ -86,6 +91,10 @@ public class AimerIOKraken implements AimerIO{
         config.Slot2.kS = 75.0;
         config.Slot2.kP = 3000.0;
         config.Slot2.kD = 0.0;
+
+        // not really kG but for constant force spring
+        // config.Slot2.GravityType = GravityTypeValue.Elevator_Static;
+        // config.Slot2.kG = ksForConstantForceSpringAmps;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 170;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -170;
