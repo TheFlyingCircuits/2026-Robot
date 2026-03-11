@@ -26,9 +26,10 @@ public class AimerIOKraken implements AimerIO{
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
     private double ksForConstantForceSpring = 1.0;
-    private double ksForConstantForceSpringAmps = 35.0;
+    private double ksForConstantForceSpringAmps = 20.0;
 
-    private double turretMaxOneSideDeg = 210;// TODO: get real
+    private double turretMaxOneSideDeg = 190;// TODO: get real
+
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);
 
@@ -83,8 +84,8 @@ public class AimerIOKraken implements AimerIO{
         // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
         // for tuning
         // torque foc
-        config.Slot2.kS = 75.0;
-        config.Slot2.kP = 3000.0;
+        config.Slot2.kS = 37.0;
+        config.Slot2.kP = 1500.0;
         config.Slot2.kD = 0.0;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 170;
