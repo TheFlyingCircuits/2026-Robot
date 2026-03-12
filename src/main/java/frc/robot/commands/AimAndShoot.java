@@ -132,7 +132,7 @@ public class AimAndShoot extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.resetFocus();
+
     }
     
     

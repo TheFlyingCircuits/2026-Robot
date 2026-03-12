@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.750066341720965,
-        "y": 7.605230984520551
+        "x": 5.699104653975233,
+        "y": 7.285042294851909
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 7.211440798858773
       },
       "prevControl": {
-        "x": 6.575035142657146,
-        "y": 7.276126387612174
+        "x": 6.647833345978767,
+        "y": 7.706720740823473
       },
       "nextControl": {
-        "x": 9.425239470575331,
-        "y": 7.08356805992816
+        "x": 9.420988137389227,
+        "y": 6.154165917111654
       },
       "isLocked": false,
       "linkedName": null
@@ -36,28 +36,28 @@
         "y": 2.144740608224976
       },
       "prevControl": {
-        "x": 8.291266420026016,
-        "y": 1.4512478805706734
+        "x": 8.421176610239241,
+        "y": 1.1713184281162041
       },
       "nextControl": {
-        "x": 5.284525939177102,
-        "y": 2.8586583184257597
+        "x": 4.7577554519271095,
+        "y": 3.384249022418998
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.458587731811697,
-        "y": 7.211440798858773
+        "x": 5.979857346647646,
+        "y": 7.4572753209700435
       },
       "prevControl": {
-        "x": 6.862362161649106,
-        "y": 5.775798381659111
+        "x": 7.636005706134092,
+        "y": 7.069115549215408
       },
       "nextControl": {
-        "x": 6.281446058279165,
-        "y": 7.841277860307769
+        "x": 5.032158659126893,
+        "y": 7.67939220085772
       },
       "isLocked": false,
       "linkedName": null
@@ -68,8 +68,8 @@
         "y": 7.385545617173523
       },
       "prevControl": {
-        "x": 5.048273894436518,
-        "y": 7.767803138373752
+        "x": 4.963540908932213,
+        "y": 7.3219803283027245
       },
       "nextControl": null,
       "isLocked": false,
@@ -94,7 +94,7 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 3.1550802139037435,
+      "waypointRelativePos": 3.15,
       "rotationDegrees": -3.985657463104053
     }
   ],
@@ -115,16 +115,16 @@
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 3.82,
+      "waypointRelativePos": 3.85,
       "endWaypointRelativePos": 4.0,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.1,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 654.461,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.1,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 150.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

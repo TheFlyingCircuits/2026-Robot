@@ -163,7 +163,7 @@ public class Drivetrain extends SubsystemBase {
             () -> {return DrivetrainConstants.swerveKinematics.toChassisSpeeds(getModuleStates());}, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (ChassisSpeeds speeds, DriveFeedforwards ff) -> {this.robotOrientedDrive(speeds);}, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(4.2, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(4.0, 0.0, 0.0) // Rotation PID constants // These are different from our angleController gain(s), after testing.
             ),
             config,
@@ -504,6 +504,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        System.out.println(DrivetrainConstants.maxAchievableVelocityMetersPerSecond);
         setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
             mod.periodic();
