@@ -31,8 +31,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeRunRollers() {
-        io.setTargetRollerBottomVelocity(40.0);
-        io.setTargetRollerTopVelocity(40.0);
+        io.setTargetRollerBottomVelocity(45.0);
+        io.setTargetRollerTopVelocity(45.0);
     }
 
     public void intakeRollersStop() {
@@ -41,8 +41,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void reverseIntake() {
-        io.setTargetRollerBottomVelocity(-40.0);
-        io.setTargetRollerTopVelocity(-40.0);
+        io.setTargetRollerBottomVelocity(-45.0);
+        io.setTargetRollerTopVelocity(-45.0);
     }
 
     public void intakeDown() {
