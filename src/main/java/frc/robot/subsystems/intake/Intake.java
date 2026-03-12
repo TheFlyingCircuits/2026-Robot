@@ -31,8 +31,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeRunRollers() {
-        io.setTargetRollerBottomVelocity(50.0);
-        io.setTargetRollerTopVelocity(50.0);
+        io.setTargetRollerBottomVelocity(40.0);
+        io.setTargetRollerTopVelocity(40.0);
     }
 
     public void intakeRollersStop() {
@@ -41,12 +41,12 @@ public class Intake extends SubsystemBase {
     }
 
     public void reverseIntake() {
-        io.setTargetRollerBottomVelocity(-50.0);
-        io.setTargetRollerTopVelocity(-50.0);
+        io.setTargetRollerBottomVelocity(-40.0);
+        io.setTargetRollerTopVelocity(-40.0);
     }
 
     public void intakeDown() {
-        if(inputs.intakePositionDegrees > 10.0) {
+        if(inputs.intakePositionDegrees > 30.0) {
             isIntakeDown = false;
             io.setTargetIntakePositionDegrees(0); 
         } else {
@@ -55,9 +55,15 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public void intakeDownAndIntake() {
-        intakeDown();
-        intakeRunRollers();
+    public void intakeDownThenIntake() {
+        if(inputs.intakePositionDegrees > 35.0) {
+            isIntakeDown = false;
+            io.setTargetIntakePositionDegrees(0); 
+        } else {
+            isIntakeDown = true;
+            intakeRunRollers();
+            intakeDefault();
+        }
     }
 
     public void intakeDefualtAndIntake() {
@@ -104,8 +110,8 @@ public class Intake extends SubsystemBase {
         return this.run(() -> reverseIntake());
     }
 
-    public Command intakeDownAndIntakeCommand() {
-        return this.run(() -> intakeDownAndIntake());
+    public Command intakeDownThenIntakeCommand() {
+        return this.run(() -> intakeDownThenIntake());
     }
 
     public Command intakeDefualtAndIntakeCommand() {

@@ -132,7 +132,7 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         new EventTrigger("intakeDown").onTrue(new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand())));
-        new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
+        new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDownThenIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
         () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true, drivetrain)
@@ -160,7 +160,7 @@ public class RobotContainer {
         // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
 
         // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
-        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand().alongWith(driveTowardsFuelTeleop()));
+        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand());
 
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
@@ -296,7 +296,7 @@ public class RobotContainer {
 // AUTOS -------------------------------------------------------------------------------
 
 public Command getAutonomousCommand() {
-    return new MeasureWheelDiameter(drivetrain);
+    return trenchAutos();
     // return trenchAutos();
 }
 
@@ -335,7 +335,7 @@ public Command getAutonomousCommand() {
         }
 
         return new SequentialCommandGroup(
-            new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
+            // new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()))
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(4),
             new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),

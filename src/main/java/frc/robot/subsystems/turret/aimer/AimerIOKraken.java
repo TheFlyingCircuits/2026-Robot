@@ -36,6 +36,9 @@ public class AimerIOKraken implements AimerIO{
     private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(2)
     .withUpdateFreqHz(0.0);
 
+    MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
+        .withUpdateFreqHz(0.0).withSlot(0);
+
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;
 
@@ -69,7 +72,7 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // motion magic
-        config.Slot0.kS = 0.1; 
+        config.Slot0.kS = 1.1; 
         config.Slot0.kP = 150.0;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
@@ -209,8 +212,7 @@ public class AimerIOKraken implements AimerIO{
         // aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
 
         if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 50.0) {
-            aimerKraken.setControl(new MotionMagicVoltage(Units.degreesToRotations(safeAngle)).withEnableFOC(true)
-        .withUpdateFreqHz(0.0).withFeedForward(feedForwardsSpringVolts).withSlot(0));
+            aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
         } else {
             // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
             if(inDeadZone) {
