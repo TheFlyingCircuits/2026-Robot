@@ -6,29 +6,26 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
+import frc.robot.subsystems.turret.TurretCalculations.PossibeTargets;
 
 public class AimAndShoot extends Command {
 
     private Turret turret;
     private Indexer indexer;
-    private Supplier<Translation3d> turretTranlsation;
+    private Supplier<Translation3d> turretTranslation;
     private Supplier<ChassisSpeeds> robotFieldOrientedVelocity;
-    private Supplier<TurretCalculations.possibeTargets>  shootingTarget;
+    private Supplier<TurretCalculations.PossibeTargets>  shootingTarget;
     private Supplier<Boolean> driverReadyToShoot;
     private double angleOfAttack;
     private boolean isShooting = false;
     private Drivetrain drivetrain;
-
-    private boolean isTrustingVisionOnInterval = true;
-    private int loopCounter;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
     private double[] notShootingTolerances = new double[] {1.0, 0.8, 0.35, 0.35};
@@ -40,7 +37,7 @@ public class AimAndShoot extends Command {
     Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain) {
         this.turret=turret;
         this.indexer=indexer;
-        this.turretTranlsation=turretTranlsation;
+        this.turretTranslation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
         // this.shootingTarget=shootingTarget;
         this.driverReadyToShoot=driverReadyToShoot;
@@ -48,56 +45,52 @@ public class AimAndShoot extends Command {
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
-        loopCounter = 0;
 
         addRequirements(turret, indexer);
-
     }
 
     @Override
     public void initialize() {
-        loopCounter = 0;
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
         // TurretCalculations.currentTarget = shootingTarget.get();
     }
 
+    private void updateShootingTarget() {
+
+        // field origin is always blue
+        // Default to shooting at hub if we can't
+        // tell what alliance we're on for whatever reason.
+        boolean shouldTargetHub_blue = turretTranslation.get().getX() < FieldElement.HUB.getLocation().getX();
+        boolean shouldTargetHub_red = turretTranslation.get().getX() > FieldElement.HUB.getLocation().getX();
+        boolean shouldTargetHub = FlyingCircuitUtils.getAllianceDependentValue(shouldTargetHub_red, shouldTargetHub_blue, true);
+
+        if (shouldTargetHub) {
+            shootingTarget = () -> PossibeTargets.HUB;
+        }
+        else {
+            shootingTarget = () -> PossibeTargets.PASSING;
+        }
+    }
+
     @Override
     public void execute() {
-        if(DriverStation.getAlliance().isPresent()) {
-            // target if blue
-            if (DriverStation.getAlliance().get() == Alliance.Blue) {
-                shootingTarget = (turretTranlsation.get().getX() < FieldElement.HUB.getLocation2d().getX()) ?
-                    () -> TurretCalculations.possibeTargets.hub : () -> TurretCalculations.possibeTargets.passing;
-            } else {
-            // target if red
-                shootingTarget = (turretTranlsation.get().getX() > FieldElement.HUB.getLocation2d().getX()) ?
-                    () -> TurretCalculations.possibeTargets.hub : () -> TurretCalculations.possibeTargets.passing;
-
-            }
-        }
-        // reset odometry on loop interval
-        if(isTrustingVisionOnInterval) {
-            if(loopCounter>30) {
-                drivetrain.fullyTrustVisionNextPoseUpdate();
-                loopCounter = 0;
-            }
-        }
+        this.updateShootingTarget();
 
 
-        Translation3d originalTargetTranlsation = TurretCalculations.getTargetFromEnum(shootingTarget.get(), () -> turretTranlsation.get().toTranslation2d());
+        Translation3d originalTargetTranlsation = TurretCalculations.getTargetFromEnum(shootingTarget.get(), () -> turretTranslation.get().toTranslation2d());
 
-        angleOfAttack = TurretCalculations.getAngleOfAttackFromTargetEnum(shootingTarget.get(), (originalTargetTranlsation.toTranslation2d().minus(turretTranlsation.get().toTranslation2d())).getNorm());
+        angleOfAttack = TurretCalculations.getAngleOfAttackFromTargetEnum(shootingTarget.get(), (originalTargetTranlsation.toTranslation2d().minus(turretTranslation.get().toTranslation2d())).getNorm());
 
         Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(originalTargetTranlsation, 
-            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
+            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
 
         // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
         double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(targetMovmentCompensated, 
-            angleOfAttack, turretTranlsation.get());
+            angleOfAttack, turretTranslation.get());
 
         // this is the angle that out robot would need to point to aim at the target
-        double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranlsation.get().toTranslation2d());
+        double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranslation.get().toTranslation2d());
 
         // if we are shooting vs not shooting we have different tolerances
         Supplier<Boolean>[] readyToShoot;
@@ -140,7 +133,7 @@ public class AimAndShoot extends Command {
 
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
         TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
-            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranlsation.get());
+            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
         
     }
 

@@ -7,10 +7,10 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.UniversalConstants;
 
 public class AdvantageScopeDrawingUtils {
 
@@ -96,8 +96,11 @@ public class AdvantageScopeDrawingUtils {
         Logger.recordOutput(name, new Translation3d[0]);
     }
 
-    public static void drawCircle(String name, Translation2d center, double radius) {
-        // https://www.desmos.com/calculator/mzf8vovsmd
+    public static void drawCircle(String name, Translation3d center, double radius) {
+        // Circles are approximated by regular polygons.
+        // We start by calculating how many verticies/sides our polygon
+        // needs to have in order to look close enough to a circle.
+        // For notes/derivation, see: https://www.desmos.com/calculator/mzf8vovsmd
         double acceptableVisualDeviationMeters = 0.01;
         double inputToArccos = (radius - acceptableVisualDeviationMeters) / (radius + acceptableVisualDeviationMeters);
         int numVertices = (int)Math.ceil(Math.PI / Math.acos(inputToArccos));
@@ -106,17 +109,17 @@ public class AdvantageScopeDrawingUtils {
         }
         double radsBetweenVertices = (2.0 * Math.PI) / numVertices;
 
-        List<Translation2d> points = new ArrayList<>();
+        List<Translation3d> points = new ArrayList<>();
         for (int i = 0; i < numVertices; i += 1) {
             double rads = radsBetweenVertices * i;
-            Translation2d radiusVector = new Translation2d(radius * Math.cos(rads), radius * Math.sin(rads));
+            Translation3d radiusVector = new Translation3d(radius * Math.cos(rads), radius * Math.sin(rads), 0);
             points.add(center.plus(radiusVector));
         }
 
         // close the loop
         points.add(points.get(0));
 
-        Logger.recordOutput(name, points.toArray(new Translation2d[0]));
+        Logger.recordOutput(name, points.toArray(new Translation3d[0]));
     }
 
     private static List<Translation3d> getBumperBox_robotFrame() {
@@ -130,5 +133,19 @@ public class AdvantageScopeDrawingUtils {
     }
     public static void drawBumpers(String nameInLog, Pose2d robotPose) {
         drawBox(nameInLog, getBumperBox_robotFrame(), new Pose3d(robotPose));
+    }
+
+    public static void drawProjectileMotion(String nameInLog, Translation3d initialPosition, Translation3d initialVelocity) {
+        // Projectile motion equations from physics class!
+        List<Translation3d> samplePoints = new ArrayList<>();
+        Translation3d gravityAccel = new Translation3d(0, 0, -UniversalConstants.gravityMetersPerSecondSquared);
+        Translation3d currentPosition = initialPosition;
+
+        for (double t = 0; currentPosition.getZ() >= 0; t += 0.1) {
+            currentPosition = initialPosition.plus(initialVelocity.times(t)).plus(gravityAccel.times(0.5*t*t));
+            samplePoints.add(currentPosition);
+        }
+
+        Logger.recordOutput(nameInLog, samplePoints.toArray(new Translation3d[0]));
     }
 }

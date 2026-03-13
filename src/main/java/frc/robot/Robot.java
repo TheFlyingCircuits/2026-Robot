@@ -79,7 +79,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     ShiftTracker.signalStartOfTeleop();
-    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

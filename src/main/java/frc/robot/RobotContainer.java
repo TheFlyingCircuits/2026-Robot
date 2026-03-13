@@ -14,12 +14,15 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,8 +72,6 @@ public class RobotContainer {
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
-
-    private final Timer trustCamerasTimer;
 
     public RobotContainer() {
         /**** INITIALIZE SUBSYSTEMS ****/
@@ -143,9 +144,6 @@ public class RobotContainer {
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
-        trustCamerasTimer = new Timer();
-        trustCamerasTimer.start();
-
         configureBindings();
         setDefaultCommands();
     }
@@ -167,7 +165,7 @@ public class RobotContainer {
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
 
-        // // reset everything
+        // reset everything
         duncanController.x().onTrue(Commands.runOnce(() -> {
             CommandScheduler.getInstance().cancelAll();
         }));
@@ -230,8 +228,18 @@ public class RobotContainer {
 
     }
 
-    public Supplier<Boolean> isInAuto() {
-        return () -> DriverStation.isAutonomous();
+    public void periodic() {
+        // Log turret pose, isn't part of turret because it needs the drivetrain too.
+        Translation3d turretLocation = TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation());
+        Rotation2d turretYaw_robotCoords = Rotation2d.fromDegrees(turret.getAimerAngleDeg_robotCoords());
+        Rotation2d turretYaw_fieldCoords = turretYaw_robotCoords.rotateBy(drivetrain.getPoseMeters().getRotation());
+
+        // pitch viz comes from hood angle.
+        // negate to match wpilib convention of looking up being negative pitch.
+        double turretPitchRadians = -Units.degreesToRadians(turret.getHoodAngleDeg());
+
+        Rotation3d turretOrientation = new Rotation3d(0, turretPitchRadians, turretYaw_fieldCoords.getRadians());
+        Logger.recordOutput("turret/poseOnField", new Pose3d(turretLocation, turretOrientation));
     }
 
     private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
@@ -295,12 +303,12 @@ public class RobotContainer {
         });
     }
 
-// AUTOS -------------------------------------------------------------------------------
+    // AUTOS -------------------------------------------------------------------------------
 
-public Command getAutonomousCommand() {
-    return trenchAutos();
-    // return trenchAutos();
-}
+    public Command getAutonomousCommand() {
+        return trenchAutos();
+        // return trenchAutos();
+    }
 
     private Command trenchAutos() {
         try{

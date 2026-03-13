@@ -11,23 +11,26 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import frc.robot.FlyingCircuitUtils;
+import frc.robot.Constants.UniversalConstants;
 import frc.robot.PlayingField.FieldElement;
 
 public class TurretCalculations {
-    private static double g = 9.81;
 
-    public enum possibeTargets {
-        hub,
-        passing,
+    private static double g = UniversalConstants.gravityMetersPerSecondSquared;
+
+    public enum PossibeTargets {
+        HUB,
+        PASSING,
     }
 
-    // currentTarget is used for the shoot button because this variable is changed when a button
-    // is clicked to autoaim at a different target but when the shoot button is held it autoaims at the last used target
-    public static possibeTargets currentTarget = possibeTargets.hub;
-
-    // This will return two doubles in a list and the first one will be target fuel exit velocity,
-    // and second will be target shot angle/hood angle
-    // https://www.desmos.com/calculator/uvsbgxh2mb
+    /**
+     * Returns a list of three doubles where:
+     * output[0] = target fuel exit velocity (meters per second)
+     * output[1] = target shot angle / hood angle (degrees)
+     * output[2] = time between launch and hitting the target (seconds)
+     * 
+     * See: https://www.desmos.com/calculator/uvsbgxh2mb
+     */
     public static double[] angleOfAttackTrajCalc(Translation3d targetTranslation, double angleOfAttackDegrees, Translation3d turretTranslation) {
         Translation3d targetTranslationTurretRelative = targetTranslation.minus(turretTranslation);
 
@@ -59,7 +62,7 @@ public class TurretCalculations {
         Translation3d target = originalTarget;
         for (int approximationCount = 0; approximationCount < 6; approximationCount += 1) {
             // in the list 0 is output velocity, 1 is launch angle degrees, and 2 is time of impact seconds
-            double [] trajectoryOuputs = angleOfAttackTrajCalc(target, angleOfAttackDegrees, turretTranslation);
+            double[] trajectoryOuputs = angleOfAttackTrajCalc(target, angleOfAttackDegrees, turretTranslation);
             double timeOfImpactSeconds = trajectoryOuputs[2];
             Translation3d robotVelocityVector = new Translation3d(robotVelocityFeildRelative.vxMetersPerSecond, robotVelocityFeildRelative.vyMetersPerSecond, 0);
             // robotVelocityVector = robotVelocityVector.times(fudgeFactor);
@@ -69,15 +72,14 @@ public class TurretCalculations {
     }
 
 
-    // this returns the angle of turret pose to target but it disregards robot orientation so its essentially robot pose
-    // to target and the actual aiming target is converted in the AimerIOKraken file in the setTargetPosition method
+    /** this returns the angle of turret pose to target but it disregards robot orientation so its essentially robot pose
+     *  to target and the actual aiming target is converted in the AimerIOKraken file in the setTargetPosition method */
     public static double getAimerTargetDegreesRobotToTarget(Translation2d targetFeildRelative, Translation2d turretTranslation) {
         Translation2d targetTranslationTurretRelative = targetFeildRelative.minus(turretTranslation);
         return targetTranslationTurretRelative.getAngle().getDegrees();
     }
 
-    public static void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, 
-    double angleOfAttackDegrees, Translation3d turretPose) {
+    public static void logShootingFunctions(Translation3d originalTarget, ChassisSpeeds robotVelocityFeildRelative, double angleOfAttackDegrees, Translation3d turretPose) {
 
 
         ArrayList<Translation3d> fuelTrajPoints = new ArrayList<>();
@@ -94,9 +96,9 @@ public class TurretCalculations {
 
 
         // get 6 points from traj withoutRobotVelocity
-        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)){
+        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)) {
             double xyPositionMeters = xyVelocityComponent * t;
-            double zPosisionMeters = (zVelocityComponent*t) - (0.5*9.81*Math.pow(t,2));
+            double zPosisionMeters = (zVelocityComponent*t) - (0.5*g*Math.pow(t,2));
 
             Translation3d fuelPositionFeildRelative = new Translation3d((xyPositionMeters*Math.cos(Units.degreesToRadians(aimerTargetDegrees))), 
                 (xyPositionMeters*Math.sin(Units.degreesToRadians(aimerTargetDegrees))), zPosisionMeters);
@@ -105,9 +107,9 @@ public class TurretCalculations {
         }
 
         // get 6 points from traj withoutRobotVelocity
-        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)){
+        for(double t = 0.0; t<=tImpact; t= t+(tImpact/6.0)) {
             double xyPositionMetersNoRobotVelocity = xyVelocityComponent * t;
-            double zPosisionMeters = (zVelocityComponent*t) - (0.5*9.81*Math.pow(t,2));
+            double zPosisionMeters = (zVelocityComponent*t) - (0.5*g*Math.pow(t,2));
 
             double xPositionWithRobotVelocity = xyPositionMetersNoRobotVelocity*Math.cos(Units.degreesToRadians(aimerTargetDegrees))
                 + robotVelocityFeildRelative.vxMetersPerSecond * t;
@@ -133,8 +135,8 @@ public class TurretCalculations {
 
     public static Translation3d getPassingTargetTranslation(Supplier<Translation2d> robotTranslation) {
 
-        double distanceToLeftTrench = Math.abs(FieldElement.TRENCH_LEFT.getLocation2d().getDistance(robotTranslation.get()));
-        double distanceToRightTrench = Math.abs(FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(robotTranslation.get()));
+        double distanceToLeftTrench = FieldElement.TRENCH_LEFT.getLocation2d().getDistance(robotTranslation.get());
+        double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(robotTranslation.get());
         
         Translation3d target;
 
@@ -154,8 +156,8 @@ public class TurretCalculations {
         return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), Units.inchesToMeters(18.0));
     }
 
-    public static Translation3d getTargetFromEnum(possibeTargets target, Supplier<Translation2d> robotTranslation) {
-        return target == possibeTargets.hub ? getHubShootingTargetTranslation() : getPassingTargetTranslation(robotTranslation);
+    public static Translation3d getTargetFromEnum(PossibeTargets target, Supplier<Translation2d> robotTranslation) {
+        return target == PossibeTargets.HUB ? getHubShootingTargetTranslation() : getPassingTargetTranslation(robotTranslation);
     }
 
     /**
@@ -176,8 +178,8 @@ public class TurretCalculations {
         return MathUtil.clamp((minAngle + (angleRange * (distanceToTargetMeters/maxDistanceMeters))), minAngle, maxAngle);
     }
 
-    public static double getAngleOfAttackFromTargetEnum(possibeTargets target, double distanceToTargetMeters) {
-        if(target == possibeTargets.hub) {
+    public static double getAngleOfAttackFromTargetEnum(PossibeTargets target, double distanceToTargetMeters) {
+        if(target == PossibeTargets.HUB) {
             // hub angle rannge and distance
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
