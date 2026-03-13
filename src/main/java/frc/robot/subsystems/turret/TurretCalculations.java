@@ -184,9 +184,9 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-60.0, -50.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-63.0, -53.0, distanceToTargetMeters, 5.65);
         } else {
-            return getAdjustedAngleOfAttack(-65.0, -57.0, distanceToTargetMeters, 7.5);
+            return getAdjustedAngleOfAttack(-66.0, -58.0, distanceToTargetMeters, 7.5);
         }
     }
     

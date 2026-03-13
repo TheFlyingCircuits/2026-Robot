@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -103,8 +102,8 @@ public class AimAndShoot extends Command {
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.58)-1.37); //*1.33333)-0.666667
-
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.62)-1.385); // * 1.65 too much
+            //*1.58)-1.37 good middle bad from far
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 

@@ -395,7 +395,7 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 5.0) {
+            if (poseObservation.tagToCamMeters() > 5.5) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -505,8 +505,49 @@ public class Drivetrain extends SubsystemBase {
         );
     }
 
+    private double getShiftTeleTimer() {
+        double timeLeftMatch = DriverStation.getMatchTime();
+        if(timeLeftMatch == -1) {
+            timeLeftMatch = 140.0;
+        }
+        double timeLeftShiftProportion;
+        // String gameData = DriverStation.getGameSpecificMessage();
+
+        double shiftTime = 0.0;
+
+        // garbage if statement but im too lazy to clean up and make algorithm
+        if (timeLeftMatch > 130.0) {
+            // transition shift
+            timeLeftShiftProportion = (timeLeftMatch - 130.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 105.0) {
+            // losers shift 1
+            timeLeftShiftProportion = (timeLeftMatch - 105);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 80.0) {
+            // winners shift 1
+            timeLeftShiftProportion = (timeLeftMatch - 80.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 55.0) {
+            // losers shift 2
+            timeLeftShiftProportion = (timeLeftMatch - 55.0);
+            shiftTime = timeLeftShiftProportion;
+        } else if (timeLeftMatch > 30.0) {
+            // winners shift 2
+            timeLeftShiftProportion = (timeLeftMatch - 30.0);
+            shiftTime = timeLeftShiftProportion;
+        } else {
+            // end game
+            shiftTime = timeLeftMatch;
+        }
+
+        return shiftTime;
+    
+    }
+
     @Override
     public void periodic() {
+        Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // Logger.recordOutput("Time Till End", Shift.getSecondsTillEnd());
         setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
