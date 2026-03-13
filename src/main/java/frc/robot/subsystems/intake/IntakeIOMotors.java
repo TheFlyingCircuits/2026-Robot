@@ -55,7 +55,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-       config.CurrentLimits.StatorCurrentLimit = 65;
+       config.CurrentLimits.StatorCurrentLimit = 80;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.36;
@@ -73,7 +73,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-       config.CurrentLimits.StatorCurrentLimit = 65;
+       config.CurrentLimits.StatorCurrentLimit = 80;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.53;
@@ -81,7 +81,7 @@ public class IntakeIOMotors implements IntakeIO{
        config.Slot0.kP = 0.2;//3
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
-       config.Feedback.RotorToSensorRatio = 1.25;
+       config.Feedback.RotorToSensorRatio = 20.0/15.0;
        config.ClosedLoopGeneral.ContinuousWrap = true;
        rollerBottomKraken.applyConfig(config);
     }

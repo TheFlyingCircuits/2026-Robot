@@ -134,11 +134,11 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         new EventTrigger("intakeDown").onTrue(new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand())));
-        new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
+        new EventTrigger("intake").onTrue(new ProxyCommand(intake.inAutoIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
         () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain)
-        .alongWith(intake.intakeDefualtAndIntakeCommand())));
+        .alongWith(intake.inAutoIntakeCommand())));
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
