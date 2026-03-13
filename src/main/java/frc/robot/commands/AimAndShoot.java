@@ -140,6 +140,7 @@ public class AimAndShoot extends Command {
         TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
         this.logPredictedTrajectory();
+        Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", shootingValues[0]);
         
     }
 

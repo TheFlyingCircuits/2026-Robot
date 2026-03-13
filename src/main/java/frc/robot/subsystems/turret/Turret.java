@@ -43,6 +43,7 @@ public class Turret extends SubsystemBase{
         Logger.processInputs("aimerInputs", aimerInputs);
         Logger.processInputs("flywheelsInputs", flywheelsInputs);
         Logger.processInputs("hoodInputs", hoodInputs);
+        Logger.recordOutput("flywheels/avgSurfaceSpeed", this.getAvgFlywheelSurfaceSpeedMetersPerSecond());
     }
 
     public double getHoodAngleDeg() {
