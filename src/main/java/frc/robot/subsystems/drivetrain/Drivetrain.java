@@ -396,7 +396,7 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 6.0) {
+            if (poseObservation.tagToCamMeters() > 5.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -500,11 +500,9 @@ public class Drivetrain extends SubsystemBase {
             desired.getRotation()
         );
     }
-    
 
     @Override
     public void periodic() {
-        System.out.println(DrivetrainConstants.maxAchievableVelocityMetersPerSecond);
         setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
             mod.periodic();

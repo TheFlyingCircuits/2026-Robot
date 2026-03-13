@@ -137,10 +137,10 @@ public class RobotContainer {
         new EventTrigger("intake").onTrue(new ProxyCommand(intake.intakeDefualtAndIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> TurretCalculations.possibeTargets.hub, () -> false, true, drivetrain)
+        () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
-        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> true, () -> true)
+        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true)
         .alongWith(intake.intakeDefualtAndIntakeCommand())));
 
         trustCamerasTimer = new Timer();
@@ -151,10 +151,10 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.rightStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
-        duncanController.leftStick().onTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.passing, () -> false, () -> true));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> TurretCalculations.currentTarget, () -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
 
         // duncanController.rightBumper().whileTrue(turret.setAimerAmpsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("aimerAmps", 0.0)));
 
@@ -234,15 +234,15 @@ public class RobotContainer {
         return () -> DriverStation.isAutonomous();
     }
 
-    private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
+    private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, needsReqs.get(), drivetrain);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain);
     }
 
-    private Command aimAndShootManual(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot,
+    private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
     Supplier<Translation3d> manualTurretPose) {
         return new AimAndShoot(turret, indexer, manualTurretPose, 
-        () -> drivetrain.getFieldOrientedVelocity(), target, driverReadyToShoot, true, drivetrain);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain);
     }
 
     // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
@@ -340,7 +340,7 @@ public Command getAutonomousCommand() {
             new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(3),
-            new ProxyCommand(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
+            new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath))
         );
     } catch (Exception e) {

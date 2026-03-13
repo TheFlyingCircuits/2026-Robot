@@ -6,6 +6,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -35,12 +37,12 @@ public class AimAndShoot extends Command {
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<TurretCalculations.possibeTargets> shootingTarget, Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain) {
+    Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain) {
         this.turret=turret;
         this.indexer=indexer;
         this.turretTranlsation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
-        this.shootingTarget=shootingTarget;
+        // this.shootingTarget=shootingTarget;
         this.driverReadyToShoot=driverReadyToShoot;
         this.drivetrain=drivetrain;
         // this.angleOfAttack=angleOfAttack;
@@ -57,11 +59,23 @@ public class AimAndShoot extends Command {
         loopCounter = 0;
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
-        TurretCalculations.currentTarget = shootingTarget.get();
+        // TurretCalculations.currentTarget = shootingTarget.get();
     }
 
     @Override
     public void execute() {
+        if(DriverStation.getAlliance().isPresent()) {
+            // target if blue
+            if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                shootingTarget = (turretTranlsation.get().getX() < FieldElement.HUB.getLocation2d().getX()) ?
+                    () -> TurretCalculations.possibeTargets.hub : () -> TurretCalculations.possibeTargets.passing;
+            } else {
+            // target if red
+                shootingTarget = (turretTranlsation.get().getX() > FieldElement.HUB.getLocation2d().getX()) ?
+                    () -> TurretCalculations.possibeTargets.hub : () -> TurretCalculations.possibeTargets.passing;
+
+            }
+        }
         // reset odometry on loop interval
         if(isTrustingVisionOnInterval) {
             if(loopCounter>30) {
