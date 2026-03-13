@@ -45,7 +45,6 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldConstants;
 import frc.robot.PlayingField.FieldElement;
-import frc.robot.subsystems.vision.ColorCamera;
 import frc.robot.subsystems.vision.SingleTagCam;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
 
@@ -508,6 +507,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Logger.recordOutput("Time Till End", Shift.getSecondsTillEnd());
         setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
             mod.periodic();

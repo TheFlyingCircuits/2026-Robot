@@ -28,7 +28,7 @@ public class AimerIOKraken implements AimerIO{
     private double ksForConstantForceSpring = 1.0;
     private double ksForConstantForceSpringAmps = 20.0;
 
-    private double turretMaxOneSideDeg = 190;// TODO: get real
+    private double turretMaxOneSideDeg = 210;// TODO: get real
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);

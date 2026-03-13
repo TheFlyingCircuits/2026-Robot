@@ -115,13 +115,13 @@
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 3.85,
+      "waypointRelativePos": 3.7190876350540236,
       "endWaypointRelativePos": 4.0,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.1,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 150.0,

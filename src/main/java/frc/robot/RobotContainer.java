@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.MeasureWheelDiameter;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -172,15 +171,17 @@ public class RobotContainer {
 
         duncanController.a().whileTrue(intake.intakeDownCommand());
 
-        duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->4.0));
-        duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-4.0));
+        duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
+        duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
+        duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
+        duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
         // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
         // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
         // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
 
-        // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
+        duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
 
         // duncanController.rightBumper().whileTrue(turret.setAllVoltsCommand(
         // ()-> FlyingCircuitUtils.getNumberFromDashboard("aimerVolts", 0.0),
@@ -349,7 +350,8 @@ public class RobotContainer {
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(3),
             new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
-            new ProxyCommand(AutoBuilder.followPath(secondPath))
+            new ProxyCommand(AutoBuilder.followPath(secondPath)),
+            Commands.waitSeconds(5)
         );
     } catch (Exception e) {
         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());

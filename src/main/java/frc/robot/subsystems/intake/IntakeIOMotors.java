@@ -54,7 +54,7 @@ public class IntakeIOMotors implements IntakeIO{
     private void configRollerTopKraken() {
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+       config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
        config.CurrentLimits.StatorCurrentLimit = 65;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -72,7 +72,7 @@ public class IntakeIOMotors implements IntakeIO{
     private void configRollerBottomKraken() {
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-       config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+       config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
        config.CurrentLimits.StatorCurrentLimit = 65;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
