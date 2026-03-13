@@ -53,6 +53,10 @@ public class Turret extends SubsystemBase{
         return aimerInputs.aimerPositionDegrees;
     }
 
+    public double getAvgFlywheelSurfaceSpeedMetersPerSecond() {
+        return (flywheelsInputs.frontWheelVelocityMPS + flywheelsInputs.hoodWheelVelocityMPS) / 2.0;
+    }
+
     public void aimAtTarget(double targetAngleDegreesRobotToTarget) {
         Logger.recordOutput("aimerInputs/targetAngleDegreesRobotVector", targetAngleDegreesRobotToTarget);
         aimer.setTargetAimerPosition(targetAngleDegreesRobotToTarget);

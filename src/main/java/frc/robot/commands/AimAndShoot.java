@@ -4,9 +4,14 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.AdvantageScopeDrawingUtils;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -134,12 +139,34 @@ public class AimAndShoot extends Command {
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
         TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
+        this.logPredictedTrajectory();
         
     }
 
     @Override
     public void end(boolean interrupted) {
+        AdvantageScopeDrawingUtils.eraseDrawing("predictedShot/withoutRobotVelocity");
+        AdvantageScopeDrawingUtils.eraseDrawing("predictedShot/withRobotVelocity");
+    }
 
+    private void logPredictedTrajectory() {
+        Translation3d initialPosition = turretTranslation.get();
+
+        Rotation2d turretYaw_robotCoords = Rotation2d.fromDegrees(turret.getAimerAngleDeg_robotCoords());
+        Rotation2d turretYaw_fieldCoords = turretYaw_robotCoords.plus(drivetrain.getPoseMeters().getRotation());
+        
+        // wpilib pitch convention is: positive angles <-> looking down.
+        double turretPitchRadians = -Units.degreesToRadians(turret.getHoodAngleDeg());
+
+        Rotation3d turretOrientation = new Rotation3d(0, turretPitchRadians, turretYaw_fieldCoords.getRadians());
+
+        Translation3d estimatedExitVelocity = new Translation3d(turret.getAvgFlywheelSurfaceSpeedMetersPerSecond(), 0, 0).rotateBy(turretOrientation);
+
+        AdvantageScopeDrawingUtils.drawProjectileMotion("predictedShot/withoutRobotVelocity", initialPosition, estimatedExitVelocity);
+        
+        Translation3d robotVelocity = new Translation3d(drivetrain.getFieldOrientedVelocity().vxMetersPerSecond, drivetrain.getFieldOrientedVelocity().vyMetersPerSecond, 0);
+        estimatedExitVelocity = estimatedExitVelocity.plus(robotVelocity);
+        AdvantageScopeDrawingUtils.drawProjectileMotion("predictedShot/withRobotVelocity", initialPosition, robotVelocity);
     }
     
     
