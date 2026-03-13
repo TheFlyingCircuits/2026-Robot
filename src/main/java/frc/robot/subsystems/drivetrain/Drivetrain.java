@@ -401,6 +401,13 @@ public class Drivetrain extends SubsystemBase {
                 continue;
             }
 
+            // reject pose observations that claim the robot
+            // is in the air or beneath the floor
+            if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
+                rejectedTags.add(poseObservation.getTagPose());
+                continue;
+            }
+
             // reject tags that are too ambiguous
             if (poseObservation.ambiguity() > 0.3) {
                 rejectedTags.add(poseObservation.getTagPose());
@@ -416,8 +423,6 @@ public class Drivetrain extends SubsystemBase {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
-
-            // setFocus(FieldElement.HUB);
 
             // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
             if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed()))) {
