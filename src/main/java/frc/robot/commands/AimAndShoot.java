@@ -166,7 +166,7 @@ public class AimAndShoot extends Command {
         
         Translation3d robotVelocity = new Translation3d(drivetrain.getFieldOrientedVelocity().vxMetersPerSecond, drivetrain.getFieldOrientedVelocity().vyMetersPerSecond, 0);
         estimatedExitVelocity = estimatedExitVelocity.plus(robotVelocity);
-        AdvantageScopeDrawingUtils.drawProjectileMotion("predictedShot/withRobotVelocity", initialPosition, robotVelocity);
+        AdvantageScopeDrawingUtils.drawProjectileMotion("predictedShot/withRobotVelocity", initialPosition, estimatedExitVelocity);
     }
     
     
