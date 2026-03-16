@@ -22,14 +22,14 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     private double targetFrontWheelMPSLocal = 0.0;
     private double targetHoodWheelMPSLocal = 0.0;
 
-    private double bangBangControllerVolts = 11.0;
-    private double bangBangControllerDeadzoneMPS = 0.1;
-    private boolean runningBangBangController = false;
+    // private double bangBangControllerVolts = 11.0;
+    // private double bangBangControllerDeadzoneMPS = 0.1;
+    private boolean runningBangBangController = true;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
 
-    private VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(1)
+    private VelocityVoltage bangBangVoltage = new VelocityVoltage(0.0).withSlot(1)
         .withUpdateFreqHz(0.0).withEnableFOC(true);
 
     public FlywheelsIOKraken() { 
@@ -56,6 +56,12 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.0; // voltage to get over static friction
         config.Slot1.kV = 0.0; // volts per rps
+        config.Slot1.kP = 99999999.0;
+
+        if(runningBangBangController) {
+            config.MotorOutput.PeakReverseDutyCycle = 0.0;
+            config.MotorOutput.PeakForwardDutyCycle = 0.9;
+        }
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
@@ -85,6 +91,15 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.0; // voltage to get over static friction
         config.Slot1.kV = 0.0; // volts per rps
+        config.Slot1.kP = 99999999.0;
+
+        if(runningBangBangController) {
+            // config.MotorOutput.PeakReverseDutyCycle = 0.0;
+            // config.MotorOutput.PeakForwardDutyCycle = 0.9;
+            config.Voltage.PeakForwardVoltage = 11.0;
+            config.Voltage.PeakReverseVoltage = 0.0;
+            // config.Voltage.SupplyVoltageTimeConstant
+        }
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
@@ -146,13 +161,15 @@ public class FlywheelsIOKraken implements FlywheelsIO {
             // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
             frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
         } else {
-            if(0.0 < (targetVelocityRPS - frontWheelKraken.getVelocity().getValueAsDouble())) {
-                frontWheelKraken.setVoltage(bangBangControllerVolts);
-                frontWheelKrakenFollower.setVoltage(bangBangControllerVolts);
-            } else {
-                frontWheelKraken.setVoltage(0.0);
-                frontWheelKrakenFollower.setVoltage(0.0);
-            }
+            frontWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            frontWheelKrakenFollower.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            // if(0.0 < (targetVelocityRPS - frontWheelKraken.getVelocity().getValueAsDouble())) {
+            //     frontWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            //     frontWheelKrakenFollower.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            // } else {
+            //     frontWheelKraken.setVoltage(0.0);
+            //     frontWheelKrakenFollower.setVoltage(0.0);
+            // }
             // // if error is above deadzone apply bang bang controller voltage
             // if(bangBangControllerDeadzoneMPS < Math.abs(targetFrontWheelMPSLocal - 
             //     frontWheelKraken.getVelocity().getValueAsDouble()* (Math.PI*TurretConstants.mainFlywheelDiameterMeters))) {
@@ -173,11 +190,12 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         if(!(runningBangBangController)) {
             hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
         } else {
-            if(0.0 < (targetVelocityRPS - hoodWheelKraken.getVelocity().getValueAsDouble())) {
-                hoodWheelKraken.setVoltage(bangBangControllerVolts);
-            } else {
-                hoodWheelKraken.setVoltage(0.0);
-            }
+            hoodWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            // if(0.0 < (targetVelocityRPS - hoodWheelKraken.getVelocity().getValueAsDouble())) {
+            //     hoodWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            // } else {
+            //     hoodWheelKraken.setVoltage(0.0);
+            // }
             // // if error is above deadzone apply bang bang controller voltage
             // if(bangBangControllerDeadzoneMPS < Math.abs(targetFrontWheelMPSLocal - 
             //     hoodWheelKraken.getVelocity().getValueAsDouble()* (Math.PI*TurretConstants.hoodFlywheelDiameterMeters))) {

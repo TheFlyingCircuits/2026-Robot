@@ -153,13 +153,8 @@ public class RobotContainer {
 
         duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
 
-        // duncanController.rightBumper().whileTrue(turret.setAimerAmpsCommand(() -> FlyingCircuitUtils.getNumberFromDashboard("aimerAmps", 0.0)));
-
-        // duncanController.rightBumper().whileTrue(aimAndShootManual(() -> TurretCalculations.currentTarget, () -> true, () -> TurretCalculations.getTurretTranslation(new Translation2d(14.028,4.093))).alongWith(intake.intakeDefualtAndIntakeCommand()))
-        // .onFalse(aimAndShoot(() -> TurretCalculations.currentTarget, () -> false, () -> true));
-
-        // duncanController.leftBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
-        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand());
+        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand()
+            .alongWith(aimAndShoot(() -> false, () -> true)));// also aims
 
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
@@ -176,48 +171,9 @@ public class RobotContainer {
         duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
         duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
-        // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, 
-        // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
-
         duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
 
-        // duncanController.rightBumper().whileTrue(turret.setAllVoltsCommand(
-        // ()-> FlyingCircuitUtils.getNumberFromDashboard("aimerVolts", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodVolts", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("mainWheelVolts", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodWheelVolts", 0.0)))
-        // .whileFalse(
-        // turret.setAllVoltsCommand(()-> 0.0, ()-> 0.0, ()-> 0.0, ()-> 0.0)
-        // );  
-
-        // duncanController.rightBumper().whileTrue(turret.setWheelsAmpsCommand(
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("mainWheelAmps", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("hoodWheelAmps", 0.0)))
-        // .whileFalse(
-        // turret.setWheelsAmpsCommand(()-> 0.0, ()-> 0.0)
-        // );  
-
-
-        // duncanController.rightBumper().whileTrue(turret.aimAtTargetAndShootCommand(
-        // ()-> FlyingCircuitUtils.getNumberFromDashboard("targetAimerDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetHoodDeg", 0.0),
-        // ()->FlyingCircuitUtils.getNumberFromDashboard("targetMainWheelMPS", 0.0)));
-
-        // duncanController.rightBumper().whileTrue(intake.intakeDefualtAndIntakeCommand());
-
-        // duncanController.leftTrigger().whileTrue(intake.intakeUpCommand());
-
-        // duncanController.rightTrigger().whileTrue(intake.intakeDownCommand());
-
-        
-
     }
-
-    // public Command normalAuto() {
-    //     return new SequentialCommandGroup(AutoBuilder.followPath(PathPlannerPath.fromPathFile("a")).alongWith(AimAndShoot).until());
-    // }
 
     public void setDefaultCommands() {
         drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
