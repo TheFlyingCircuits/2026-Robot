@@ -64,11 +64,11 @@ public class Kraken extends TalonFX {
             System.out.println("u gotta set something for TalonFXConfiguration.CurrentLimits.StatorCurrentLimit");
             Timer.delay(5);
         }
-        while (!currentLimitEnabled) {
-            System.out.println("bruh, u forgot to enable the current limit for "+name);
-            System.out.println("u gotta explicitly set TalonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable to true");
-            Timer.delay(5);
-        }
+        // while (!currentLimitEnabled) {
+        //     System.out.println("bruh, u forgot to enable the current limit for "+name);
+        //     System.out.println("u gotta explicitly set TalonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable to true");
+        //     Timer.delay(5);
+        // }
 
         /** Print a warning if you're running a test and don't want a current limit to interfere. */
         if (statorCurrentLimit >= 100) { 

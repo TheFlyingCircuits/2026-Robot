@@ -32,7 +32,7 @@ public class AimAndShoot extends Command {
     private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.35, 0.35};
+    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.1, 0.1};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     

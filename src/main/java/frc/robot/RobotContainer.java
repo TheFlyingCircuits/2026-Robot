@@ -114,10 +114,10 @@ public class RobotContainer {
 
         drivetrain.setFocus(FieldElement.HUB);
 
-        FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("targetMainWheelMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("aimerAmps", 0.0);
+        // FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
+        // FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("mainVolts", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("hoodWVolts", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -148,6 +148,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        duncanController.a().whileTrue(turret.setAllVoltsCommand(()->0.0, ()->0.0, ()->FlyingCircuitUtils.getNumberFromDashboard("mainVolts", 0.0),()->FlyingCircuitUtils.getNumberFromDashboard("hoodWVolts", 0.0)));
+
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
 
@@ -164,8 +166,7 @@ public class RobotContainer {
             CommandScheduler.getInstance().cancelAll();
         }));
 
-        duncanController.a().whileTrue(intake.intakeDownCommand());
-
+        // duncanController.a().whileTrue(intake.intakeDownCommand());
         duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
         duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
         duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
