@@ -50,6 +50,9 @@ public class AimAndShoot extends Command {
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
 
+        drivetrain.allowTeleportsNextPoseUpdate();
+        drivetrain.fullyTrustVisionNextPoseUpdate();
+
         addRequirements(turret, indexer);
     }
 
@@ -57,6 +60,8 @@ public class AimAndShoot extends Command {
     public void initialize() {
         isShooting = false;
         drivetrain.setFocus(FieldElement.HUB);
+        drivetrain.allowTeleportsNextPoseUpdate();
+        drivetrain.fullyTrustVisionNextPoseUpdate();
         // TurretCalculations.currentTarget = shootingTarget.get();
     }
 

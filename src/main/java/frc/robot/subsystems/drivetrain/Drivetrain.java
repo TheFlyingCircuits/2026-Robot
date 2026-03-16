@@ -48,6 +48,8 @@ import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.vision.SingleTagCam;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
 
+import frc.robot.PlayingField.Shift;
+
 public class Drivetrain extends SubsystemBase {
     private GyroIO gyroIO;
     private GyroIOInputsAutoLogged gyroInputs;
@@ -78,6 +80,8 @@ public class Drivetrain extends SubsystemBase {
 
     private final SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
+
+    private double shiftTime = 0;
  
     public Drivetrain(
         GyroIO gyroIO, 
@@ -395,20 +399,20 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 5.5) {
+            if (poseObservation.tagToCamMeters() > 6.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
 
             // reject pose observations that claim the robot
             // is in the air or beneath the floor
-            if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
-                rejectedTags.add(poseObservation.getTagPose());
-                continue;
-            }
+            // if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
+            //     rejectedTags.add(poseObservation.getTagPose());
+            //     continue;
+            // }
 
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.3) {
+            if (poseObservation.ambiguity() > 0.4) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
@@ -568,6 +572,22 @@ public class Drivetrain extends SubsystemBase {
 
         Logger.recordOutput("drivetrain/swerveModuleStates", getModuleStates());
         Logger.recordOutput("drivetrain/swerveModulePositions", getModulePositions());
+
+        if(Shift.TRANSITION_SHIFT.isHappeningNow()) {
+            shiftTime = Shift.TRANSITION_SHIFT.getSecondsTillEnd();
+        } else  if(Shift.SHIFT_1.isHappeningNow()) {
+            shiftTime = Shift.SHIFT_1.getSecondsTillEnd();
+        } else if(Shift.SHIFT_2.isHappeningNow()) {
+            shiftTime = Shift.SHIFT_2.getSecondsTillEnd();
+        } else if(Shift.SHIFT_3.isHappeningNow()) {
+            shiftTime = Shift.SHIFT_3.getSecondsTillEnd();
+        } else if(Shift.SHIFT_4.isHappeningNow()) {
+            shiftTime = Shift.SHIFT_4.getSecondsTillEnd();
+        } else if(Shift.END_GAME.isHappeningNow()) {
+            shiftTime = Shift.END_GAME.getSecondsTillEnd();
+        }
+
+        Logger.recordOutput("drivetrain/ShiftTime", shiftTime);
 
         // this.compareCamPoses();
     }

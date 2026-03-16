@@ -37,8 +37,8 @@ public class Intake extends SubsystemBase {
 
     public void inAutoIntake() {
         intakeDefault();
-        io.setTargetRollerBottomVelocity(47.5);
-        io.setTargetRollerTopVelocity(47.5);
+        io.setTargetRollerBottomVelocity(40.0);
+        io.setTargetRollerTopVelocity(40.0);
     }
 
     public void intakeRollersStop() {
@@ -47,12 +47,12 @@ public class Intake extends SubsystemBase {
     }
 
     public void reverseIntake() {
-        io.setTargetRollerBottomVelocity(-45.0);
-        io.setTargetRollerTopVelocity(-45.0);
+        io.setTargetRollerBottomVelocity(-40.0);
+        io.setTargetRollerTopVelocity(-40.0);
     }
 
     public void intakeDown() {
-        reverseIntake();
+        // reverseIntake();
         if(inputs.intakePositionDegrees > 15.0) {
             isIntakeDown = false;
             io.setIntakeVolts(-8.0);
