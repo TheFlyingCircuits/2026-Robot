@@ -20,7 +20,7 @@ public class HoodIOKraken implements HoodIO{
     private double hoodFeedForwardGravity = -0.57;
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(1000.0);
 
     private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(1)
     .withUpdateFreqHz(0.0);

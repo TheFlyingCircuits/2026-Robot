@@ -112,12 +112,12 @@ public class RobotContainer {
         // canLeds = new LedsCANdle(0, 60);
         // canLedsCounter = new LedsCANdle(1, 60);
 
-        drivetrain.setFocus(FieldElement.HUB);
+        // drivetrain.setFocus(FieldElement.HUB);
 
-        // FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
-        // FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("mainVolts", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("hoodWVolts", 0.0);
+        // // FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
+        // // FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
+        // FlyingCircuitUtils.putNumberOnDashboard("mainVolts", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("kickerVolts", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -148,7 +148,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.a().whileTrue(turret.setAllVoltsCommand(()->0.0, ()->0.0, ()->FlyingCircuitUtils.getNumberFromDashboard("mainVolts", 0.0),()->FlyingCircuitUtils.getNumberFromDashboard("hoodWVolts", 0.0)));
+        duncanController.a().whileTrue(indexer.kickerVolts(()->FlyingCircuitUtils.getNumberFromDashboard("kickerVolts", 0.0)));
 
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));

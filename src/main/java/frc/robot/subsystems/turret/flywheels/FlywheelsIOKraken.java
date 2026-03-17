@@ -24,13 +24,13 @@ public class FlywheelsIOKraken implements FlywheelsIO {
 
     // private double bangBangControllerVolts = 11.0;
     // private double bangBangControllerDeadzoneMPS = 0.1;
-    private boolean runningBangBangController = true;
+    private boolean runningBangBangController = false;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
         .withUpdateFreqHz(0.0);
 
     private VelocityVoltage bangBangVoltage = new VelocityVoltage(0.0).withSlot(1)
-        .withEnableFOC(true);
+        .withEnableFOC(true).withUpdateFreqHz(0.0);
 
     public FlywheelsIOKraken() { 
         frontWheelKraken = new Kraken(TurretConstants.frontWheelKrakenID, UniversalConstants.canivoreName);
@@ -45,8 +45,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        // config.CurrentLimits.StatorCurrentLimit = 100;
-        config.CurrentLimits.StatorCurrentLimitEnable = false;
+        config.CurrentLimits.StatorCurrentLimit = 200;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 4.2; // 4.0 amps to get over friction
         config.Slot0.kP = 4.7; // 8 amps per erreor of 1 rps
@@ -54,12 +54,12 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.Slot0.kV = 0.01;
 
         // for bang-bang controller in volts
-        config.Slot1.kS = 0.0; // voltage to get over static friction
-        config.Slot1.kV = 0.0; // volts per rps
+        config.Slot1.kS = 0.260623; // voltage to get over static friction
+        config.Slot1.kV = 0.121846; // volts per rps
         config.Slot1.kP = 99999999.0;
 
         if(runningBangBangController) {
-            config.Voltage.PeakForwardVoltage = 24.0;
+            config.Voltage.PeakForwardVoltage = 11.0;
             config.Voltage.PeakReverseVoltage = 0.0;
         }
 
@@ -79,8 +79,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        // config.CurrentLimits.StatorCurrentLimit = 100;
-        config.CurrentLimits.StatorCurrentLimitEnable = false;
+        config.CurrentLimits.StatorCurrentLimit = 200;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 5.3; // 5.0 amps to get over friction
         config.Slot0.kP = 11.3; // 8 amps per erreor of 1 rps
@@ -88,12 +88,12 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.Slot0.kV = 0.01;
 
         // for bang-bang controller in volts
-        config.Slot1.kS = 0.0; // voltage to get over static friction
-        config.Slot1.kV = 0.0; // volts per rps
+        config.Slot1.kS = 0.297372; // voltage to get over static friction
+        config.Slot1.kV = 0.11847; // volts per rps
         config.Slot1.kP = 99999999.0;
 
         if(runningBangBangController) {
-            config.Voltage.PeakForwardVoltage = 24.0;
+            config.Voltage.PeakForwardVoltage = 11.0;
             config.Voltage.PeakReverseVoltage = 0.0;
             // config.Voltage.SupplyVoltageTimeConstant
         }

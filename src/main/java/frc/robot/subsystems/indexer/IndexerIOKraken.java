@@ -3,6 +3,7 @@ package frc.robot.subsystems.indexer;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -14,6 +15,9 @@ import frc.robot.VendorWrappers.Kraken;
 public class IndexerIOKraken implements IndexerIO {
 
     private VelocityTorqueCurrentFOC velTorqueFOCRequest = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
+        .withUpdateFreqHz(0.0);
+
+    private VelocityVoltage velVoltage = new VelocityVoltage(0.0).withSlot(1)
         .withUpdateFreqHz(0.0);
 
     private Kraken bigSpinnerKraken;
@@ -52,7 +56,6 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.bigSpinnerGearRatio;
-        config.ClosedLoopGeneral.ContinuousWrap = true;
         bigSpinnerKraken.applyConfig(config);
     }
 
@@ -74,7 +77,6 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.sideKickerGearRatio;
-        config.ClosedLoopGeneral.ContinuousWrap = true;
         sideKickerKraken.applyConfig(config);
     }
 
@@ -82,7 +84,7 @@ public class IndexerIOKraken implements IndexerIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 9.3;
@@ -90,13 +92,19 @@ public class IndexerIOKraken implements IndexerIO {
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 80;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -80;
-        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
+        config.Slot1.kS = 0.80861;
+        config.Slot1.kV = 0.086685;
+        config.Slot1.kP = 0.1;
+
+        config.Voltage.PeakForwardVoltage = 11.0;
+        config.Voltage.PeakReverseVoltage = 0.0;
+
+        // config.TorqueCurrent.PeakForwardTorqueCurrent = 80;
+        // config.TorqueCurrent.PeakReverseTorqueCurrent = -80;
+        // config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = IndexerConstants.kickerGearRatio;
-        config.ClosedLoopGeneral.ContinuousWrap = true;
         kickerKraken.applyConfig(config);
     }
 

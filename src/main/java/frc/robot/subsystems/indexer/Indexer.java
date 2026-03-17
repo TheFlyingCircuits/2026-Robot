@@ -1,9 +1,13 @@
 package frc.robot.subsystems.indexer;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IndexerConstants;
 
 public class Indexer extends SubsystemBase {
 
@@ -28,23 +32,29 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setAllTargetVolts(double kickerVolts, double sideKickerVolts, double bigSpinnerVolts) {
-        indexerIO.setBigSpinnerVolts(kickerVolts);
-        indexerIO.setBigSpinnerVolts(sideKickerVolts);
+        indexerIO.setKickerVolts(kickerVolts);
+        indexerIO.setSideKickerVolts(sideKickerVolts);
         indexerIO.setBigSpinnerVolts(bigSpinnerVolts);
     }
 
-    public void setAllTargetVelocity(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
+    public void setAllTargetVelocity(double kickerVelMPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
+        double kickerVelRPS = (1.0/IndexerConstants.kickerGearRatio)*kickerVelMPS
+            /(Math.PI*Units.inchesToMeters(2.0));
         indexerIO.setTargetKickerVelocity(kickerVelRPS);
         indexerIO.setTargetSideKickerVelocity(sideKickerVelRPS);
         indexerIO.setTargetBigSpinnerVelocity(bigSpinnerVelRPS);
     }
 
     public void indexFuel() {
-        setAllTargetVelocity(45.0,45.0,2.5);
+        setAllTargetVelocity(6.0,45.0,2.5);
+    }
+    
+    public void shootFuel(double targetKickerMPS) {
+        setAllTargetVelocity(targetKickerMPS,45.0,2.5);
     }
 
     public void reverseIndexer() {
-        setAllTargetVelocity(-45.0,-45.0,-2.5);
+        setAllTargetVelocity(-5.0,-45.0,-2.5);
     }
 
     public void stopIndexing() {
@@ -55,6 +65,9 @@ public class Indexer extends SubsystemBase {
         return(this.run(() -> setAllTargetVelocity(kickerVelRPS, sideKickerVelRPS, bigSpinnerVelRPS)));
     }
 
+    public Command kickerVolts(Supplier<Double> volts) {
+        return this.run(() -> setAllTargetVolts(volts.get(), 0.0, 0.0));
+    }
 
     // EDIT THIS FOR DIFFERENT INDEXER SPEEDS
     public Command indexFuelCommand() {

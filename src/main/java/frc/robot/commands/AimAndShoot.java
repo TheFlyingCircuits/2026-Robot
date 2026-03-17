@@ -107,14 +107,14 @@ public class AimAndShoot extends Command {
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0])); // * 1.65 too much
-            //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.58)-1.37); // * 1.65 too much *1.61)-1.385 woked good
+            //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
             // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
             if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
-                indexer.indexFuel();
+                indexer.shootFuel(shootingValues[0]*0.7);
                 isShooting = true;
             } else {
                 // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
