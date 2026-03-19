@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -117,7 +118,8 @@ public class RobotContainer {
         // // FlyingCircuitUtils.putNumberOnDashboard("targetAimerDeg", 0.0);
         // // FlyingCircuitUtils.putNumberOnDashboard("targetHoodDeg", 0.0);
         // FlyingCircuitUtils.putNumberOnDashboard("mainVolts", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("kickerVolts", 0.0);
+        // FlyingCircuitUtils.putNumberOnDashboard("frontWheelVolts", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("targetMPS", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -148,15 +150,20 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.a().whileTrue(indexer.kickerVolts(()->FlyingCircuitUtils.getNumberFromDashboard("kickerVolts", 0.0)));
+        duncanController.a().whileTrue(turret.setWheelsAmpsCommand(
+        ()->FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0),
+        ()->FlyingCircuitUtils.getNumberFromDashboard("hoodWheelVolts", 0.0)));
 
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true));//.alongWith(intake.intakeDefualtAndIntakeCommand()));
 
-        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand()
-            .alongWith(aimAndShoot(() -> false, () -> true)));// also aims
+        // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
+        // , () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0)));
+
+        // duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand()
+        //     .alongWith(aimAndShoot(() -> false, () -> true)));// also aims
 
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
@@ -264,8 +271,20 @@ public class RobotContainer {
     // AUTOS -------------------------------------------------------------------------------
 
     public Command getAutonomousCommand() {
-        return trenchAutos();
+        return passingLeftAuto();
         // return trenchAutos();
+    }
+
+    private Command passingLeftAuto() {
+        try {
+            PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Passing Left");
+            return new SequentialCommandGroup(
+            new ProxyCommand(AutoBuilder.followPath(firstPath)),
+            Commands.waitSeconds(6));
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
     }
 
     private Command trenchAutos() {

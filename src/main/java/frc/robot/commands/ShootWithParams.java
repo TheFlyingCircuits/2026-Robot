@@ -19,7 +19,7 @@ public class ShootWithParams extends Command {
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
     // private double[] notShootingTolerances = new double[] {5.0, 5.0, 1.0, 1.0};
-    private double[] notShootingTolerances = new double[] {2.0, 1.0, 0.5, 0.5};
+    private double[] notShootingTolerances = new double[] {2.0, 1.0, 0.12, 0.12};
     // private double[] whileShootingTolerances = new double[] {5.0, 5.0, 4.0, 4.0};
     private double[] whileShootingTolerances = new double[] {10.0, 5.0, 6.0, 6.0};
 
@@ -57,7 +57,7 @@ public class ShootWithParams extends Command {
 
         // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
         if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
-            indexer.indexFuel();
+            indexer.shootFuel(targetShotMetersPerSecond.get());
             isShooting = true;
         } else {
             // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting

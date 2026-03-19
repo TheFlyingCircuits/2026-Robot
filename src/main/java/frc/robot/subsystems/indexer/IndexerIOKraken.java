@@ -84,7 +84,7 @@ public class IndexerIOKraken implements IndexerIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimit = 120;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 9.3;
@@ -93,8 +93,8 @@ public class IndexerIOKraken implements IndexerIO {
         config.Slot0.kV = 0.0;
 
         config.Slot1.kS = 0.80861;
-        config.Slot1.kV = 0.086685;
-        config.Slot1.kP = 0.1;
+        config.Slot1.kV = 0.17337;
+        config.Slot1.kP = 99999999.1;
 
         config.Voltage.PeakForwardVoltage = 11.0;
         config.Voltage.PeakReverseVoltage = 0.0;
@@ -171,6 +171,6 @@ public class IndexerIOKraken implements IndexerIO {
     @Override
     public void setTargetKickerVelocity(double targetVelocityRPS) {
         kickerTargetRPSLocal = targetVelocityRPS;
-        kickerKraken.setControl(velTorqueFOCRequest.withVelocity(targetVelocityRPS));
+        kickerKraken.setControl(velVoltage.withVelocity(targetVelocityRPS));
     }
 }

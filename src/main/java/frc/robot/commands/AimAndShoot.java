@@ -32,7 +32,7 @@ public class AimAndShoot extends Command {
     private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.1, 0.1};
+    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.2, 0.2};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
@@ -65,13 +65,23 @@ public class AimAndShoot extends Command {
         // TurretCalculations.currentTarget = shootingTarget.get();
     }
 
+    private double getConvertedVelocity(double requestedOutputVelocityMPS) {
+        // the velocity conversion factor (VCF) is y=1.34022x-2.08217 if linear
+        // and y=0.850355 * x^{1.38127} if power regression 
+        // https://www.desmos.com/calculator/vjiv7dbdtf
+        // double wheelVelocityTarget = (1.88108*requestedOutputVelocityMPS)-1.7475;
+        // double wheelVelocityTarget = (1.24016*requestedOutputVelocityMPS) -2.22636;
+        double wheelVelocityTarget = requestedOutputVelocityMPS * 1.86 - 5.7;
+        return wheelVelocityTarget;
+    }
+
     private void updateShootingTarget() {
 
         // field origin is always blue
         // Default to shooting at hub if we can't
         // tell what alliance we're on for whatever reason.
         boolean shouldTargetHub_blue = turretTranslation.get().getX() < FieldElement.HUB.getLocation().getX();
-        boolean shouldTargetHub_red = turretTranslation.get().getX() > FieldElement.HUB.getLocation().getX();
+        boolean shouldTargetHub_red = !shouldTargetHub_blue;
         boolean shouldTargetHub = FlyingCircuitUtils.getAllianceDependentValue(shouldTargetHub_red, shouldTargetHub_blue, true);
 
         if (shouldTargetHub) {
@@ -97,6 +107,8 @@ public class AimAndShoot extends Command {
         // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
         double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(targetMovmentCompensated, 
             angleOfAttack, turretTranslation.get());
+        
+        double vcfWheelMPS = getConvertedVelocity(shootingValues[0]);
 
         // this is the angle that out robot would need to point to aim at the target
         double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranslation.get().toTranslation2d());
@@ -107,14 +119,17 @@ public class AimAndShoot extends Command {
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], (shootingValues[0]*1.58)-1.37); // * 1.65 too much *1.61)-1.385 woked good
-            //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot
+
+            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], vcfWheelMPS); // * 1.65 too much *1.61)-1.385 woked good
+            //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot *1.58)-1.37
+
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
             // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
             if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
-                indexer.shootFuel(shootingValues[0]*0.7);
+                // indexer.shootFuel(shootingValues[0]*0.7);
+                indexer.shootFuel(shootingValues[0]);
                 isShooting = true;
             } else {
                 // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
