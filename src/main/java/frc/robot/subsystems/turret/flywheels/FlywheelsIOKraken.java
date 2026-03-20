@@ -59,7 +59,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.268738; // voltage to get over static friction
         config.Slot1.kV = 0.119992; // volts per rps
-        config.Slot1.kP = 99999999.0;
+        // config.Slot1.kP = 99999999.0;
 
         // current bang bang 
         config.Slot2.kS = 4.0;
@@ -97,7 +97,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.292215; // voltage to get over static friction
         config.Slot1.kV = 0.121075; // volts per rps
-        config.Slot1.kP = 99999999.0;
+        // config.Slot1.kP = 99999999.0;
 
         // current bang bang 
         config.Slot2.kS = 3.6;

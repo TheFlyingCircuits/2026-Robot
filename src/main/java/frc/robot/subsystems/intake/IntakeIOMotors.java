@@ -58,13 +58,13 @@ public class IntakeIOMotors implements IntakeIO{
        config.CurrentLimits.StatorCurrentLimit = 120;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-       config.Slot0.kS = 0.36;
-       config.Slot0.kV = 0.121212121212 * 1.0625;
-       config.Slot0.kP = 0.1;//3
+       config.Slot0.kS = 0.220953;
+       config.Slot0.kV = 0.120283;
+       config.Slot0.kP = 0.2;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
        config.ClosedLoopGeneral.ContinuousWrap = true;
-       config.Feedback.RotorToSensorRatio = 34.0/16.0;
+       config.Feedback.RotorToSensorRatio = (31.0/15.0) * (34.0/21.0);// 30/15 and 34 21
        rollerTopKraken.applyConfig(config);
     }
 
@@ -76,12 +76,12 @@ public class IntakeIOMotors implements IntakeIO{
        config.CurrentLimits.StatorCurrentLimit = 90;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-       config.Slot0.kS = 0.53;
-       config.Slot0.kV = 0.10101010101;
-       config.Slot0.kP = 0.2;//3
+       config.Slot0.kS = 0.296772;
+       config.Slot0.kV = 0.119405;
+       config.Slot0.kP = 0.2;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
-       config.Feedback.RotorToSensorRatio = 20.0/15.0;
+       config.Feedback.RotorToSensorRatio = (31.0/15.0);
        config.ClosedLoopGeneral.ContinuousWrap = true;
        rollerBottomKraken.applyConfig(config);
     }

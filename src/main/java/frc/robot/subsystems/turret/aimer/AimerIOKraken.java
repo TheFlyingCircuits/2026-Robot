@@ -28,7 +28,7 @@ public class AimerIOKraken implements AimerIO{
     private double ksForConstantForceSpring = 1.0;
     private double ksForConstantForceSpringAmps = 20.0;
 
-    private double turretMaxOneSideDeg = 210;// TODO: get real
+    private double turretMaxOneSideDeg = 190;// TODO: get real
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
         .withUpdateFreqHz(0.0).withSlot(1);
@@ -88,8 +88,8 @@ public class AimerIOKraken implements AimerIO{
         // for tuning
         // torque foc
         config.Slot2.kS = 10.0;
-        config.Slot2.kP = 6800.0;
-        config.Slot2.kD = 100.0;
+        config.Slot2.kP = 6900.0;
+        config.Slot2.kD = 30.0;// was 100
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 160;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -160;

@@ -82,8 +82,8 @@ public class Turret extends SubsystemBase{
         Supplier<Boolean> aimerReady = () -> Math.abs(Rotation2d.fromDegrees(aimerInputs.aimerTargetPositionDegrees).minus(Rotation2d.fromDegrees(aimerInputs.aimerPositionDegrees))
         .getDegrees()) <= aimerToleranceDegrees;
         Supplier<Boolean> hoodReady = () ->Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
-        Supplier<Boolean> mainWheelReady = () ->Math.abs(flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS) <= mainWheelToleranceMPS;
-        Supplier<Boolean> hoodWheelReady = () ->Math.abs(flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS) <= hoodWheelToleranceMPS;
+        Supplier<Boolean> mainWheelReady = () ->flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS <= mainWheelToleranceMPS;
+        Supplier<Boolean> hoodWheelReady = () ->flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS <= hoodWheelToleranceMPS;
         Supplier<Boolean>[] outputList = new Supplier[4];
         outputList[0] = aimerReady;
         outputList[1] = hoodReady;

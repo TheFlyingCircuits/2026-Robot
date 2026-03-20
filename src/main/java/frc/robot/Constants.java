@@ -260,24 +260,23 @@ public final class Constants {
         //http://10.17.87.11:5800/ this is for left/BW3, right/BW4, and back/BW1                                           
 
         public final static Transform3d robotToFront = new Transform3d(
-            new Translation3d(0.268, 0.000, Units.inchesToMeters(21)),
-            new Rotation3d(Math.toRadians(0.0), -Math.toRadians(25.0), -Math.toRadians(0.0))
+            new Translation3d(0.262, -0.004, 0.53),
+            new Rotation3d(Math.toRadians(1.2), -Math.toRadians(24.8), Math.toRadians(0.5))
         );// 10.5 forward in 0.5 in to right/left, 21.5 in height
 
         public final static Transform3d robotToLeft = new Transform3d(
-            new Translation3d(0.0, 0.268, Units.inchesToMeters(21)),
-            new Rotation3d(0, -Math.toRadians(25.0), Math.toRadians(90))
+            new Translation3d(0.001, 0.260, 0.528),
+            new Rotation3d(-Math.toRadians(0.11), -Math.toRadians(24.5), Math.toRadians(90.5))
         );
 
         public final static Transform3d robotToRight = new Transform3d(
-            new Translation3d(0.0, -0.268, Units.inchesToMeters(21)),
-            new Rotation3d(0, -Math.toRadians(25.0), Math.toRadians(-90))
+            new Translation3d(0.005, -0.262, 0.536),
+            new Rotation3d(-Math.toRadians(0.22), -Math.toRadians(24.3), -Math.toRadians(89.7))
         );
 
-
         public final static Transform3d robotToBack = new Transform3d(
-            new Translation3d(-0.268, 0.0, Units.inchesToMeters(21)),
-            new Rotation3d(0, -Math.toRadians(25.0), Math.toRadians(180))
+            new Translation3d(-0.262, 0.002, 0.53),
+            new Rotation3d(-Math.toRadians(0.18), -Math.toRadians(24.9), Math.toRadians(179.9))
         );
 
         public final static Transform3d robotToFuelCamera = new Transform3d(

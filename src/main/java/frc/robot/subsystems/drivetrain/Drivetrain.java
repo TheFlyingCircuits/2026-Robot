@@ -563,6 +563,7 @@ public class Drivetrain extends SubsystemBase {
         Logger.processInputs("gyroInputs", gyroInputs);
 
         updatePoseEstimator();
+        
 
         // intakeCam.periodic(fusedPoseEstimator);
 

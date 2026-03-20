@@ -32,7 +32,7 @@ public class AimAndShoot extends Command {
     private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.2, 0.2};
+    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.15, 0.15};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
@@ -71,7 +71,7 @@ public class AimAndShoot extends Command {
         // https://www.desmos.com/calculator/vjiv7dbdtf
         // double wheelVelocityTarget = (1.88108*requestedOutputVelocityMPS)-1.7475;
         // double wheelVelocityTarget = (1.24016*requestedOutputVelocityMPS) -2.22636;
-        double wheelVelocityTarget = requestedOutputVelocityMPS * 1.86 - 5.7;
+        double wheelVelocityTarget = requestedOutputVelocityMPS * 1.965 - 5.92;
         return wheelVelocityTarget;
     }
 
