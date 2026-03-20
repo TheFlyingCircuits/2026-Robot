@@ -153,7 +153,7 @@ public class TurretCalculations {
 
     // change z based off cad model once done
     public static Translation3d getTurretTranslation(Translation2d robotTranslation) {
-        return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), Units.inchesToMeters(18.0));
+        return new Translation3d(robotTranslation.getX(), robotTranslation.getY(), Units.inchesToMeters(19.045));
     }
 
     public static Translation3d getTargetFromEnum(PossibeTargets target, Supplier<Translation2d> robotTranslation) {

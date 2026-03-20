@@ -15,10 +15,10 @@ import frc.robot.VendorWrappers.Kraken;
 public class IndexerIOKraken implements IndexerIO {
 
     private VelocityTorqueCurrentFOC velTorqueFOCRequest = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
 
     private VelocityVoltage velVoltage = new VelocityVoltage(0.0).withSlot(1)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
 
     private Kraken bigSpinnerKraken;
     private Kraken sideKickerKraken;

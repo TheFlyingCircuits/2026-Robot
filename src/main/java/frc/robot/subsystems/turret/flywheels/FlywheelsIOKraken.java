@@ -30,7 +30,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         .withUpdateFreqHz(0.0);
 
     private VelocityVoltage bangBangVoltage = new VelocityVoltage(0.0).withSlot(1)
-        .withEnableFOC(true).withUpdateFreqHz(0.0);
+        .withEnableFOC(true).withUpdateFreqHz(100.0);
 
     private VelocityTorqueCurrentFOC torqueCurrentBangBang = new VelocityTorqueCurrentFOC(0.0).withSlot(2)
         .withUpdateFreqHz(0.0);
@@ -97,7 +97,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.292215; // voltage to get over static friction
         config.Slot1.kV = 0.121075; // volts per rps
-        // config.Slot1.kP = 99999999.0;
+        // config.Slot1.kP = 1.0;
 
         // current bang bang 
         config.Slot2.kS = 3.6;
@@ -106,6 +106,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         if(runningBangBangController) {
             config.Voltage.PeakForwardVoltage = 11.0;
             config.Voltage.PeakReverseVoltage = 0.0;
+            // config.Voltage.PeakForwardVoltage = 11.0;
+            // config.Voltage.PeakReverseVoltage = -11.0;
             // config.Voltage.SupplyVoltageTimeConstant
         }
 

@@ -92,6 +92,10 @@ public class Turret extends SubsystemBase{
         return outputList;
     }
 
+    public void setHoodWheelSpeed(double velocityRPS) {
+        flywheels.setTargetHoodWheelVelocity(velocityRPS);
+    }
+
     public void aimAtTargetNoShoot(double targetAimerDegrees) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(TurretConstants.hoodDefaultAngleDegrees);

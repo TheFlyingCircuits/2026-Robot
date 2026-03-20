@@ -34,10 +34,10 @@ public class AimerIOKraken implements AimerIO{
         .withUpdateFreqHz(0.0).withSlot(1);
 
     private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(2)
-    .withUpdateFreqHz(0.0);
+    .withUpdateFreqHz(100.0);
 
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
-        .withUpdateFreqHz(0.0).withSlot(0);
+        .withUpdateFreqHz(100.0).withSlot(0);
 
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;

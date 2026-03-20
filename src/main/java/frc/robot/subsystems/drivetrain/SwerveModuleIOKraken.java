@@ -20,9 +20,9 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     private double desiredAngleDeg = 0.0;
 
     final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
     final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(1).withEnableFOC(true)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
 
     private CANcoder absoluteEncoder;
     private Kraken angleMotor;
