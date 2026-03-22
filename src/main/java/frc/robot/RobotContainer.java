@@ -317,7 +317,6 @@ public class RobotContainer {
         if ( distFromRightTrench < distFromLeftTrench) {
             firstPath = firstPath.mirrorPath();
             secondPath = secondPath.mirrorPath();
-
         }
 
         return new SequentialCommandGroup(

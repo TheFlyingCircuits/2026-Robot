@@ -7,7 +7,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IndexerConstants;
 
 public class Indexer extends SubsystemBase {
 
@@ -22,7 +21,7 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         indexerIO.updateInputs(indexerInputs);
-        Logger.processInputs("aimerInputs", indexerInputs);
+        Logger.processInputs("indexerInputs", indexerInputs);
     }
 
     public void setAllTargetAmps(double kickerAmps, double sideKickerAmps, double bigSpinnerAmps) {
@@ -38,7 +37,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setAllTargetVelocity(double kickerVelMPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
-        double kickerVelRPS = (1.0/IndexerConstants.kickerGearRatio)*kickerVelMPS
+        double kickerVelRPS = kickerVelMPS
             /(Math.PI*Units.inchesToMeters(2.0));
         indexerIO.setTargetKickerVelocity(kickerVelRPS);
         indexerIO.setTargetSideKickerVelocity(sideKickerVelRPS);
@@ -50,7 +49,7 @@ public class Indexer extends SubsystemBase {
     }
     
     public void shootFuel(double targetKickerMPS) {
-        setAllTargetVelocity(targetKickerMPS,45.0,2.5);
+        setAllTargetVelocity(targetKickerMPS * 0.5,45.0,2.5);
     }
 
     public void reverseIndexer() {

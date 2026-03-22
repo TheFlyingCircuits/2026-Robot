@@ -406,10 +406,10 @@ public class Drivetrain extends SubsystemBase {
 
             // reject pose observations that claim the robot
             // is in the air or beneath the floor
-            // if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
-            //     rejectedTags.add(poseObservation.getTagPose());
-            //     continue;
-            // }
+            if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
+                rejectedTags.add(poseObservation.getTagPose());
+                continue;
+            }
 
             // reject tags that are too ambiguous
             if (poseObservation.ambiguity() > 0.4) {
