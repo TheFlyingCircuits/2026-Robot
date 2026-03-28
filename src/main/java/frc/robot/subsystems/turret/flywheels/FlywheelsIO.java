@@ -6,9 +6,11 @@ public interface FlywheelsIO {
     @AutoLog
     public class FlywheelsIOInputs {
         public double frontWheelVelocityRPS = 0.0;
+        public double frontWheelFollowerRPS = 0.0;
         public double hoodWheelVelocityRPS = 0.0;
 
         public double frontWheelVelocityMPS = 0.0;
+        public double frontWheelFollowerVelocityMPS = 0.0;
         public double hoodWheelVelocityMPS = 0.0;
 
         public double targetFrontWheelVelocityMPS = 0.0;

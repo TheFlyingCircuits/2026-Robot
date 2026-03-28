@@ -143,9 +143,9 @@ public class TurretCalculations {
         double inverIfRed = FlyingCircuitUtils.getAllianceDependentValue(-1.0, 1.0, 1.0);
 
         if(distanceToLeftTrench<distanceToRightTrench) {
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.3*inverIfRed,-1.5*inverIfRed,-0.5));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.3*inverIfRed,-1.5*inverIfRed,-1.0));
         } else {
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.3*inverIfRed,1.5*inverIfRed,-0.5));
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.3*inverIfRed,1.5*inverIfRed,-1.0));
         }
 
         return target;
@@ -186,7 +186,7 @@ public class TurretCalculations {
             // }
             return getAdjustedAngleOfAttack(-80.0, -55.0, distanceToTargetMeters, 5.65);
         } else {
-            return getAdjustedAngleOfAttack(-40.0, -30.0, distanceToTargetMeters, 7.5);
+            return getAdjustedAngleOfAttack(-65.0, -55.0, distanceToTargetMeters, 7.5);
         }
     }
     

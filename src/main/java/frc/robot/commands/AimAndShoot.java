@@ -32,7 +32,7 @@ public class AimAndShoot extends Command {
     private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.2, 1.0, 0.15, 0.15};
+    private double[] notShootingTolerances = new double[] {1.3, 1.3, 0.2, 0.2};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
@@ -101,17 +101,31 @@ public class AimAndShoot extends Command {
 
         angleOfAttack = TurretCalculations.getAngleOfAttackFromTargetEnum(shootingTarget.get(), (originalTargetTranlsation.toTranslation2d().minus(turretTranslation.get().toTranslation2d())).getNorm());
 
-        Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(originalTargetTranlsation, 
-            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
+        // Translation3d targetMovmentCompensated = TurretCalculations.targetMovementCompensation(originalTargetTranlsation, 
+        //     robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
 
         // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
-        double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(targetMovmentCompensated, 
+        double[] shootingValues = TurretCalculations.angleOfAttackTrajCalc(originalTargetTranlsation, 
             angleOfAttack, turretTranslation.get());
-        
-        double vcfWheelMPS = getConvertedVelocity(shootingValues[0]);
+
+        double xyVelocityComponent = shootingValues[0] * Math.cos(Units.degreesToRadians(shootingValues[1]));
+        double zVelocityComponent = shootingValues[0] * Math.sin(Units.degreesToRadians(shootingValues[1]));
+        double aimerTargetDegreesNotCompensated = TurretCalculations.getAimerTargetDegreesRobotToTarget(originalTargetTranlsation.toTranslation2d(), 
+            turretTranslation.get().toTranslation2d());
+
+
+        Translation3d fuelNotCompensatedVelocity = new Translation3d(xyVelocityComponent*Math.cos(Units.degreesToRadians(aimerTargetDegreesNotCompensated)),
+             xyVelocityComponent*Math.sin(Units.degreesToRadians(aimerTargetDegreesNotCompensated)), zVelocityComponent);
+
+        Translation3d fuelVelocityCompensated = fuelNotCompensatedVelocity.minus(new Translation3d(robotFieldOrientedVelocity.get().vxMetersPerSecond, 
+            robotFieldOrientedVelocity.get().vyMetersPerSecond, 0));
+
+        double vcfWheelMPS = getConvertedVelocity(fuelVelocityCompensated.getNorm());
+        double targetAimerDed = Units.radiansToDegrees(Math.atan2(fuelVelocityCompensated.getY(), fuelVelocityCompensated.getX()));
+        double tagetHoodAngle = Units.radiansToDegrees(Math.atan2(fuelVelocityCompensated.getZ(), fuelVelocityCompensated.toTranslation2d().getNorm()));
 
         // this is the angle that out robot would need to point to aim at the target
-        double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(targetMovmentCompensated.toTranslation2d(), turretTranslation.get().toTranslation2d());
+        // double robotToTargetAngle = TurretCalculations.getAimerTargetDegreesRobotToTarget(originalTargetTranlsation.toTranslation2d(), turretTranslation.get().toTranslation2d());
 
         // if we are shooting vs not shooting we have different tolerances
         Supplier<Boolean>[] readyToShoot;
@@ -120,7 +134,7 @@ public class AimAndShoot extends Command {
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
 
-            turret.aimAtTargetAndShoot(robotToTargetAngle, shootingValues[1], vcfWheelMPS); // * 1.65 too much *1.61)-1.385 woked good
+            turret.aimAtTargetAndShoot(targetAimerDed, tagetHoodAngle, vcfWheelMPS); // * 1.65 too much *1.61)-1.385 woked good
             //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot *1.58)-1.37
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
@@ -129,7 +143,7 @@ public class AimAndShoot extends Command {
             // if everything is ready to shoot in the turret subsystem we shoot by turning on indexer
             if(readyToShoot[0].get().booleanValue() && readyToShoot[1].get().booleanValue() && readyToShoot[2].get().booleanValue() && readyToShoot[3].get().booleanValue()) {
                 // indexer.shootFuel(shootingValues[0]*0.7);
-                indexer.shootFuel(shootingValues[0]);
+                indexer.shootFuel(vcfWheelMPS);
                 isShooting = true;
             } else {
                 // stop indexer if turret is not ready to shoot or turret gets out of the tolerance while shooting
@@ -141,7 +155,7 @@ public class AimAndShoot extends Command {
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
             // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
-            turret.aimAtTargetNoShoot(robotToTargetAngle);
+            turret.aimAtTargetNoShoot(targetAimerDed);
             indexer.stopIndexing();
             isShooting = false;
         }
@@ -159,7 +173,7 @@ public class AimAndShoot extends Command {
         TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
         this.logPredictedTrajectory();
-        Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", shootingValues[0]);
+        Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", fuelVelocityCompensated.getNorm());
         
     }
 

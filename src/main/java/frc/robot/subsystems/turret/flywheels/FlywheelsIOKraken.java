@@ -27,13 +27,13 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     private boolean runningBangBangController = true;
 
     private VelocityTorqueCurrentFOC velTorqueFOC = new VelocityTorqueCurrentFOC(0.0).withSlot(0)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
 
-    private VelocityVoltage bangBangVoltage = new VelocityVoltage(0.0).withSlot(1)
+    private VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(1)
         .withEnableFOC(true).withUpdateFreqHz(100.0);
 
     private VelocityTorqueCurrentFOC torqueCurrentBangBang = new VelocityTorqueCurrentFOC(0.0).withSlot(2)
-        .withUpdateFreqHz(0.0);
+        .withUpdateFreqHz(100.0);
 
     public FlywheelsIOKraken() { 
         frontWheelKraken = new Kraken(TurretConstants.frontWheelKrakenID, UniversalConstants.canivoreName);
@@ -77,9 +77,11 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = TurretConstants.mainWheelKrakenToTurretRotationsGearRatio;
         frontWheelKraken.applyConfig(config);
+        frontWheelKraken.getVelocity().setUpdateFrequency(250);
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         frontWheelKrakenFollower.applyConfig(config);
+        frontWheelKrakenFollower.getVelocity().setUpdateFrequency(250);
     }
 
     private void configHoodWheelKrakens() {
@@ -119,14 +121,17 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodWheelKrakenToTurretRotationsGearRatio;
         // config.ClosedLoopGeneral.ContinuousWrap = true;
         hoodWheelKraken.applyConfig(config);
+        hoodWheelKraken.getVelocity().setUpdateFrequency(250);
     }
 
     @Override
     public void updateInputs(FlywheelsIOInputs inputs) {
         inputs.frontWheelVelocityRPS = frontWheelKraken.getVelocity().getValueAsDouble();
+        inputs.frontWheelFollowerRPS = frontWheelKrakenFollower.getVelocity().getValueAsDouble();
         inputs.hoodWheelVelocityRPS = hoodWheelKraken.getVelocity().getValueAsDouble();
 
         inputs.frontWheelVelocityMPS = inputs.frontWheelVelocityRPS*(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
+        inputs.frontWheelFollowerVelocityMPS = inputs.frontWheelFollowerRPS*(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         inputs.hoodWheelVelocityMPS = inputs.hoodWheelVelocityRPS*(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
 
         inputs.targetFrontWheelVelocityMPS = targetFrontWheelMPSLocal;
@@ -171,8 +176,8 @@ public class FlywheelsIOKraken implements FlywheelsIO {
             // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
             frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
         } else {
-            frontWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
-            frontWheelKrakenFollower.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            frontWheelKraken.setControl(velocityVoltage.withVelocity(targetVelocityRPS));
+            frontWheelKrakenFollower.setControl(velocityVoltage.withVelocity(targetVelocityRPS));
             // if(0.0 < (targetVelocityRPS - frontWheelKraken.getVelocity().getValueAsDouble())) {
             //     frontWheelKraken.setVoltage(11.0);
             //     frontWheelKrakenFollower.setVoltage(11.0);
@@ -200,7 +205,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         if(!(runningBangBangController)) {
             hoodWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
         } else {
-            hoodWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
+            hoodWheelKraken.setControl(velocityVoltage.withVelocity(targetVelocityRPS));
             // if(0.0 < (targetVelocityRPS - hoodWheelKraken.getVelocity().getValueAsDouble())) {
             //     // hoodWheelKraken.setControl(bangBangVoltage.withVelocity(targetVelocityRPS));
             //     hoodWheelKraken.setVoltage(11.0);
