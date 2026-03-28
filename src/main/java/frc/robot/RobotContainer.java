@@ -270,20 +270,55 @@ public class RobotContainer {
     // AUTOS -------------------------------------------------------------------------------
 
     public Command getAutonomousCommand() {
-        return passingLeftAuto();
+        return agressiveDipAuto();
         // return trenchAutos();
     }
 
     private Command passingLeftAuto() {
         try {
             PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Passing Left");
-            return new SequentialCommandGroup(
-            new ProxyCommand(AutoBuilder.followPath(firstPath)),
-            Commands.waitSeconds(6));
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
+            // flip based on left or right
+            double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+            double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+            if (distFromRightTrench < distFromLeftTrench) {
+                firstPath = firstPath.mirrorPath();
+            }
+                return new SequentialCommandGroup(
+                new ProxyCommand(AutoBuilder.followPath(firstPath)),
+                Commands.waitSeconds(6));
+            } catch (Exception e) {
+                DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+                return Commands.none();
         }
+    }
+
+    private Command agressiveDipAuto() {
+        try{
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Dip P1");
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Agressive Dip P2");
+
+        // flip based on left or right
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        if ( distFromRightTrench < distFromLeftTrench) {
+            firstPath = firstPath.mirrorPath();
+            secondPath = secondPath.mirrorPath();
+        }
+
+        return new SequentialCommandGroup(
+            new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
+            new ProxyCommand(AutoBuilder.followPath(firstPath)),
+            Commands.waitSeconds(3),
+            new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
+            new ProxyCommand(AutoBuilder.followPath(secondPath)),
+            Commands.waitSeconds(5)
+        );
+    } catch (Exception e) {
+        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        return Commands.none();
+    }
     }
 
     private Command trenchAutos() {
