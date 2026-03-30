@@ -137,19 +137,19 @@
   "eventMarkers": [
     {
       "name": "intakeDown",
-      "waypointRelativePos": 0.47265361242402637,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 5.0,
       "command": null
     },
     {
       "name": "aim",
-      "waypointRelativePos": 1.5395003376097092,
-      "endWaypointRelativePos": 4.118838622552313,
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 4.54,
       "command": null
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 4.834571235651584,
+      "waypointRelativePos": 4.550979068197178,
       "endWaypointRelativePos": 4.9,
       "command": null
     }
