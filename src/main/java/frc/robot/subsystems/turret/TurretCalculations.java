@@ -10,8 +10,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import frc.robot.FlyingCircuitUtils;
 import frc.robot.Constants.UniversalConstants;
+import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
 
 public class TurretCalculations {
@@ -21,6 +21,8 @@ public class TurretCalculations {
     public enum PossibeTargets {
         HUB,
         PASSING,
+        PASSING_LEFT,
+        PASSING_RIGHT
     }
 
     /**
@@ -133,16 +135,12 @@ public class TurretCalculations {
         return shootingPose;
     }
 
-    public static Translation3d getPassingTargetTranslation(Supplier<Translation2d> robotTranslation) {
-
-        double distanceToLeftTrench = FieldElement.TRENCH_LEFT.getLocation2d().getDistance(robotTranslation.get());
-        double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(robotTranslation.get());
+    public static Translation3d getPassingTargetTranslation(PossibeTargets passingTarget) {
         
+        double inverIfRed = FlyingCircuitUtils.getAllianceDependentValue(-1.0, 1.0, 1.0);
         Translation3d target;
 
-        double inverIfRed = FlyingCircuitUtils.getAllianceDependentValue(-1.0, 1.0, 1.0);
-
-        if(distanceToLeftTrench<distanceToRightTrench) {
+        if(passingTarget == PossibeTargets.PASSING_LEFT) {
             target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.3*inverIfRed,-1.5*inverIfRed,-1.0));
         } else {
             target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.3*inverIfRed,1.5*inverIfRed,-1.0));
@@ -157,7 +155,7 @@ public class TurretCalculations {
     }
 
     public static Translation3d getTargetFromEnum(PossibeTargets target, Supplier<Translation2d> robotTranslation) {
-        return target == PossibeTargets.HUB ? getHubShootingTargetTranslation() : getPassingTargetTranslation(robotTranslation);
+        return target == PossibeTargets.HUB ? getHubShootingTargetTranslation() : getPassingTargetTranslation(target);
     }
 
     /**

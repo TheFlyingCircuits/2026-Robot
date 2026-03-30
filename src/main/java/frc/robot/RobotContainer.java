@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -115,8 +114,10 @@ public class RobotContainer {
 
         // drivetrain.setFocus(FieldElement.HUB);
 
-        FlyingCircuitUtils.putNumberOnDashboard("reqMPS", 0.0);
-        FlyingCircuitUtils.putNumberOnDashboard("reqHoodAngle", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.97);
+        FlyingCircuitUtils.putNumberOnDashboard("intercept", - 5.93);
+
+        FlyingCircuitUtils.putNumberOnDashboard("aimerTargetVolts", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -147,9 +148,12 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
-            () -> FlyingCircuitUtils.getNumberFromDashboard("reqHoodAngle", 0.0), 
-            () -> FlyingCircuitUtils.getNumberFromDashboard("reqMPS", 0.0)));
+        // duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
+        //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqHoodAngle", 0.0), 
+        //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqMPS", 0.0)));
+
+        // duncanController.a().whileTrue(turret.setAimerVoltsCommand(
+        //     () -> FlyingCircuitUtils.getNumberFromDashboard("aimerTargetVolts", 0.0)));
 
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));

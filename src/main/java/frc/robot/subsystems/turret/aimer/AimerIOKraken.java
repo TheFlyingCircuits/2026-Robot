@@ -25,13 +25,13 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 1.0;
+    private double ksForConstantForceSpring = 0.78592;//
     private double ksForConstantForceSpringAmps = 20.0;
 
-    private double turretMaxOneSideDeg = 190;// TODO: get real
+    private double turretMaxOneSideDeg = 250;// TODO: get real
 
-    private final PositionVoltage m_request = new PositionVoltage(0).withSlot(1).withEnableFOC(true)
-        .withUpdateFreqHz(0.0).withSlot(1);
+    private final PositionVoltage m_request = new PositionVoltage(0.0).withSlot(0).withEnableFOC(true)
+        .withUpdateFreqHz(100.0).withSlot(1);
 
     private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(2)
     .withUpdateFreqHz(100.0);
@@ -71,25 +71,29 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimit = 160;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        // motion magic
-        config.Slot0.kS = 1.1; 
-        config.Slot0.kP = 150.0;
-        config.Slot0.kI = 0.0;
+        // motion magic y=1.80594x+0.78592
+        // config.Slot0.kG = ksForConstantForceSpring; 
+        config.Slot0.kP = 120.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 1.52413793103; // rps/volts 0.82 rps 2v - 1.4rps - 3v
+        config.Slot0.kV = 1.80594; // rps/volts 0.82 rps 2v - 1.4rps - 3v
+
+        // config.Slot1.kG = -ksForConstantForceSpring; 
+        config.Slot1.kP = 70.0;
+        config.Slot1.kD = 0.0;
+        // config.Slot1.kV = 1.80594; 
 
         // close voltage feedback
         // ks is over 0.0 because in either direction 0.001 volts of feedback pid is not enough
         // to overcome spring feed forward because its kidnda an estimate
-        config.Slot1.kS = 0.1;
-        config.Slot1.kP = 195.0; 
+        // config.Slot1.kS = 0.1;
+        // config.Slot1.kP = 195.0; 
 
         // will follow https://phoenixpro-documentation--161.org.readthedocs.build/en/161/docs/application-notes/manual-pid-tuning.html
         // for tuning
         // torque foc
-        config.Slot2.kS = 10.0;
-        config.Slot2.kP = 6900.0;
-        config.Slot2.kD = 70.0;// was 100
+        // config.Slot2.kS = 10.0;
+        // config.Slot2.kP = 6900.0;
+        // config.Slot2.kD = 70.0;// was 100
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 160;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -160;
@@ -97,7 +101,7 @@ public class AimerIOKraken implements AimerIO{
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.2);
 
         config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
-        config.MotionMagic.MotionMagicAcceleration = 2.0; //rotations per second squared
+        config.MotionMagic.MotionMagicAcceleration = 3.0; //rotations per second squared
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -180,20 +184,20 @@ public class AimerIOKraken implements AimerIO{
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
 
         double feedForwardsSpringVolts = ksForConstantForceSpring;
-        double feedForwardsSpringAmps = ksForConstantForceSpringAmps;
+        // double feedForwardsSpringAmps = ksForConstantForceSpringAmps;
 
         double turretPositionRotations = aimerKraken.getPosition().getValueAsDouble();
 
-        boolean inDeadZone = false;
+        // boolean inDeadZone = false;
 
         if(turretPositionRotations < 0) {
             feedForwardsSpringVolts = feedForwardsSpringVolts*-1.0;
-            feedForwardsSpringAmps = feedForwardsSpringAmps*-1.0;
+            // feedForwardsSpringAmps = feedForwardsSpringAmps*-1.0;
         }
 
-        if(((Units.rotationsToDegrees(turretPositionRotations) < 7.0) && (Units.rotationsToDegrees(turretPositionRotations) > -9.9))) {
-            inDeadZone = true;
-        }
+        // if(((Units.rotationsToDegrees(turretPositionRotations) < 7.0) && (Units.rotationsToDegrees(turretPositionRotations) > -9.9))) {
+        //     inDeadZone = true;
+        // }
         //|| (turretPositionRotations*targetPositionDegreesRobotToTarget < 0.0) 
         //|| Units.degreesToRotations(targetPositionDegreesRobotToTarget)-turretPositionRotations < 0.0)
 
@@ -209,18 +213,27 @@ public class AimerIOKraken implements AimerIO{
         double safeAngle = getSafeOptimizedAngleDeg(targetAngleDeg180Clamped);
         targetAimerDegrees = safeAngle;
 
+        // if(turretPositionRotations < 0) {
+        //     // use slot 1 for negative kS
+        //     aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withSlot(1).withFeedForward(ksForConstantForceSpring));
+        // } else {
+        //     aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withSlot(0).withFeedForward(ksForConstantForceSpring));
+        // }
+
         // aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
 
         if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 50.0) {
             aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
         } else {
-            // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
-            if(inDeadZone) {
-                aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)));
-            } else {
-                aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
-            }
+            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withSlot(1).withFeedForward(ksForConstantForceSpring));
         }
+        //     // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
+        //     if(inDeadZone) {
+        //         aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)));
+        //     } else {
+        //         aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
+        //     }
+        // }
         // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)));
         // aimerKraken.setControl(m_Velrequest.withVelocity(Units.degreesToRotations(targetPositionDegrees)));
     }

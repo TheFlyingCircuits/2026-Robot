@@ -66,12 +66,12 @@ public class AimAndShoot extends Command {
     }
 
     private double getConvertedVelocity(double requestedOutputVelocityMPS) {
-        // the velocity conversion factor (VCF) is y=1.34022x-2.08217 if linear
-        // and y=0.850355 * x^{1.38127} if power regression 
+        // the velocity conversion factor (VCF)
         // https://www.desmos.com/calculator/vjiv7dbdtf
-        // double wheelVelocityTarget = (1.88108*requestedOutputVelocityMPS)-1.7475;
-        // double wheelVelocityTarget = (1.24016*requestedOutputVelocityMPS) -2.22636;
-        double wheelVelocityTarget = requestedOutputVelocityMPS * 1.965 - 5.92;
+        if(requestedOutputVelocityMPS < 6.1134) return requestedOutputVelocityMPS;
+        double wheelVelocityTarget = requestedOutputVelocityMPS * 
+        FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.97) +
+        FlyingCircuitUtils.getNumberFromDashboard("intercept", -5.93);
         return wheelVelocityTarget;
     }
 
@@ -86,9 +86,24 @@ public class AimAndShoot extends Command {
 
         if (shouldTargetHub) {
             shootingTarget = () -> PossibeTargets.HUB;
-        }
-        else {
-            shootingTarget = () -> PossibeTargets.PASSING;
+        } else {
+
+            double sideWaysToleranceMeters = 1.5;
+
+            double distanceToLeftTrench = FieldElement.TRENCH_LEFT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
+            double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
+
+            if(shootingTarget.get() == PossibeTargets.PASSING_LEFT) {
+                distanceToLeftTrench = distanceToLeftTrench - sideWaysToleranceMeters;
+            } else {
+                distanceToRightTrench = distanceToRightTrench - sideWaysToleranceMeters;
+            }
+
+            if(distanceToLeftTrench<distanceToRightTrench) {
+                shootingTarget = ()-> PossibeTargets.PASSING_LEFT;
+            } else {
+                shootingTarget = ()-> PossibeTargets.PASSING_RIGHT;
+            }
         }
     }
 
@@ -174,6 +189,7 @@ public class AimAndShoot extends Command {
             robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
         this.logPredictedTrajectory();
         Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", fuelVelocityCompensated.getNorm());
+        Logger.recordOutput("AimAndShoot/desiredSpeedWithVCF", vcfWheelMPS);
         
     }
 
