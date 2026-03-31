@@ -48,7 +48,6 @@ public class AimAndShoot extends Command {
         this.drivetrain=drivetrain;
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
-        drivetrain.setFocus(FieldElement.HUB);
 
         drivetrain.allowTeleportsNextPoseUpdate();
         drivetrain.fullyTrustVisionNextPoseUpdate();
@@ -59,7 +58,6 @@ public class AimAndShoot extends Command {
     @Override
     public void initialize() {
         isShooting = false;
-        drivetrain.setFocus(FieldElement.HUB);
         drivetrain.allowTeleportsNextPoseUpdate();
         drivetrain.fullyTrustVisionNextPoseUpdate();
         // TurretCalculations.currentTarget = shootingTarget.get();
@@ -86,17 +84,23 @@ public class AimAndShoot extends Command {
 
         if (shouldTargetHub) {
             shootingTarget = () -> PossibeTargets.HUB;
+            drivetrain.setFocus(FieldElement.HUB);
         } else {
 
+            drivetrain.resetFocus();
             double sideWaysToleranceMeters = 1.5;
 
             double distanceToLeftTrench = FieldElement.TRENCH_LEFT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
             double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
 
-            if(shootingTarget.get() == PossibeTargets.PASSING_LEFT) {
-                distanceToLeftTrench = distanceToLeftTrench - sideWaysToleranceMeters;
-            } else {
-                distanceToRightTrench = distanceToRightTrench - sideWaysToleranceMeters;
+            try {
+                if(shootingTarget.get() == PossibeTargets.PASSING_LEFT) {
+                    distanceToLeftTrench = distanceToLeftTrench - sideWaysToleranceMeters;
+                } else {
+                    distanceToRightTrench = distanceToRightTrench - sideWaysToleranceMeters;
+                }
+            } catch(NullPointerException e) {
+                
             }
 
             if(distanceToLeftTrench<distanceToRightTrench) {
@@ -195,6 +199,7 @@ public class AimAndShoot extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        drivetrain.resetFocus();
         AdvantageScopeDrawingUtils.eraseDrawing("predictedShot/withoutRobotVelocity");
         AdvantageScopeDrawingUtils.eraseDrawing("predictedShot/withRobotVelocity");
     }

@@ -553,7 +553,6 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // Logger.recordOutput("Time Till End", Shift.getSecondsTillEnd());
-        setFocus(FieldElement.HUB);
         for (SwerveModule mod : swerveModules)
             mod.periodic();
         

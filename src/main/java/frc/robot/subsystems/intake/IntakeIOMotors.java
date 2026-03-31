@@ -77,11 +77,11 @@ public class IntakeIOMotors implements IntakeIO{
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.296772;
-       config.Slot0.kV = 0.119405;
+       config.Slot0.kV = 0.12771672326;
        config.Slot0.kP = 0.2;
        config.Slot0.kI = 0.0;
        config.Slot0.kD = 0.0;
-       config.Feedback.RotorToSensorRatio = (31.0/15.0);
+       config.Feedback.RotorToSensorRatio = (30.0/15.0) * (21.0/19.0);
        config.ClosedLoopGeneral.ContinuousWrap = true;
        rollerBottomKraken.applyConfig(config);
     }
