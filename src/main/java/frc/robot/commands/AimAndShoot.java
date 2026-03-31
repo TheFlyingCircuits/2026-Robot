@@ -43,10 +43,8 @@ public class AimAndShoot extends Command {
         this.indexer=indexer;
         this.turretTranslation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
-        // this.shootingTarget=shootingTarget;
         this.driverReadyToShoot=driverReadyToShoot;
         this.drivetrain=drivetrain;
-        // this.angleOfAttack=angleOfAttack;
         isShooting = false;
 
         drivetrain.allowTeleportsNextPoseUpdate();
@@ -60,16 +58,22 @@ public class AimAndShoot extends Command {
         isShooting = false;
         drivetrain.allowTeleportsNextPoseUpdate();
         drivetrain.fullyTrustVisionNextPoseUpdate();
-        // TurretCalculations.currentTarget = shootingTarget.get();
     }
 
     private double getConvertedVelocity(double requestedOutputVelocityMPS) {
         // the velocity conversion factor (VCF)
         // https://www.desmos.com/calculator/vjiv7dbdtf
-        if(requestedOutputVelocityMPS < 6.1134) return requestedOutputVelocityMPS;
+
+        // our max surface speed on our hood is about 14.8 so if around max speed cap it
+        if(requestedOutputVelocityMPS > 14.25) return 14.25;
+
         double wheelVelocityTarget = requestedOutputVelocityMPS * 
-        FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.97) +
-        FlyingCircuitUtils.getNumberFromDashboard("intercept", -5.93);
+            FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.97) +
+            FlyingCircuitUtils.getNumberFromDashboard("intercept", -5.93);
+
+        // if VCF output is lower than original request return original velocity
+        if(requestedOutputVelocityMPS > wheelVelocityTarget) return requestedOutputVelocityMPS;
+
         return wheelVelocityTarget;
     }
 
