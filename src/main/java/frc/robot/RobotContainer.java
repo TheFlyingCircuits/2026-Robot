@@ -23,18 +23,23 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
+import frc.robot.PlayingField.Shift;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
+import frc.robot.subsystems.LedsCANdle;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
@@ -61,7 +66,7 @@ public class RobotContainer {
     public final Drivetrain drivetrain;
     // public final Leds leds;
     // public final LedsCANdle canLeds;
-    // public final LedsCANdle canLedsCounter;
+    public final LedsCANdle canLedsCounter;
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
@@ -74,7 +79,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         /**** INITIALIZE SUBSYSTEMS ****/
-        if (RobotBase.isReal()) {
+        if (!RobotBase.isReal()) { //TODO put this back to not !
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
@@ -92,6 +97,7 @@ public class RobotContainer {
             // );
             // leds = new Leds(0,60);
             // drivetrain is only used for getPoseMeters method and does not do anything else
+            
             turret = new Turret(new AimerIOKraken(drivetrain), new FlywheelsIOKraken(), new HoodIOKraken());
             indexer = new Indexer(new IndexerIOKraken());
             intake = new Intake(new IntakeIOMotors());
@@ -110,7 +116,7 @@ public class RobotContainer {
         }
 
         // canLeds = new LedsCANdle(0, 60);
-        // canLedsCounter = new LedsCANdle(1, 60);
+        canLedsCounter = new LedsCANdle(45, 60);
 
         // drivetrain.setFocus(FieldElement.HUB);
 
@@ -158,7 +164,8 @@ public class RobotContainer {
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand())
+        .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
         // , () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0)));
@@ -183,17 +190,14 @@ public class RobotContainer {
         duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
         duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
-
     }
 
     public void setDefaultCommands() {
         drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
-        // leds.setDefaultCommand(leds.heartbeatCommand(1.).ignoringDisable(true).withName("ledsDefaultCommand"));
         turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
         indexer.setDefaultCommand(indexer.stopIndexingCommand());
-        // canLedsCounter.setDefaultCommand(canLedsCounter.heartbeatCommand().ignoringDisable(true));
         intake.setDefaultCommand(intake.noVoltageCommand());
-
+        canLedsCounter.setDefaultCommand(canLedsCounter.solidColorCommand(Color.fromHSV(canLedsCounter.getAllianceHue(), 255, 255)));
     }
 
     public void periodic() {
