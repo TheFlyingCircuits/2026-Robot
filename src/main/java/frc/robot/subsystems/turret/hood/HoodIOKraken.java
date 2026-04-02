@@ -81,10 +81,10 @@ public class HoodIOKraken implements HoodIO{
     @Override
     public void setTargetHoodPosition(double targetPositionDegrees) {
         targetHoodDegreesLocal = targetPositionDegrees;
-        if(targetPositionDegrees < TurretConstants.minHoodAngle + 1.0) {
-            targetPositionDegrees = TurretConstants.minHoodAngle + 1.0;
-        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -1.0) {
-            targetPositionDegrees = TurretConstants.maxHoodAngle - 1.0;
+        if(targetPositionDegrees < TurretConstants.minHoodAngle + 0.5) {
+            targetPositionDegrees = TurretConstants.minHoodAngle + 0.5;
+        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -0.5) {
+            targetPositionDegrees = TurretConstants.maxHoodAngle - 0.5;
         }
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));
         // hoodKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));
