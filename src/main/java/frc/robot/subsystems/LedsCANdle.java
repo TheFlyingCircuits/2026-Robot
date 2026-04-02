@@ -32,8 +32,8 @@ public class LedsCANdle extends SubsystemBase {
         leds = new CANdle(id);
         CANdleConfiguration config = new CANdleConfiguration();
 
-        config.LED.StripType = StripTypeValue.RGB;
-        config.LED.BrightnessScalar = 0.5;
+        config.LED.StripType = StripTypeValue.GRB;
+        config.LED.BrightnessScalar = 1;
 
         leds.getConfigurator().apply(config);
 
@@ -78,7 +78,10 @@ public class LedsCANdle extends SubsystemBase {
         if(timeLeft == -1) {
             timeLeft = 20.0;
         }
-        Color color = DriverStation.getAlliance().get() == Alliance.Blue ? Color.kBlue : Color.kRed;
+        int hue = 7;
+        int saturation = 255;
+        int value = 225;
+        Color color = Color.fromHSV(hue, saturation, value);
         // time left is allways 20 or less because of 20 sec auto
         int maxLed = (int)((timeLeft/20.0) * ledLength);
         leds.setControl(new SolidColor(0, maxLed).withColor(new RGBWColor(color)));
@@ -289,10 +292,11 @@ public class LedsCANdle extends SubsystemBase {
                 normalizedBrightness = Math.exp(-k2*(currentTime - timeBetweenSingleTaps));
             }
 
-            int hue = this.getAllianceHue();
+            int hue = 7;
             int saturation = 255;
             int value = (int)(255 * normalizedBrightness);
             Color color = Color.fromHSV(hue, saturation, value);
+            // Color color = new Color(255,45,0);
             this.solidColor(color);
         }).until(() -> {return heartbeatTimer.get() >= timeBetweenDoubleTaps;}));
     }
@@ -342,7 +346,7 @@ public class LedsCANdle extends SubsystemBase {
     }
 
     public Command solidOrangeCommand() {
-        Color orange = Color.fromHSV(LEDConstants.Hues.orangeSignalLight, 255, 255);
+        Color orange = new Color(255,45,0);
         return this.solidColorCommand(orange).withName("solid orange command");
     }
 
@@ -393,13 +397,15 @@ public class LedsCANdle extends SubsystemBase {
     }
 
     public Command playFireNoteAnimationCommand() {
-        double timeForEachSegment = 1./5.;
-        Color orange = Color.fromHSV(LEDConstants.Hues.orangeSignalLight, 255, 255);
-        Color green = new Color(0, 255, 0);
+        double timeForEachSegment = 0.5;
+        // Color orange = Color.fromHSV(LEDConstants.Hues.orangeSignalLight, 255, 255);
+        Color orange =new Color(255, 45, 0);
 
-        return this.solidColorCommand(green).withTimeout(0.05)
-               .andThen(this.playWipeToColorCommand(timeForEachSegment, orange))
-               .andThen(this.playWipeToAllianceColorCommand(timeForEachSegment));
+        Color white = new Color(255, 255, 255);
+
+        return this.solidColorCommand(white).withTimeout(0.05)
+               .andThen(this.playWipeToColorCommand(timeForEachSegment, orange));
+            //    .andThen(this.playWipeToAllianceColorCommand(timeForEachSegment));
     }
 
     public Command temporarilySwitchPattern(Supplier<Command> switchSupplier) {
