@@ -40,6 +40,8 @@ public class Robot extends LoggedRobot {
     // TODO: We may not need this anymore as of 2026. The AdvantageKit docs indicate that this is
     //       automatically done for us now, provided we use the default CAN ID for our PDH.
     Logger.start();
+  //   SignalLogger.setPath("/media/sdb1/ctre");
+  //   SignalLogger.start();
   }
 
   @Override
@@ -50,6 +52,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
   }
 
   @Override
@@ -58,7 +61,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
 
     // TODO: try using this and see if auto starts faster
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
   }
 
   @Override

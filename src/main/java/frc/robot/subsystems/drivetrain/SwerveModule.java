@@ -52,9 +52,7 @@ public class SwerveModule {
     }
 
     public void setDesiredStateNoOptimize(SwerveModuleState desiredState) {
-        
         desiredState = constrainState(desiredState); // constrain one more time after optimization just to be safe, because I'm unsure if optimization can ever pull the angle out of [-180, 180]
-
         io.setDriveVelocity(desiredState.speedMetersPerSecond);
         io.setTurnAngle(desiredState.angle.getDegrees());
     }

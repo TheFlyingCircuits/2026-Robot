@@ -32,7 +32,7 @@ public class AimAndShoot extends Command {
     private Drivetrain drivetrain;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {1.3, 1.3, 0.2, 0.2};
+    private double[] notShootingTolerances = new double[] {1.3, 1.5, 0.25, 0.25};
     private double[] whileShootingTolerances = new double[] {10.0, 7.0, 8.0, 8.0};
 
     
@@ -65,7 +65,8 @@ public class AimAndShoot extends Command {
         // https://www.desmos.com/calculator/vjiv7dbdtf
 
         // our max surface speed on our hood is about 14.8 so if around max speed cap it
-        if(requestedOutputVelocityMPS > 14.25) return 14.25;
+        //23.8325407491 is out max front mps
+        // if(requestedOutputVelocityMPS > 14.25) return 14.25;
 
         double wheelVelocityTarget = requestedOutputVelocityMPS * 
             FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.97) +
@@ -156,8 +157,11 @@ public class AimAndShoot extends Command {
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
-
-            turret.aimAtTargetAndShoot(targetAimerDed, tagetHoodAngle, vcfWheelMPS); // * 1.65 too much *1.61)-1.385 woked good
+            
+            // caps both speeds to almost max
+            double hoodMPSReq = (vcfWheelMPS > 14.25) ? 14.25 : vcfWheelMPS;
+            double mainMPSReq = (vcfWheelMPS > 22.0) ? 22.0 : vcfWheelMPS;
+            turret.aimAtTargetAndShoot(targetAimerDed, tagetHoodAngle, mainMPSReq, hoodMPSReq); // * 1.65 too much *1.61)-1.385 woked good
             //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot *1.58)-1.37
 
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 

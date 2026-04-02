@@ -15,12 +15,10 @@ public class Flywheeltest extends Command {
 
     @Override 
     public void initialize() {
-        System.out.println("------------------------------------------------------------------------------------------");
         turret.setHoodWheelSpeed(3.0);
     }
 
     @Override 
     public void execute() {
-        System.out.println("running");
     }
 }

@@ -66,7 +66,7 @@ public class RobotContainer {
     public final Drivetrain drivetrain;
     // public final Leds leds;
     // public final LedsCANdle canLeds;
-    public final LedsCANdle canLedsCounter;
+    // public final LedsCANdle canLedsCounter;
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
@@ -79,7 +79,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         /**** INITIALIZE SUBSYSTEMS ****/
-        if (!RobotBase.isReal()) { //TODO put this back to not !
+        if (RobotBase.isReal()) { //TODO put this back to not !
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
@@ -116,7 +116,7 @@ public class RobotContainer {
         }
 
         // canLeds = new LedsCANdle(0, 60);
-        canLedsCounter = new LedsCANdle(45, 60);
+        // canLedsCounter = new LedsCANdle(45, 60);
 
         // drivetrain.setFocus(FieldElement.HUB);
 
@@ -164,8 +164,8 @@ public class RobotContainer {
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand())
-        .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+        // .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
         // , () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0)));
@@ -197,7 +197,7 @@ public class RobotContainer {
         turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
         indexer.setDefaultCommand(indexer.stopIndexingCommand());
         intake.setDefaultCommand(intake.noVoltageCommand());
-        canLedsCounter.setDefaultCommand(canLedsCounter.solidColorCommand(Color.fromHSV(canLedsCounter.getAllianceHue(), 255, 255)));
+        // canLedsCounter.setDefaultCommand(canLedsCounter.solidColorCommand(Color.fromHSV(canLedsCounter.getAllianceHue(), 255, 255)).ignoringDisable(true));
     }
 
     public void periodic() {
@@ -316,12 +316,12 @@ public class RobotContainer {
         }
 
         return new SequentialCommandGroup(
-            new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
+
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
-            Commands.waitSeconds(3),
+            Commands.waitSeconds(4),
             new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath)),
-            Commands.waitSeconds(5)
+            Commands.waitSeconds(7)
         );
     } catch (Exception e) {
         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());

@@ -103,15 +103,16 @@ public class Turret extends SubsystemBase{
         flywheels.setHoodWheelVolts(0.0);
     }
 
-    public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecond) {
+    public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecondMain, 
+        double targetHoodMPS) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(targetHoodAngleDegrees);
 
         // Convert meters per second to RPS
-        double frontWheelRPSOutput = targetVelocityMetersPerSecond/(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
+        double frontWheelRPSOutput = targetVelocityMetersPerSecondMain/(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         flywheels.setTargetFrontWheelVelocity(frontWheelRPSOutput);
 
-        double hoodWheelRPSOutput = (targetVelocityMetersPerSecond)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        double hoodWheelRPSOutput = (targetHoodMPS)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
         flywheels.setTargetHoodWheelVelocity(hoodWheelRPSOutput);
     }
 
@@ -139,12 +140,12 @@ public class Turret extends SubsystemBase{
         return this.run(() -> aimAtTargetNoShoot(targetAimerDegrees.get()));
     }
 
-    public Command aimAtTargetAndShootCommand(Supplier<Double> targetAimerDegrees, 
-    Supplier<Double> targetHoodAngleDegrees, Supplier<Double> targetVelocityMetersPerSecond) {
+    // public Command aimAtTargetAndShootCommand(Supplier<Double> targetAimerDegrees, 
+    // Supplier<Double> targetHoodAngleDegrees, Supplier<Double> targetVelocityMetersPerSecond) {
         
-        return this.run(() -> aimAtTargetAndShoot(targetAimerDegrees.get(),targetHoodAngleDegrees.get(),
-            targetVelocityMetersPerSecond.get()));
-    }
+    //     return this.run(() -> aimAtTargetAndShoot(targetAimerDegrees.get(),targetHoodAngleDegrees.get(),
+    //         targetVelocityMetersPerSecond.get()));
+    // }
 
     public Command turretStopDoingStuffCommand() {
         return this.run(() -> setAllVolts(0.0,0.0,0.0,0.0));

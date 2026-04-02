@@ -17,7 +17,7 @@ public class HoodIOKraken implements HoodIO{
     private Kraken hoodKraken;
     private double targetHoodDegreesLocal = 0.0;
 
-    private double hoodFeedForwardGravity = -0.57;
+    private double hoodFeedForwardGravity = -0.7;
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(100.0);
@@ -40,7 +40,7 @@ public class HoodIOKraken implements HoodIO{
         // replaced kS with a constant volts feed forward for gravity because ks would switch if going down
         // to negative volts and I don't want that
         config.Slot0.kS = 0.11; // Add 0.6 V output to overcome static friction
-        config.Slot0.kP = 160.6875; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V// was 154
+        config.Slot0.kP = 162.5; // An error of 1 rotation results in 20.0 V output for each 1/8th rot off 2.5V// was 154
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
