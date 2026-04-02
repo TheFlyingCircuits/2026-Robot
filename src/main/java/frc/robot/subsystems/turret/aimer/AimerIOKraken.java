@@ -98,8 +98,8 @@ public class AimerIOKraken implements AimerIO{
         config.MotionMagic.MotionMagicCruiseVelocity = 2.0; //rps
         config.MotionMagic.MotionMagicAcceleration = 6.0; //rotations per second squared
 
-        config.Voltage.PeakForwardVoltage = 4.0;
-        config.Voltage.PeakReverseVoltage = -4.0;
+        config.Voltage.PeakForwardVoltage = 8.0;
+        config.Voltage.PeakReverseVoltage = -8.0;
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -215,7 +215,7 @@ public class AimerIOKraken implements AimerIO{
         // aimerKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringAmps));
 
         if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 50.0) {
-            aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
+            aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
         } else {
             // aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withSlot(1).withFeedForward(ksForConstantForceSpring));
             aimerKraken.setControl(m_request.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
