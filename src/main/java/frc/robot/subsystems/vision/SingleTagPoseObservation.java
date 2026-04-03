@@ -16,9 +16,10 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
     public Matrix<N3, N1> getStandardDeviations() {
         // double slopeStdDevMeters_PerMeter = 0.0023;
 
-        double slopeStdDevMeters_PerMeter = 0.00;
-        // if (tagToCamMeters < 1.5) {
-        //     slopeStdDevMeters_PerMeter = 0.0010;
+        double slopeStdDevMeters_PerMeter = 0.00125;
+        if (tagToCamMeters < 1.5) {
+            slopeStdDevMeters_PerMeter = 0.0005;
+        }
         // } else if(tagToCamMeters < 2.5) {
         //     slopeStdDevMeters_PerMeter = 0.0017;
         // }
