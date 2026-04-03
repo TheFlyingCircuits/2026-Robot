@@ -23,23 +23,18 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
-import frc.robot.PlayingField.Shift;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.subsystems.HumanDriver;
-import frc.robot.subsystems.LedsCANdle;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
@@ -120,10 +115,12 @@ public class RobotContainer {
 
         // drivetrain.setFocus(FieldElement.HUB);
 
-        FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.97);
+        FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.89);
         FlyingCircuitUtils.putNumberOnDashboard("intercept", - 5.93);
 
-        FlyingCircuitUtils.putNumberOnDashboard("aimerTargetVolts", 0.0);
+        // FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0);
+
+        // FlyingCircuitUtils.putNumberOnDashboard("aimerTargetVolts", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -158,8 +155,8 @@ public class RobotContainer {
         //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqHoodAngle", 0.0), 
         //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqMPS", 0.0)));
 
-        // duncanController.a().whileTrue(turret.setAimerVoltsCommand(
-        //     () -> FlyingCircuitUtils.getNumberFromDashboard("aimerTargetVolts", 0.0)));
+        // duncanController.a().whileTrue(turret.setAllVoltsCommand(()->0.0,()->0.0,
+        //     () -> FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0), ()->0.0));
 
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));

@@ -69,7 +69,7 @@ public class AimAndShoot extends Command {
         // if(requestedOutputVelocityMPS > 14.25) return 14.25;
 
         double wheelVelocityTarget = requestedOutputVelocityMPS * 
-            FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.97) +
+            FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.89) +
             FlyingCircuitUtils.getNumberFromDashboard("intercept", -5.93);
 
         // if VCF output is lower than original request return original velocity

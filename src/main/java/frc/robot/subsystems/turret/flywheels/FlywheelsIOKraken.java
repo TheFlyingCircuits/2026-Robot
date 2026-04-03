@@ -51,14 +51,16 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.CurrentLimits.StatorCurrentLimit = 200;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 4.0; // 4.0 amps to get over friction
-        config.Slot0.kP = 4.7; // 8 amps per erreor of 1 rps
-        config.Slot0.kD = 0.0;
-        config.Slot0.kV = 0.01;
+        // config.Slot0.kS = 4.0; // 4.0 amps to get over friction
+        // config.Slot0.kP = 4.7; // 8 amps per erreor of 1 rps
+        // config.Slot0.kD = 0.0;
+        // config.Slot0.kV = 0.01;
 
-        // for bang-bang controller in volts
-        config.Slot1.kS = 0.268738; // voltage to get over static friction
-        config.Slot1.kV = 0.119992; // volts per rps
+        //https://www.desmos.com/calculator/cott1bvfru
+        //y=0.120111x+0.300167
+        // volts
+        config.Slot1.kS = 0.300167; // voltage to get over static friction
+        config.Slot1.kV = 0.120111; // volts per rps
         // config.Slot1.kP = 99999999.0;
 
         // current bang bang 
