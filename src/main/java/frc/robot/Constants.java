@@ -230,7 +230,7 @@ public final class Constants {
         public static final double hoodDefaultAngleDegrees = 80.0;
 
         public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3.0);
-        public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(2.0);
+        public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(1.85);
     }
 
     public final static class IndexerConstants {

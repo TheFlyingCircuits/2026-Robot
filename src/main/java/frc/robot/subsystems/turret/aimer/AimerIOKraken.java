@@ -75,7 +75,7 @@ public class AimerIOKraken implements AimerIO{
 
         // motion magic y=1.80594x+0.78592
         // config.Slot0.kG = ksForConstantForceSpring; 
-        config.Slot0.kP = 200.0;
+        config.Slot0.kP = 210.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 1.80594; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 

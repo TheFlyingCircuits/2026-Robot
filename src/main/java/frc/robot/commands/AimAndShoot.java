@@ -69,8 +69,11 @@ public class AimAndShoot extends Command {
         // if(requestedOutputVelocityMPS > 14.25) return 14.25;
 
         double wheelVelocityTarget = requestedOutputVelocityMPS * 
-            FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.89) +
-            FlyingCircuitUtils.getNumberFromDashboard("intercept", -5.93);
+            FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.91) +
+            FlyingCircuitUtils.getNumberFromDashboard("intercept", -6.0);
+
+        Logger.recordOutput("AimAndShoot/fudge_proportion", FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.91));
+        Logger.recordOutput("AimAndShoot/fudge_intercept", FlyingCircuitUtils.getNumberFromDashboard("intercept", -6.0));
 
         // if VCF output is lower than original request return original velocity
         if(requestedOutputVelocityMPS > wheelVelocityTarget) return requestedOutputVelocityMPS;

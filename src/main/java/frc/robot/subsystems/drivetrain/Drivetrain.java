@@ -45,10 +45,9 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldConstants;
 import frc.robot.PlayingField.FieldElement;
+import frc.robot.PlayingField.Shift;
 import frc.robot.subsystems.vision.SingleTagCam;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
-
-import frc.robot.PlayingField.Shift;
 
 public class Drivetrain extends SubsystemBase {
     private GyroIO gyroIO;
@@ -421,7 +420,7 @@ public class Drivetrain extends SubsystemBase {
             // and experience lots of wheel slip, which is why we have the "allowTeleportsNextPoseUpdate" flag
             // (used at driver's discretion (typically via y-button)). Also useful for seeding the robot pose
             // at the beginning of a match.
-            double teleportToleranceMeters = 4.0;
+            double teleportToleranceMeters = 2.0;
             if ((observedLocation.getDistance(locationNow) > teleportToleranceMeters) && (!this.allowTeleportsNextPoseUpdate)) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
@@ -435,7 +434,7 @@ public class Drivetrain extends SubsystemBase {
 
             // This measurment passes all our checks, so we add it to the fusedPoseEstimator
             acceptedTags.add(poseObservation.getTagPose());
-            Matrix<N3, N1> stdDevs = this.fullyTrustVisionNextPoseUpdate ? VecBuilder.fill(0, 0, 0) : poseObservation.getStandardDeviations();
+            Matrix<N3, N1> stdDevs = this.fullyTrustVisionNextPoseUpdate ? VecBuilder.fill(0, 0, 0) : poseObservation.getStandardDeviations((focus.isPresent() && focus.get() == FieldElement.HUB));
 
             fusedPoseEstimator.addVisionMeasurement(
                 poseObservation.robotPose().toPose2d(), 

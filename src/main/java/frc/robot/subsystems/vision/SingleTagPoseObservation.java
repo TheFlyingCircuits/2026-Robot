@@ -5,6 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.PlayingField.FieldConstants;;
 
 //perform an experiment.  Place the robot on the field.  Collect location data (x,y, theta).  Use the statistic tab in advandave scope to calculate the standard deviation
@@ -13,16 +14,19 @@ import frc.robot.PlayingField.FieldConstants;;
 //Plot standard deviation and distance in desmos
 
 public record SingleTagPoseObservation (String camName, Pose3d robotPose, double timestampSeconds, int tagUsed, double tagToCamMeters, double ambiguity, boolean usingMultiTag) {
-    public Matrix<N3, N1> getStandardDeviations() {
+    public Matrix<N3, N1> getStandardDeviations(boolean isScoringInHub) {
         // double slopeStdDevMeters_PerMeter = 0.0023;
-
-        double slopeStdDevMeters_PerMeter = 0.00125;
-        if (tagToCamMeters < 1.5) {
-            slopeStdDevMeters_PerMeter = 0.0005;
+        double slopeStdDevMeters_PerMeter;
+        if(isScoringInHub) {
+            slopeStdDevMeters_PerMeter = 0.0;
+        } else {
+            slopeStdDevMeters_PerMeter = 0.00225;
+            if (tagToCamMeters < 1.5) {
+                slopeStdDevMeters_PerMeter = 0.001;
+            } else if (tagToCamMeters < 3) {
+                slopeStdDevMeters_PerMeter = 0.0015;
+            }
         }
-        // } else if(tagToCamMeters < 2.5) {
-        //     slopeStdDevMeters_PerMeter = 0.0017;
-        // }
 
         return VecBuilder.fill(
             slopeStdDevMeters_PerMeter*tagToCamMeters,

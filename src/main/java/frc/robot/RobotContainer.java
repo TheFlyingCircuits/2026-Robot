@@ -115,8 +115,8 @@ public class RobotContainer {
 
         // drivetrain.setFocus(FieldElement.HUB);
 
-        FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.89);
-        FlyingCircuitUtils.putNumberOnDashboard("intercept", - 5.93);
+        FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.91);
+        FlyingCircuitUtils.putNumberOnDashboard("intercept", -6.0);
 
         // FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0);
 
