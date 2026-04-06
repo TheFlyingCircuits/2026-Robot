@@ -141,9 +141,9 @@ public class TurretCalculations {
         Translation3d target;
 
         if(passingTarget == PossibeTargets.PASSING_LEFT) {
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.3*inverIfRed,-1.5*inverIfRed,-0.1));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.1));
         } else {
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.3*inverIfRed,1.5*inverIfRed,-0.1));
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.1));
         }
 
         return target;

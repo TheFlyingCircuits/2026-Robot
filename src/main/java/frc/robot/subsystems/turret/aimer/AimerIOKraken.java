@@ -80,7 +80,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kV = 1.80594; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         // config.Slot1.kG = -ksForConstantForceSpring; 
-        config.Slot1.kP = 200.0;
+        config.Slot1.kP = 210.0;
         config.Slot1.kD = 0.0;
         // config.Slot1.kV = 1.80594; 
 
