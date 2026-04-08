@@ -14,13 +14,9 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -34,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -118,6 +115,9 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("proportion", 1.91);
         FlyingCircuitUtils.putNumberOnDashboard("intercept", -6.0);
 
+        FlyingCircuitUtils.putNumberOnDashboard("req surface speed", 0.0);
+        FlyingCircuitUtils.putNumberOnDashboard("req shot angle", 0.0);
+
         // FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0);
 
         // FlyingCircuitUtils.putNumberOnDashboard("aimerTargetVolts", 0.0);
@@ -151,12 +151,17 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
-        //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqHoodAngle", 0.0), 
-        //     () -> FlyingCircuitUtils.getNumberFromDashboard("reqMPS", 0.0)));
+        duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
+         () -> FlyingCircuitUtils.getNumberFromDashboard("req shot angle", 0.0),
+         () -> FlyingCircuitUtils.getNumberFromDashboard("req surface speed", 0.0)).alongWith(intake.intakeDefualtAndIntakeCommand()));
 
         // duncanController.a().whileTrue(turret.setAllVoltsCommand(()->0.0,()->0.0,
         //     () -> FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0), ()->0.0));
+
+        // duncanController.a().onTrue(turret.aimAtTargetNoShootCommand(
+        //     () ->TurretCalculations.getAimerTargetDegreesRobotToTarget(
+        //         TurretCalculations.getTargetFromEnum(PossibeTargets.HUB, () -> drivetrain.getPoseMeters().getTranslation()).toTranslation2d(), 
+        //     drivetrain.getPoseMeters().getTranslation())));
 
         duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
@@ -197,19 +202,20 @@ public class RobotContainer {
         // canLedsCounter.setDefaultCommand(canLedsCounter.solidColorCommand(Color.fromHSV(canLedsCounter.getAllianceHue(), 255, 255)).ignoringDisable(true));
     }
 
-    public void periodic() {
-        // Log turret pose, isn't part of turret because it needs the drivetrain too.
-        Translation3d turretLocation = TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation());
-        Rotation2d turretYaw_robotCoords = Rotation2d.fromDegrees(turret.getAimerAngleDeg_robotCoords());
-        Rotation2d turretYaw_fieldCoords = turretYaw_robotCoords.rotateBy(drivetrain.getPoseMeters().getRotation());
 
-        // pitch viz comes from hood angle.
-        // negate to match wpilib convention of looking up being negative pitch.
-        double turretPitchRadians = -Units.degreesToRadians(turret.getHoodAngleDeg());
+    // public void periodic() {
+    //     // Log turret pose, isn't part of turret because it needs the drivetrain too.
+    //     Translation3d turretLocation = TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation());
+    //     Rotation2d turretYaw_robotCoords = Rotation2d.fromDegrees(turret.getAimerAngleDeg_robotCoords());
+    //     Rotation2d turretYaw_fieldCoords = turretYaw_robotCoords.rotateBy(drivetrain.getPoseMeters().getRotation());
 
-        Rotation3d turretOrientation = new Rotation3d(0, turretPitchRadians, turretYaw_fieldCoords.getRadians());
-        Logger.recordOutput("turret/poseOnField", new Pose3d(turretLocation, turretOrientation));
-    }
+    //     // pitch viz comes from hood angle.
+    //     // negate to match wpilib convention of looking up being negative pitch.
+    //     double turretPitchRadians = -Units.degreesToRadians(turret.getHoodAngleDeg());
+
+    //     Rotation3d turretOrientation = new Rotation3d(0, turretPitchRadians, turretYaw_fieldCoords.getRadians());
+    //     Logger.recordOutput("turret/poseOnField", new Pose3d(turretLocation, turretOrientation));
+    // }
 
     private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 

@@ -59,8 +59,8 @@ public class Turret extends SubsystemBase{
     }
 
     public void aimAtTarget(double targetAngleDegreesRobotToTarget) {
-        Logger.recordOutput("aimerInputs/targetAngleDegreesRobotVector", targetAngleDegreesRobotToTarget);
         aimer.setTargetAimerPosition(targetAngleDegreesRobotToTarget);
+        Logger.recordOutput("aimerInputs/targetAngleDegreesRobotVector", targetAngleDegreesRobotToTarget);
     }
 
     public void setAimerVolts(double volts) {

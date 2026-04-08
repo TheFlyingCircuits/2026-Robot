@@ -47,8 +47,8 @@ public class AimAndShoot extends Command {
         this.drivetrain=drivetrain;
         isShooting = false;
 
-        drivetrain.allowTeleportsNextPoseUpdate();
-        drivetrain.fullyTrustVisionNextPoseUpdate();
+        // drivetrain.allowTeleportsNextPoseUpdate();
+        // drivetrain.fullyTrustVisionNextPoseUpdate();
 
         addRequirements(turret, indexer);
     }
@@ -181,11 +181,12 @@ public class AimAndShoot extends Command {
                 isShooting = false;
             }
         } else {
+            // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
+            turret.aimAtTargetNoShoot(targetAimerDed);
+
             readyToShoot = isShooting ? turret.isReadyToShoot(whileShootingTolerances[0],whileShootingTolerances[1],whileShootingTolerances[2],whileShootingTolerances[3]) 
             : turret.isReadyToShoot(notShootingTolerances[0],notShootingTolerances[1],notShootingTolerances[2],notShootingTolerances[3]);
 
-            // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
-            turret.aimAtTargetNoShoot(targetAimerDed);
             indexer.stopIndexing();
             isShooting = false;
         }
@@ -200,9 +201,9 @@ public class AimAndShoot extends Command {
         Logger.recordOutput("AimAndShoot/angleOfAttack", angleOfAttack);
 
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
-        TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
-            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
-        this.logPredictedTrajectory();
+        // TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
+        //     robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
+        // this.logPredictedTrajectory();
         Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", fuelVelocityCompensated.getNorm());
         Logger.recordOutput("AimAndShoot/desiredSpeedWithVCF", vcfWheelMPS);
         
