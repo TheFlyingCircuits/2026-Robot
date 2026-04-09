@@ -140,11 +140,9 @@ public class RobotContainer {
         new EventTrigger("intake").onTrue(new ProxyCommand(intake.inAutoIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
         new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain)
-        .alongWith(intake.inAutoIntakeCommand())));
+        () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain, intake, () -> true)));
 
-        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true)
-        .alongWith(intake.intakeDefualtAndIntakeCommand())));
+        new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true, () ->true)));
 
         configureBindings();
         setDefaultCommands();
@@ -153,7 +151,7 @@ public class RobotContainer {
     private void configureBindings() {
         duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
          () -> FlyingCircuitUtils.getNumberFromDashboard("req shot angle", 0.0),
-         () -> FlyingCircuitUtils.getNumberFromDashboard("req surface speed", 0.0)).alongWith(intake.intakeDefualtAndIntakeCommand()));
+         () -> FlyingCircuitUtils.getNumberFromDashboard("req surface speed", 0.0), intake));
 
         // duncanController.a().whileTrue(turret.setAllVoltsCommand(()->0.0,()->0.0,
         //     () -> FlyingCircuitUtils.getNumberFromDashboard("frontWheelVolts", 0.0), ()->0.0));
@@ -163,18 +161,17 @@ public class RobotContainer {
         //         TurretCalculations.getTargetFromEnum(PossibeTargets.HUB, () -> drivetrain.getPoseMeters().getTranslation()).toTranslation2d(), 
         //     drivetrain.getPoseMeters().getTranslation())));
 
-        duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true));
-        duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true, () -> false));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true).alongWith(intake.intakeDefualtAndIntakeCommand()));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
         // .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
         // , () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0)));
 
-        duncanController.leftTrigger().whileTrue(intake.intakeDefualtAndIntakeCommand()
-            .alongWith(aimAndShoot(() -> false, () -> true))).whileFalse(
-                aimAndShoot(() -> false, () -> true)
+        duncanController.leftTrigger().whileTrue((aimAndShoot(() -> false, () -> true, () -> true))).whileFalse(
+                aimAndShoot(() -> false, () -> true, () -> false)
             );// also aims
 
         duncanController.y().onTrue(reSeedRobotPose());
@@ -217,15 +214,15 @@ public class RobotContainer {
     //     Logger.recordOutput("turret/poseOnField", new Pose3d(turretLocation, turretOrientation));
     // }
 
-    private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs) {
+    private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs, Supplier<Boolean> shouldIntake) {
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake);
     }
 
     private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
     Supplier<Translation3d> manualTurretPose) {
         return new AimAndShoot(turret, indexer, manualTurretPose, 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain, intake, () -> true);
     }
 
     // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
@@ -322,7 +319,7 @@ public class RobotContainer {
 
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(4),
-            new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
+            new ProxyCommand(aimAndShoot(() -> false, () -> false, () -> true).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath)),
             Commands.waitSeconds(7)
         );
@@ -369,7 +366,7 @@ public class RobotContainer {
             new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown())),
             new ProxyCommand(AutoBuilder.followPath(firstPath)),
             Commands.waitSeconds(3),
-            new ProxyCommand(aimAndShoot(() -> false, () -> false).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
+            new ProxyCommand(aimAndShoot(() -> false, () -> false, () -> true).until(() -> (turret.getHoodAngleDeg() > TurretConstants.maxHoodAngle-10.0))),
             new ProxyCommand(AutoBuilder.followPath(secondPath)),
             Commands.waitSeconds(5)
         );

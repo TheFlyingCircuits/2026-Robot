@@ -6,12 +6,14 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.turret.Turret;
 
 public class ShootWithParams extends Command {
 
     private Turret turret;
     private Indexer indexer;
+    private Intake intake;
     private boolean isShooting = false;
     private Supplier<Double> aimerAngleDeg;
     private Supplier<Double> hoodAngleDeg;
@@ -26,16 +28,17 @@ public class ShootWithParams extends Command {
     
 
     public ShootWithParams(Turret turret, Indexer indexer, Supplier<Double> aimerAngleDeg, Supplier<Double> hoodAngleDeg,
-        Supplier<Double> targetShotMetersPerSecond) {
+        Supplier<Double> targetShotMetersPerSecond, Intake intake) {
         this.turret=turret;
         this.indexer=indexer;
         this.aimerAngleDeg=aimerAngleDeg;
+        this.intake=intake;
         this.hoodAngleDeg=hoodAngleDeg;
         this.targetShotMetersPerSecond=targetShotMetersPerSecond;
         // this.angleOfAttack=angleOfAttack;
         isShooting = false;
 
-        addRequirements(turret, indexer);
+        addRequirements(turret, indexer, intake);
     }
 
     @Override
@@ -45,6 +48,7 @@ public class ShootWithParams extends Command {
 
     @Override
     public void execute() {
+        intake.intakeUpDown();
 
         // driverReadyToShoot is a boolean based off driver button
 

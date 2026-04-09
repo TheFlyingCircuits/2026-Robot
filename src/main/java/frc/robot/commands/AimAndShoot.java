@@ -15,6 +15,7 @@ import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.TurretCalculations.PossibeTargets;
@@ -23,10 +24,12 @@ public class AimAndShoot extends Command {
 
     private Turret turret;
     private Indexer indexer;
+    private Intake intake;
     private Supplier<Translation3d> turretTranslation;
     private Supplier<ChassisSpeeds> robotFieldOrientedVelocity;
     private Supplier<TurretCalculations.PossibeTargets>  shootingTarget;
     private Supplier<Boolean> driverReadyToShoot;
+    private Supplier<Boolean> shouldIntake;
     private double angleOfAttack;
     private boolean isShooting = false;
     private Drivetrain drivetrain;
@@ -38,19 +41,21 @@ public class AimAndShoot extends Command {
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain) {
+    Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain, Intake intake, Supplier<Boolean> shouldIntake) {
         this.turret=turret;
         this.indexer=indexer;
+        this.intake=intake;
         this.turretTranslation=turretTranlsation;
         this.robotFieldOrientedVelocity=robotFieldOrientedVelocity;
         this.driverReadyToShoot=driverReadyToShoot;
+        this.shouldIntake=shouldIntake;
         this.drivetrain=drivetrain;
         isShooting = false;
 
         // drivetrain.allowTeleportsNextPoseUpdate();
         // drivetrain.fullyTrustVisionNextPoseUpdate();
 
-        addRequirements(turret, indexer);
+        addRequirements(turret, indexer, intake);
     }
 
     @Override
@@ -67,6 +72,7 @@ public class AimAndShoot extends Command {
         // our max surface speed on our hood is about 14.8 so if around max speed cap it
         //23.8325407491 is out max front mps
         // if(requestedOutputVelocityMPS > 14.25) return 14.25;
+
 
         double wheelVelocityTarget = requestedOutputVelocityMPS * 
             FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.91) +
@@ -159,6 +165,12 @@ public class AimAndShoot extends Command {
 
         // driverReadyToShoot is a boolean based off driver button
         if(driverReadyToShoot.get()) {
+
+            if(Math.abs(robotFieldOrientedVelocity.get().vxMetersPerSecond) + Math.abs(robotFieldOrientedVelocity.get().vyMetersPerSecond) < 0.025) {
+                intake.intakeUpDown();
+            } else {
+                intake.intakeDefualtAndIntake();
+            }
             // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
             
             // caps both speeds to almost max
@@ -181,6 +193,11 @@ public class AimAndShoot extends Command {
                 isShooting = false;
             }
         } else {
+            if(shouldIntake.get()) {
+                intake.intakeDefualtAndIntake();
+            } else {
+                intake.intakeRollersStop();
+            }
             // aimer will just preaim target but hood will be at defualt position and flyWheels will be stationary
             turret.aimAtTargetNoShoot(targetAimerDed);
 

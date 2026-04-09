@@ -31,7 +31,7 @@ public class AimerIOKraken implements AimerIO{
     private CANcoder absoluteEncoder;
     private double turretSpringAngleRobotRelative = 0.0;
     // private double turretMaxRobotRelativeDeg = new Rotation2d(Units.degreesToRadians(turretZeroDegreesRobotRelative)).plus(Rotation2d.k180deg).getDegrees();
-    private double ksForConstantForceSpring = 0.65;
+    private double ksForConstantForceSpring = 0.60;
     // private double ksForConstantForceSpring = 0.82;
     private double ksForConstantForceSpringAmps = 20.0;
     private double kVVoltsVoltsPerRotation = 1.80594;
@@ -99,7 +99,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kV = 1.80594; // rps/volts 0.82 rps 2v - 1.4rps - 3v
 
         // config.Slot1.kG = -ksForConstantForceSpring; 
-        config.Slot1.kP = 200.0;
+        config.Slot1.kP = 125.0;
         config.Slot1.kV = 1.80594;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
@@ -120,8 +120,8 @@ public class AimerIOKraken implements AimerIO{
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.05);
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 2.0; //rps
-        config.MotionMagic.MotionMagicAcceleration = 6.0; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
+        config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
 
         config.Voltage.PeakForwardVoltage = 8.0;
         config.Voltage.PeakReverseVoltage = -8.0;
@@ -198,6 +198,27 @@ public class AimerIOKraken implements AimerIO{
         aimerKraken.setControl(new TorqueCurrentFOC(amps).withUpdateFreqHz(0.0));
     }
 
+    // returns a velocity setpoint
+    public double motionProfile(double currentError, double currentVelocityRotationsPerSec, 
+        double maxVelocityRotationsPerSec, double maxAcelRotationsPerSecSquared) {
+        // How much distance do we need to stop from current velocity
+        double stoppingDistanceRot = (currentVelocityRotationsPerSec * currentVelocityRotationsPerSec) / (2.0 * maxAcelRotationsPerSecSquared);
+        
+        // If we need to start slowing down to stop in time
+        if (Math.abs(currentError) <= stoppingDistanceRot) {
+            // Attempt to decelerate if we are at or under our stopping distance rotations
+            return Math.signum(currentError) * Math.sqrt(2.0 * maxAcelRotationsPerSecSquared * Math.abs(currentError));
+        }
+        
+        // Accelerate toward max velocity
+        double targetVel = Math.signum(currentError) * maxVelocityRotationsPerSec;
+        
+        // Make it so we don't aceed max acel
+        double velocityDelta = targetVel - currentVelocityRotationsPerSec;
+        double maxDelta = maxAcelRotationsPerSecSquared * 0.02;
+        return currentVelocityRotationsPerSec + MathUtil.clamp(velocityDelta, -maxDelta, maxDelta);
+        }
+
     @Override
     public void setTargetAimerPosition(double targetPositionDegreesRobotToTarget) {
 
@@ -229,27 +250,38 @@ public class AimerIOKraken implements AimerIO{
 
         double pidOutputVolts;
         double errorRotations = (Units.degreesToRotations(safeAngle) -turretPositionRotations);
-        pidOutputVolts = turretPID.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle));//errorRotations * 65;
+        // pidOutputVolts = turretPID.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle));//errorRotations * 65;
 
-        profiledController.reset(new TrapezoidProfile.State(turretPositionRotations, aimerKraken.getVelocity().getValueAsDouble()));
-        profiledController.setGoal(new TrapezoidProfile.State(Units.degreesToRotations(safeAngle), 0.0));
+        // profiledController.reset(new TrapezoidProfile.State(turretPositionRotations, aimerKraken.getVelocity().getValueAsDouble()));
+        // profiledController.setGoal(new TrapezoidProfile.State(Units.degreesToRotations(safeAngle), 0.0));
 
-        m_setpoint = trapezoidProfile.calculate(0.02, m_setpoint, new TrapezoidProfile.State(Units.degreesToRotations(safeAngle), -robotRotationVelocityRotations));
-    
-    
-        Logger.recordOutput("aimer profile target velocity", profiledController.getSetpoint().velocity);
-        Logger.recordOutput("aimer profile target position", profiledController.getSetpoint().position);
-        Logger.recordOutput("aimAtTargetTimeDebug", timer.get());
-        // pidOutputVolts = (m_setpoint.velocity - turretVelocityRotationsPerSec) * 2.0;
+        // m_setpoint = trapezoidProfile.calculate(0.02, m_setpoint, new TrapezoidProfile.State(Units.degreesToRotations(safeAngle), -robotRotationVelocityRotations));
+
+        double velocitySetpoint = motionProfile(errorRotations, turretVelocityRotationsPerSec, 1.25, 5.0);
+        velocitySetpoint = velocitySetpoint -robotRotationVelocityRotations;
+
+        double pidOutputToTarget;
+        if(Units.rotationsToDegrees(errorRotations) < 5.0) {
+            velocitySetpoint = -robotRotationVelocityRotations;
+            pidOutputToTarget = MathUtil.clamp(errorRotations * 85.0, -2.0, 2.0);
+        } else {
+            pidOutputToTarget = MathUtil.clamp(errorRotations * 40.0, -1.2, 1.2);
+        }
+        Logger.recordOutput("profile velcity setpoint", velocitySetpoint);
+        Logger.recordOutput("aimer timer", timer.get());
+
+        double pidOutputToVelocitySetpoint = MathUtil.clamp((velocitySetpoint - turretVelocityRotationsPerSec) * 1.5, -2.0, 2.0);
+
+        pidOutputVolts = pidOutputToTarget + pidOutputToVelocitySetpoint;
 
         // double feedForwardVolts = feedForwardsSpringVolts + m_setpoint.velocity*kVVoltsVoltsPerRotation;
-        // double feedForwardVolts = feedForwardsSpringVolts + profiledController.getSetpoint().velocity*kVVoltsVoltsPerRotation;
+        double feedForwardVolts = feedForwardsSpringVolts + velocitySetpoint*kVVoltsVoltsPerRotation;
         // pidOutputVolts = turretPID.calculate(aimerKraken.getVelocity().getValueAsDouble(), profiledController.getSetpoint().velocity);
-        // double outputVolts = MathUtil.clamp(pidOutputVolts + feedForwardVolts, -8.0, 8.0);
-        double outputVolts = MathUtil.clamp(pidOutputVolts+ feedForwardsSpringVolts + robotRotationFeedForward, -8.0, 8.0);
+        double outputVolts = MathUtil.clamp(pidOutputVolts + feedForwardVolts, -8.0, 8.0);
+        // double outputVolts = MathUtil.clamp(pidOutputVolts+ feedForwardsSpringVolts + robotRotationFeedForward, -8.0, 8.0);
 
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 50.0) {
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 80.0) {
             aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
         } else {
             aimerKraken.setVoltage(outputVolts);

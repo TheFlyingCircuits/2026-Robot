@@ -4,18 +4,22 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
     IntakeIOInputsAutoLogged inputs;
     IntakeIO io;
+    private Timer timer;
 
     boolean isIntakeDown = false;
 
     public Intake(IntakeIO io) {
         this.io = io;
         inputs = new IntakeIOInputsAutoLogged();
+        timer = new Timer();
+        timer.start();
         
     }
 
@@ -63,6 +67,17 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public void intakeUpDown() {
+        if(timer.get() > 0.3) timer.reset();
+
+        intakeRunRollers();
+        if((timer.get() < 0.15) ) {
+            io.setIntakeVolts(2.0);
+        } else if(timer.get() < 0.3) {
+            io.setIntakeVolts(-1.5);
+        }
+    }
+
     public void intakeDownThenIntake() {
         if(inputs.intakePositionDegrees > 15.0) {
             isIntakeDown = false;
@@ -79,7 +94,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeDefualtAndIntake() {
-        
+        io.setIntakeVolts(0);
         intakeRunRollers();
     }
 
