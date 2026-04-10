@@ -257,15 +257,15 @@ public class AimerIOKraken implements AimerIO{
 
         // m_setpoint = trapezoidProfile.calculate(0.02, m_setpoint, new TrapezoidProfile.State(Units.degreesToRotations(safeAngle), -robotRotationVelocityRotations));
 
-        double velocitySetpoint = motionProfile(errorRotations, turretVelocityRotationsPerSec, 1.25, 5.0);
+        double velocitySetpoint = motionProfile(errorRotations, turretVelocityRotationsPerSec, 1.25, 7.0);
         velocitySetpoint = velocitySetpoint -robotRotationVelocityRotations;
 
         double pidOutputToTarget;
-        if(Units.rotationsToDegrees(errorRotations) < 5.0) {
+        if(Units.rotationsToDegrees(errorRotations) < 10.0) {
             velocitySetpoint = -robotRotationVelocityRotations;
             pidOutputToTarget = MathUtil.clamp(errorRotations * 85.0, -2.0, 2.0);
         } else {
-            pidOutputToTarget = MathUtil.clamp(errorRotations * 40.0, -1.2, 1.2);
+            pidOutputToTarget = MathUtil.clamp(errorRotations * 35.0, -1.1, 1.1);
         }
         Logger.recordOutput("profile velcity setpoint", velocitySetpoint);
         Logger.recordOutput("aimer timer", timer.get());

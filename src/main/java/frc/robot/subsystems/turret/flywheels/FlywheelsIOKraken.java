@@ -48,7 +48,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 200;
+        config.CurrentLimits.StatorCurrentLimit = 130;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // config.Slot0.kS = 4.0; // 4.0 amps to get over friction
@@ -61,36 +61,36 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // volts
         config.Slot1.kS = 0.300167; // voltage to get over static friction
         config.Slot1.kV = 0.120111; // volts per rps
+        config.Slot1.kP = 1.5;
         // config.Slot1.kP = 99999999.0;
 
         // current bang bang 
         config.Slot2.kS = 4.0;
         config.Slot2.kP = 99999999.0;
 
-        if(runningBangBangController) {
-            config.Voltage.PeakForwardVoltage = 11.0;
-            config.Voltage.PeakReverseVoltage = 0.0;
-        }
+        // if(runningBangBangController) {
+        //     config.Voltage.PeakForwardVoltage = 11.0;
+        //     config.Voltage.PeakReverseVoltage = 0.0;
+        // }
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = 0.0;
-        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
+        config.Voltage.PeakForwardVoltage = 11.0;
+        config.Voltage.PeakReverseVoltage = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = TurretConstants.mainWheelKrakenToTurretRotationsGearRatio;
         frontWheelKraken.applyConfig(config);
-        frontWheelKraken.getVelocity().setUpdateFrequency(250);
+        frontWheelKraken.getVelocity().setUpdateFrequency(1000);
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         frontWheelKrakenFollower.applyConfig(config);
-        frontWheelKrakenFollower.getVelocity().setUpdateFrequency(250);
+        frontWheelKrakenFollower.getVelocity().setUpdateFrequency(1000);
     }
 
     private void configHoodWheelKrakens() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 200;
+        config.CurrentLimits.StatorCurrentLimit = 130;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 3.6; // 5.0 amps to get over friction
@@ -101,6 +101,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // for bang-bang controller in volts
         config.Slot1.kS = 0.292215; // voltage to get over static friction
         config.Slot1.kV = 0.121075; // volts per rps
+        config.Slot0.kP = 1.5;
         // config.Slot1.kP = 1.0;
 
         // current bang bang 
@@ -115,6 +116,9 @@ public class FlywheelsIOKraken implements FlywheelsIO {
             // config.Voltage.SupplyVoltageTimeConstant
         }
 
+        config.Voltage.PeakForwardVoltage = 11.0;
+        config.Voltage.PeakReverseVoltage = 0.0;
+
         config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
         config.TorqueCurrent.PeakReverseTorqueCurrent = 0.0;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
@@ -123,7 +127,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.Feedback.SensorToMechanismRatio = TurretConstants.hoodWheelKrakenToTurretRotationsGearRatio;
         // config.ClosedLoopGeneral.ContinuousWrap = true;
         hoodWheelKraken.applyConfig(config);
-        hoodWheelKraken.getVelocity().setUpdateFrequency(250);
+        hoodWheelKraken.getVelocity().setUpdateFrequency(1000);
     }
 
     @Override
