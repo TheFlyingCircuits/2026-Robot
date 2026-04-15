@@ -61,7 +61,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // volts
         config.Slot1.kS = 0.369422; // voltage to get over static friction
         config.Slot1.kV = 0.12203; // volts per rps
-        config.Slot2.kP = 0.55;
+        config.Slot2.kP = 0.4;
         // config.Slot1.kP = 0.5; 
         // config.Slot1.kP = 1.5;
         // config.Slot1.kP = 99999999.0;

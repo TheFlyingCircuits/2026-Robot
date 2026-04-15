@@ -40,52 +40,54 @@ public class Indexer extends SubsystemBase {
         indexerIO.setBigSpinnerAmps(bigSpinnerAmps);
     }
 
-    public void setAllTargetVolts(double kickerVolts, double sideKickerVolts, double bigSpinnerVolts) {
+    public void setAllTargetVolts(double kickerVolts, double sideKickerVolts, double bigSpinnerVolts, double midRollerVolts) {
         indexerIO.setKickerVolts(kickerVolts);
         indexerIO.setSideKickerVolts(sideKickerVolts);
         indexerIO.setBigSpinnerVolts(bigSpinnerVolts);
+        indexerIO.setMidRollerVolts(midRollerVolts);
     }
 
-    public void setAllTargetVelocity(double kickerVelMPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
+    public void setAllTargetVelocity(double kickerVelMPS, double sideKickerVelRPS, double bigSpinnerVelRPS, double midRollerVelRPS) {
         double kickerVelRPS = kickerVelMPS
             /(Math.PI*Units.inchesToMeters(2.0));
         indexerIO.setTargetKickerVelocity(kickerVelRPS);
         indexerIO.setTargetSideKickerVelocity(sideKickerVelRPS);
         indexerIO.setTargetBigSpinnerVelocity(bigSpinnerVelRPS);
+        indexerIO.setTargetMidRollerVelocity(midRollerVelRPS);
     }
 
     public void indexFuel() {
-        setAllTargetVelocity(4.5,45.0,2.5);
+        setAllTargetVelocity(4.5,45.0,2.5, 50.0);
     }
     
     public void shootFuel(double targetKickerMPS) {
         if (filter.lastValue() > 145) 
             timer.start();
         if (timer.get() > 0) 
-            setAllTargetVelocity(4.5,45.0,-2.5);// 2.5 original
+            setAllTargetVelocity(4.5,45.0,-2.5, 50.0);// 2.5 original
             if (timer.get() > .2) {
                 timer.stop();
                 timer.reset();
             }
         else 
-            setAllTargetVelocity(4.5,45.0,2.5);// 2.5 original
+            setAllTargetVelocity(4.5,45.0,2.5, 50.0);// 2.5 original
 
     }
 
     public void reverseIndexer() {
-        setAllTargetVelocity(-5.0,-45.0,-2.5);
+        setAllTargetVelocity(-5.0,-45.0,-2.5, -25.0);
     }
 
     public void stopIndexing() {
-        setAllTargetVolts(0.0,0.0,0.0);
+        setAllTargetVolts(0.0,0.0,0.0, 0.0);
     }
 
-    public Command setAllTargetVelocityCommand(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
-        return(this.run(() -> setAllTargetVelocity(kickerVelRPS, sideKickerVelRPS, bigSpinnerVelRPS)));
-    }
+    // public Command setAllTargetVelocityCommand(double kickerVelRPS, double sideKickerVelRPS, double bigSpinnerVelRPS) {
+    //     return(this.run(() -> setAllTargetVelocity(kickerVelRPS, sideKickerVelRPS, bigSpinnerVelRPS)));
+    // }
 
     public Command kickerVolts(Supplier<Double> volts) {
-        return this.run(() -> setAllTargetVolts(volts.get(), 0.0, 0.0));
+        return this.run(() -> setAllTargetVolts(volts.get(), 0.0, 0.0, 0.0));
     }
 
     // EDIT THIS FOR DIFFERENT INDEXER SPEEDS

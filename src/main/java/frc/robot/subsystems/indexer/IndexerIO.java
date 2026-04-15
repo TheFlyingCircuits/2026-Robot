@@ -19,6 +19,11 @@ public interface IndexerIO {
         public double kickerTargetRPS = 0.0;
         public double kickerVolts = 0.0;
         public double kickerAmps = 0.0;
+        
+        public double midRollerVelocityRPS = 0.0;
+        public double midRollerTargetRPS = 0.0;
+        public double midRollerVolts = 0.0;
+        public double midRollerAmps = 0.0;
     }
 
     public default void updateInputs(IndexerIOInputs inputs) {};
@@ -28,6 +33,8 @@ public interface IndexerIO {
     public default void setSideKickerVolts(double volts) {};
 
     public default void setKickerVolts(double volts) {};
+
+    public default void setMidRollerVolts(double volts) {};
 
     public default void setBigSpinnerAmps(double volts) {};
 
@@ -40,5 +47,7 @@ public interface IndexerIO {
     public default void setTargetSideKickerVelocity(double targetVelocityRPS) {};
 
     public default void setTargetKickerVelocity(double targetVelocityRPS) {};
+
+    public default void setTargetMidRollerVelocity(double targetVelocityRPS) {};
 
 }

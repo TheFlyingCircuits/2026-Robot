@@ -41,7 +41,7 @@ public class AimAndShoot extends Command {
     Translation3d fuelVelocityCompensated;
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
-    private double[] notShootingTolerances = new double[] {2.5, 1.5, 0.25, 0.25};
+    private double[] notShootingTolerances = new double[] {2.7, 1.5, 0.25, 0.25};
     private double[] whileShootingTolerances = new double[] {25.0, 15.0, 8.0, 8.0};
 
     

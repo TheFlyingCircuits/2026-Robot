@@ -245,10 +245,12 @@ public final class Constants {
         public static final int bigSpinnerID = 16;
         public static final int sideKickerID = 18;
         public static final int kickerID = 17;
+        public static final int midRollerID = 19;
 
         public static final double bigSpinnerGearRatio = 28.0; // positive is gear reduction
         public static final double sideKickerGearRatio = 2.0;
         public static final double kickerGearRatio = 2.0;
+        public static final double midRollerGearRatio = 1.0;// need to change
     }
 
     public final static class IntakeConstants {

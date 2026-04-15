@@ -23,19 +23,23 @@ public class IndexerIOKraken implements IndexerIO {
     private Kraken bigSpinnerKraken;
     private Kraken sideKickerKraken;
     private Kraken kickerKraken;
+    private Kraken midRollerKraken;
 
     private double bigSpinnerTargetRPSLocal = 0.0;
     private double sideKickerTargetRPSLocal = 0.0;
     private double kickerTargetRPSLocal = 0.0;
+    private double midRollerTargetRPSLocal = 0.0;
 
     public IndexerIOKraken() {
         bigSpinnerKraken = new Kraken(IndexerConstants.bigSpinnerID, UniversalConstants.canivoreName);
         sideKickerKraken = new Kraken(IndexerConstants.sideKickerID, UniversalConstants.canivoreName);
         kickerKraken = new Kraken(IndexerConstants.kickerID, UniversalConstants.canivoreName);
+        midRollerKraken = new Kraken(IndexerConstants.midRollerID, UniversalConstants.canivoreName);
 
         configBigSpinnerKraken();
         configSideKickerKraken();
         configKickerKraken();
+        configMidRoller();
     }
     
     private void configBigSpinnerKraken() {
@@ -108,6 +112,23 @@ public class IndexerIOKraken implements IndexerIO {
         kickerKraken.applyConfig(config);
     }
 
+    private void configMidRoller() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        config.CurrentLimits.StatorCurrentLimit = 50;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        //y=0.0966166x+0.388333
+        config.Slot1.kS = 0.388333;
+        config.Slot1.kV = 0.0966166;
+        config.Slot1.kP = 0.2;
+
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        config.Feedback.SensorToMechanismRatio = IndexerConstants.midRollerGearRatio;
+        midRollerKraken.applyConfig(config);
+    }
+
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
         inputs.bigSpinnerVelocityRPS = bigSpinnerKraken.getVelocity().getValueAsDouble();
@@ -124,6 +145,11 @@ public class IndexerIOKraken implements IndexerIO {
         inputs.kickerTargetRPS = kickerTargetRPSLocal;
         inputs.kickerVolts = kickerKraken.getMotorVoltage().getValueAsDouble();
         inputs.kickerAmps = kickerKraken.getStatorCurrent().getValueAsDouble();
+
+        inputs.midRollerVelocityRPS = midRollerKraken.getVelocity().getValueAsDouble();
+        inputs.midRollerTargetRPS = midRollerTargetRPSLocal;
+        inputs.midRollerVolts = midRollerKraken.getMotorVoltage().getValueAsDouble();
+        inputs.midRollerAmps = midRollerKraken.getStatorCurrent().getValueAsDouble();
     }
 
     @Override
@@ -139,6 +165,11 @@ public class IndexerIOKraken implements IndexerIO {
     @Override
     public void setKickerVolts(double volts) {
         kickerKraken.setVoltage(volts);
+    }
+
+    @Override
+    public void setMidRollerVolts(double volts) {
+        midRollerKraken.setVoltage(volts);
     }
 
     @Override
@@ -172,5 +203,11 @@ public class IndexerIOKraken implements IndexerIO {
     public void setTargetKickerVelocity(double targetVelocityRPS) {
         kickerTargetRPSLocal = targetVelocityRPS;
         kickerKraken.setControl(velVoltage.withVelocity(targetVelocityRPS));
+    }
+
+    @Override
+    public void setTargetMidRollerVelocity(double targetVelocityRPS) {
+        midRollerTargetRPSLocal = targetVelocityRPS;
+        midRollerKraken.setControl(velVoltage.withVelocity(targetVelocityRPS));
     }
 }
