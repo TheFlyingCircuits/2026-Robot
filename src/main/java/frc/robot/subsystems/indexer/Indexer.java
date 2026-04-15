@@ -23,7 +23,7 @@ public class Indexer extends SubsystemBase {
         this.indexerIO=indexerIO;
         indexerInputs = new IndexerIOInputsAutoLogged();
         indexerIOInputs = new IndexerIOInputs();
-        filter = LinearFilter.movingAverage(10);
+        filter = LinearFilter.singlePoleIIR(0.2, 0.02);
         timer = new Timer();
     }
 
@@ -59,16 +59,17 @@ public class Indexer extends SubsystemBase {
     }
     
     public void shootFuel(double targetKickerMPS) {
-        if (filter.lastValue() > 145) 
-            timer.start();
-        if (timer.get() > 0) 
+        if (filter.lastValue() > 145) timer.start();
+
+        if (timer.get() > 0) {
             setAllTargetVelocity(4.5,45.0,-2.5);// 2.5 original
             if (timer.get() > .2) {
                 timer.stop();
                 timer.reset();
             }
-        else 
+        } else {
             setAllTargetVelocity(4.5,45.0,2.5);// 2.5 original
+        }
 
     }
 
