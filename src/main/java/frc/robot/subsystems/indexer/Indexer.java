@@ -23,7 +23,7 @@ public class Indexer extends SubsystemBase {
         this.indexerIO=indexerIO;
         indexerInputs = new IndexerIOInputsAutoLogged();
         indexerIOInputs = new IndexerIOInputs();
-        filter = LinearFilter.movingAverage(10);
+        filter = LinearFilter.singlePoleIIR(0.2, 0.02);
         timer = new Timer();
     }
 
