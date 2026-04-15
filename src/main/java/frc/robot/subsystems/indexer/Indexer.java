@@ -4,24 +4,34 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
 
 public class Indexer extends SubsystemBase {
 
     IndexerIOInputsAutoLogged indexerInputs;
     IndexerIO indexerIO;
+    IndexerIOInputs indexerIOInputs;
+    LinearFilter filter;
+    Timer timer;
 
     public Indexer(IndexerIO indexerIO) {
         this.indexerIO=indexerIO;
         indexerInputs = new IndexerIOInputsAutoLogged();
+        indexerIOInputs = new IndexerIOInputs();
+        filter = LinearFilter.movingAverage(10);
+        timer = new Timer();
     }
 
     @Override
     public void periodic() {
         indexerIO.updateInputs(indexerInputs);
         Logger.processInputs("indexerInputs", indexerInputs);
+        filter.calculate(indexerIOInputs.bigSpinnerAmps);
     }
 
     public void setAllTargetAmps(double kickerAmps, double sideKickerAmps, double bigSpinnerAmps) {
@@ -49,7 +59,17 @@ public class Indexer extends SubsystemBase {
     }
     
     public void shootFuel(double targetKickerMPS) {
-        setAllTargetVelocity(4.5,45.0,2.5);// 2.5 original
+        if (filter.lastValue() > 145) 
+            timer.start();
+        if (timer.get() > 0) 
+            setAllTargetVelocity(4.5,45.0,-2.5);// 2.5 original
+            if (timer.get() > .2) {
+                timer.stop();
+                timer.reset();
+            }
+        else 
+            setAllTargetVelocity(4.5,45.0,2.5);// 2.5 original
+
     }
 
     public void reverseIndexer() {
