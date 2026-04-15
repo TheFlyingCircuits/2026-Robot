@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
@@ -160,7 +161,7 @@ public final class Constants {
         // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
         // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
         // public static final double wheelRadiusMeters = 0.04946; //use MeasureWheelDiameter for this!
-        public static final double wheelRadiusMeters = Units.inchesToMeters(2.015434249374315); 
+        public static final double wheelRadiusMeters = 0.05019730723396923;// use to be nits.inchesToMeters(2.015434249374315)
         public static final double wheelCircumferenceMeters = 2 * Math.PI * wheelRadiusMeters; // ~0.31
 
         //0.05128784124270502
@@ -206,7 +207,7 @@ public final class Constants {
         public static final double turretMinAngle = -180;
 
         public static final double maxHoodAngle = 68.0;// used to be 85.5-13.4
-        public static final double minHoodAngle = 27.5;//used to be 50.0-13.4
+        public static final double minHoodAngle = 32.7;//used to be 50.0-13.4
 
 
         public static final int aimerKrakenID = 9;
@@ -214,7 +215,7 @@ public final class Constants {
         public static final int hoodKrakenID = 12;
         public static final int frontWheelKrakenID = 10;
         public static final int frontWheelFollowerKrakenID = 11;
-        public static final int hoodWheelKrakenID = 13;
+        // public static final int hoodWheelKrakenID = 13;
 
         // 27:160 - ctre wants a >1 number for reductions
         public static final double canCoderToTurretRotationsGearRatio = 5.92592592593;// this is final I think and its cancoder to turret
@@ -231,6 +232,13 @@ public final class Constants {
 
         public static final double mainFlywheelDiameterMeters = Units.inchesToMeters(3.0);
         public static final double hoodFlywheelDiameterMeters = Units.inchesToMeters(1.85);
+
+        // input is req speed output is the adjusted surface speed
+        // the key should be the lower velocity and to get this through graph
+        // the tables relationship to actual velocity is that I look on the dip graph
+        // and I see what was the req velocity and what was the actual
+        // and this is the inverse so if I want velocity x what should the wheels spin at
+        public static final InterpolatingDoubleTreeMap velocityLookUp = new InterpolatingDoubleTreeMap();
     }
 
     public final static class IndexerConstants {

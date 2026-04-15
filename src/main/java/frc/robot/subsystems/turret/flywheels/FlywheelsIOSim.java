@@ -18,9 +18,9 @@ public class FlywheelsIOSim implements FlywheelsIO{
         inputs.frontWheelVelocityMPS = frontWheelVelocityRPS*(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         inputs.targetFrontWheelVelocityMPS = inputs.frontWheelVelocityMPS;
 
-        inputs.hoodWheelVelocityRPS = hoodWheelVelocityRPS;
-        inputs.hoodWheelVelocityMPS = hoodWheelVelocityRPS*(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
-        inputs.targetHoodWheelVelocityMPS = inputs.hoodWheelVelocityMPS;
+        // inputs.hoodWheelVelocityRPS = hoodWheelVelocityRPS;
+        // inputs.hoodWheelVelocityMPS = hoodWheelVelocityRPS*(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        // inputs.targetHoodWheelVelocityMPS = inputs.hoodWheelVelocityMPS;
 
 
     }
@@ -30,8 +30,8 @@ public class FlywheelsIOSim implements FlywheelsIO{
 
     }
 
-    @Override
-    public void setHoodWheelVolts(double volts) {}
+    // @Override
+    // public void setHoodWheelVolts(double volts) {}
 
     @Override
     public void setTargetFrontWheelVelocity(double targetVelocityRPS) {

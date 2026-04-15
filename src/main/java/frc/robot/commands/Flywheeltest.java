@@ -15,7 +15,7 @@ public class Flywheeltest extends Command {
 
     @Override 
     public void initialize() {
-        turret.setHoodWheelSpeed(3.0);
+        // turret.setHoodWheelSpeed(3.0);
     }
 
     @Override 

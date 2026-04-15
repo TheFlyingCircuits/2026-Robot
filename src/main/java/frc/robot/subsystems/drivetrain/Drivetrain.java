@@ -451,6 +451,8 @@ public class Drivetrain extends SubsystemBase {
         // log the accepted and rejected tags
         Logger.recordOutput("drivetrain/acceptedTags", acceptedTags.toArray(new Pose3d[0]));
         Logger.recordOutput("drivetrain/rejectedTags", rejectedTags.toArray(new Pose3d[0]));
+        
+        allFreshPoseObservations = null;
     }
 
 
@@ -550,7 +552,7 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("shift Timer", getShiftTeleTimer());
+        // Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // Logger.recordOutput("Time Till End", Shift.getSecondsTillEnd());
         for (SwerveModule mod : swerveModules)
             mod.periodic();
@@ -572,21 +574,21 @@ public class Drivetrain extends SubsystemBase {
         Logger.recordOutput("drivetrain/swerveModuleStates", getModuleStates());
         Logger.recordOutput("drivetrain/swerveModulePositions", getModulePositions());
 
-        if(Shift.TRANSITION_SHIFT.isHappeningNow()) {
-            shiftTime = Shift.TRANSITION_SHIFT.getSecondsTillEnd();
-        } else  if(Shift.SHIFT_1.isHappeningNow()) {
-            shiftTime = Shift.SHIFT_1.getSecondsTillEnd();
-        } else if(Shift.SHIFT_2.isHappeningNow()) {
-            shiftTime = Shift.SHIFT_2.getSecondsTillEnd();
-        } else if(Shift.SHIFT_3.isHappeningNow()) {
-            shiftTime = Shift.SHIFT_3.getSecondsTillEnd();
-        } else if(Shift.SHIFT_4.isHappeningNow()) {
-            shiftTime = Shift.SHIFT_4.getSecondsTillEnd();
-        } else if(Shift.END_GAME.isHappeningNow()) {
-            shiftTime = Shift.END_GAME.getSecondsTillEnd();
-        }
+        // if(Shift.TRANSITION_SHIFT.isHappeningNow()) {
+        //     shiftTime = Shift.TRANSITION_SHIFT.getSecondsTillEnd();
+        // } else  if(Shift.SHIFT_1.isHappeningNow()) {
+        //     shiftTime = Shift.SHIFT_1.getSecondsTillEnd();
+        // } else if(Shift.SHIFT_2.isHappeningNow()) {
+        //     shiftTime = Shift.SHIFT_2.getSecondsTillEnd();
+        // } else if(Shift.SHIFT_3.isHappeningNow()) {
+        //     shiftTime = Shift.SHIFT_3.getSecondsTillEnd();
+        // } else if(Shift.SHIFT_4.isHappeningNow()) {
+        //     shiftTime = Shift.SHIFT_4.getSecondsTillEnd();
+        // } else if(Shift.END_GAME.isHappeningNow()) {
+        //     shiftTime = Shift.END_GAME.getSecondsTillEnd();
+        // }
 
-        Logger.recordOutput("drivetrain/ShiftTime", shiftTime);
+        // Logger.recordOutput("drivetrain/ShiftTime", shiftTime);
 
         // this.compareCamPoses();
     }

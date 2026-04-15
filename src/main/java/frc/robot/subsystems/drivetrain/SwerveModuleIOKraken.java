@@ -20,9 +20,9 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     private double desiredAngleDeg = 0.0;
 
     final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
-        .withUpdateFreqHz(100.0);
+        .withUpdateFreqHz(60.0);
     final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(1).withEnableFOC(true)
-        .withUpdateFreqHz(100.0);
+        .withUpdateFreqHz(60.0);
 
     private CANcoder absoluteEncoder;
     private Kraken angleMotor;
@@ -77,7 +77,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 50; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
+        config.CurrentLimits.StatorCurrentLimit = 45; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
 
         config.Slot1.kS = 0.25; 
         config.Slot1.kV = 0.872844827583;// 2.1volts - 0.8 mps
@@ -96,7 +96,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.CurrentLimits.StatorCurrentLimit = 60;
+        config.CurrentLimits.StatorCurrentLimit = 45;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.2;

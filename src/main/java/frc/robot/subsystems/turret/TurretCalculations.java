@@ -141,6 +141,8 @@ public class TurretCalculations {
         Translation3d target;
 
         if(passingTarget == PossibeTargets.PASSING_LEFT) {
+            // new Translation3d(3.134,5.516,0.0); for test
+            
             target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.1));
         } else {
             target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.1));
@@ -182,9 +184,9 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-78.0, -55.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
         } else {
-            return getAdjustedAngleOfAttack(-65.0, -55.0, distanceToTargetMeters, 7.5);
+            return getAdjustedAngleOfAttack(-30.0, -20.0, distanceToTargetMeters, 7.5);
         }
     }
     

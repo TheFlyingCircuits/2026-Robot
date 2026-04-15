@@ -55,7 +55,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-       config.CurrentLimits.StatorCurrentLimit = 120;
+       config.CurrentLimits.StatorCurrentLimit = 80;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.220953;
@@ -73,7 +73,7 @@ public class IntakeIOMotors implements IntakeIO{
        TalonFXConfiguration config = new TalonFXConfiguration();
        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-       config.CurrentLimits.StatorCurrentLimit = 90;
+       config.CurrentLimits.StatorCurrentLimit = 70;
        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
        config.Slot0.kS = 0.296772;

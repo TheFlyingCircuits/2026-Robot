@@ -45,11 +45,11 @@ public class Indexer extends SubsystemBase {
     }
 
     public void indexFuel() {
-        setAllTargetVelocity(6.0,45.0,2.5);
+        setAllTargetVelocity(4.5,45.0,2.5);
     }
     
     public void shootFuel(double targetKickerMPS) {
-        setAllTargetVelocity(targetKickerMPS*0.8,45.0,2.5);// 2.5 original
+        setAllTargetVelocity(4.5,45.0,2.5);// 2.5 original
     }
 
     public void reverseIndexer() {

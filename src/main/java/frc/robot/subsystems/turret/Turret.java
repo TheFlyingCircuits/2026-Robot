@@ -33,6 +33,20 @@ public class Turret extends SubsystemBase{
         aimerInputs = new AimerIOInputsAutoLogged();
         flywheelsInputs = new FlywheelsIOInputsAutoLogged();
         hoodInputs = new HoodIOInputsAutoLogged();
+
+        TurretConstants.velocityLookUp.put(0.0,0.0);
+        TurretConstants.velocityLookUp.put(2.431,3.0);
+        TurretConstants.velocityLookUp.put(3.11589191241,4.0);
+        TurretConstants.velocityLookUp.put(4.01491482442,5.0);
+        TurretConstants.velocityLookUp.put(4.65546856545,6.0);
+        TurretConstants.velocityLookUp.put(5.55084078972,7.0);
+        TurretConstants.velocityLookUp.put(6.48876088193,8.5);
+        TurretConstants.velocityLookUp.put(7.182817,9.9);
+        TurretConstants.velocityLookUp.put(7.971402,11.5);
+        TurretConstants.velocityLookUp.put(9.0,12.5);
+        // TurretConstants.velocityLookUp.put(,10.0);
+        // TurretConstants.velocityLookUp.put(9.19311256048,11.0);
+        // TurretConstants.velocityLookUp.put(,12.0);
     }
 
     @Override 
@@ -56,7 +70,7 @@ public class Turret extends SubsystemBase{
     }
 
     public double getAvgFlywheelSurfaceSpeedMetersPerSecond() {
-        return (flywheelsInputs.frontWheelVelocityMPS + flywheelsInputs.hoodWheelVelocityMPS) / 2.0;
+        return (flywheelsInputs.frontWheelVelocityMPS);
     }
 
     public void aimAtTarget(double targetAngleDegreesRobotToTarget) {
@@ -68,44 +82,43 @@ public class Turret extends SubsystemBase{
         aimer.setAimerVolts(volts);
     }
 
-    public void setAllVolts(double aimerVolts, double hoodVolts, double mainWheelVolts, double hoodWheelVolts) {
+    public void setAllVolts(double aimerVolts, double hoodVolts, double mainWheelVolts) {
         aimer.setAimerVolts(aimerVolts);
         hood.setHoodVolts(hoodVolts);
         flywheels.setFrontWheelVolts(mainWheelVolts);
-        flywheels.setHoodWheelVolts(hoodWheelVolts);
+        // flywheels.setHoodWheelVolts(hoodWheelVolts);
     }
 
     // will return a boolean for each part of turret ready to shoot
     // 0 is aimer ready, 1 is hood ready, 2 is mainFlywheel ready, and 3 is hoodFlywheel ready
     public Supplier<Boolean>[] isReadyToShoot(double aimerToleranceDegrees, double hoodToleranceDegrees, 
-    double mainWheelToleranceMPS, double hoodWheelToleranceMPS) {
+    double mainWheelToleranceMPS) {
 
         Supplier<Boolean> aimerReady = () -> Math.abs(Rotation2d.fromDegrees(aimerInputs.aimerTargetPositionDegrees).minus(Rotation2d.fromDegrees(aimerInputs.aimerPositionDegrees))
         .getDegrees()) <= aimerToleranceDegrees;
         Supplier<Boolean> hoodReady = () ->Math.abs(hoodInputs.targetHoodPositionDegrees-hoodInputs.hoodPositionDegrees) <= hoodToleranceDegrees;
         Supplier<Boolean> mainWheelReady = () ->flywheelsInputs.targetFrontWheelVelocityMPS-flywheelsInputs.frontWheelVelocityMPS <= mainWheelToleranceMPS;
-        Supplier<Boolean> hoodWheelReady = () ->flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS <= hoodWheelToleranceMPS;
-        Supplier<Boolean>[] outputList = new Supplier[4];
+        // Supplier<Boolean> hoodWheelReady = () ->flywheelsInputs.targetHoodWheelVelocityMPS-flywheelsInputs.hoodWheelVelocityMPS <= hoodWheelToleranceMPS;
+        Supplier<Boolean>[] outputList = new Supplier[3];
         outputList[0] = aimerReady;
         outputList[1] = hoodReady;
         outputList[2] = mainWheelReady;
-        outputList[3] = hoodWheelReady;
+        // outputList[3] = hoodWheelReady;
         return outputList;
     }
 
-    public void setHoodWheelSpeed(double velocityRPS) {
-        flywheels.setTargetHoodWheelVelocity(velocityRPS);
-    }
+    // public void setHoodWheelSpeed(double velocityRPS) {
+    //     flywheels.setTargetHoodWheelVelocity(velocityRPS);
+    // }
 
     public void aimAtTargetNoShoot(double targetAimerDegrees) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(TurretConstants.hoodDefaultAngleDegrees);
         flywheels.setFrontWheelVolts(0.0);
-        flywheels.setHoodWheelVolts(0.0);
+        // flywheels.setHoodWheelVolts(0.0);
     }
 
-    public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecondMain, 
-        double targetHoodMPS) {
+    public void aimAtTargetAndShoot(double targetAimerDegrees, double targetHoodAngleDegrees, double targetVelocityMetersPerSecondMain) {
         aimAtTarget(targetAimerDegrees);
         hood.setTargetHoodPosition(targetHoodAngleDegrees);
 
@@ -113,13 +126,12 @@ public class Turret extends SubsystemBase{
         double frontWheelRPSOutput = targetVelocityMetersPerSecondMain/(Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         flywheels.setTargetFrontWheelVelocity(frontWheelRPSOutput);
 
-        double hoodWheelRPSOutput = (targetHoodMPS)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
-        flywheels.setTargetHoodWheelVelocity(hoodWheelRPSOutput);
+        // double hoodWheelRPSOutput = (targetHoodMPS)/(Math.PI*TurretConstants.hoodFlywheelDiameterMeters);
+        // flywheels.setTargetHoodWheelVelocity(hoodWheelRPSOutput);
     }
 
-    public void setWheelsAmps(double mainWheelAmps, double hoodWheelAmps) {
+    public void setWheelsAmps(double mainWheelAmps) {
         flywheels.setFrontWheelAmps(mainWheelAmps);
-        flywheels.setHoodWheelAmps(hoodWheelAmps);
     }
 
 
@@ -149,18 +161,17 @@ public class Turret extends SubsystemBase{
     // }
 
     public Command turretStopDoingStuffCommand() {
-        return this.run(() -> setAllVolts(0.0,0.0,0.0,0.0));
+        return this.run(() -> setAllVolts(0.0,0.0,0.0));
     }
 
     public Command setAllVoltsCommand(Supplier<Double> aimerVolts, Supplier<Double> hoodVolts, 
-        Supplier<Double> mainWheelVolts, Supplier<Double> hoodWheelVolts) {
+        Supplier<Double> mainWheelVolts) {
 
         return this.run(() -> setAllVolts(aimerVolts.get(), hoodVolts.get(), 
-        mainWheelVolts.get(), hoodWheelVolts.get()));
+        mainWheelVolts.get()));
     }
 
-    public Command setWheelsAmpsCommand(Supplier<Double> mainWheelAmps,
-     Supplier<Double> hoodWheelAmps) {
-        return this.run(() -> setWheelsAmps(mainWheelAmps.get(), hoodWheelAmps.get()));
+    public Command setWheelsAmpsCommand(Supplier<Double> mainWheelAmps) {
+        return this.run(() -> setWheelsAmps(mainWheelAmps.get()));
     }
 }

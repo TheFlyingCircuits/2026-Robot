@@ -42,16 +42,16 @@ public class IndexerIOKraken implements IndexerIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimit = 150;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 3.2;
-        config.Slot0.kP = 110.0; 
+        config.Slot0.kP = 115.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 100;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -100;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 150;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -150;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -63,7 +63,7 @@ public class IndexerIOKraken implements IndexerIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimit = 60;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 5.2;
@@ -71,8 +71,8 @@ public class IndexerIOKraken implements IndexerIO {
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 80;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -80;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -60;
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -84,7 +84,7 @@ public class IndexerIOKraken implements IndexerIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimit = 80;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // config.Slot0.kS = 9.3;
@@ -94,13 +94,13 @@ public class IndexerIOKraken implements IndexerIO {
 
         config.Slot1.kS = 1.1;
         config.Slot1.kV = 0.178;
-        // config.Slot1.kP = 99999999.1;
+        config.Slot1.kP = 0.2;
 
         config.Voltage.PeakForwardVoltage = 11.0;
         config.Voltage.PeakReverseVoltage = 0.0;
 
-        // config.TorqueCurrent.PeakForwardTorqueCurrent = 80;
-        // config.TorqueCurrent.PeakReverseTorqueCurrent = -80;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 80;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -80;
         // config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
 
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
