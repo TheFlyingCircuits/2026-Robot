@@ -131,7 +131,7 @@ public class TurretCalculations {
     }
 
     public static Translation3d getHubShootingTargetTranslation() {
-        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.625));
+        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.64));
         return shootingPose;
     }
 
@@ -141,8 +141,8 @@ public class TurretCalculations {
         Translation3d target;
 
         if(passingTarget == PossibeTargets.PASSING_LEFT) {
-            // new Translation3d(3.134,5.516,0.0); for test
-            
+            // new Translation3d(0.500, 6.448,0.0); for test
+
             target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.1));
         } else {
             target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.1));
@@ -157,6 +157,7 @@ public class TurretCalculations {
     }
 
     public static Translation3d getTargetFromEnum(PossibeTargets target, Supplier<Translation2d> robotTranslation) {
+        // return new Translation3d(0.500, 6.448,0.0);
         return target == PossibeTargets.HUB ? getHubShootingTargetTranslation() : getPassingTargetTranslation(target);
     }
 
@@ -184,8 +185,9 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-67.0, -45.0, distanceToTargetMeters, 5.65);
         } else {
+            // return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
             return getAdjustedAngleOfAttack(-30.0, -20.0, distanceToTargetMeters, 7.5);
         }
     }

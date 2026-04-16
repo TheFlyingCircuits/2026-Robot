@@ -35,18 +35,13 @@ public class Turret extends SubsystemBase{
         hoodInputs = new HoodIOInputsAutoLogged();
 
         TurretConstants.velocityLookUp.put(0.0,0.0);
-        TurretConstants.velocityLookUp.put(2.431,3.0);
-        TurretConstants.velocityLookUp.put(3.11589191241,4.0);
-        TurretConstants.velocityLookUp.put(4.01491482442,5.0);
-        TurretConstants.velocityLookUp.put(4.65546856545,6.0);
-        TurretConstants.velocityLookUp.put(5.55084078972,7.0);
-        TurretConstants.velocityLookUp.put(6.48876088193,8.5);
-        TurretConstants.velocityLookUp.put(7.182817,9.9);
-        TurretConstants.velocityLookUp.put(7.971402,11.5);
-        TurretConstants.velocityLookUp.put(9.0,12.5);
-        // TurretConstants.velocityLookUp.put(,10.0);
-        // TurretConstants.velocityLookUp.put(9.19311256048,11.0);
-        // TurretConstants.velocityLookUp.put(,12.0);
+        TurretConstants.velocityLookUp.put(3.030998,3.780998);
+        TurretConstants.velocityLookUp.put(3.990554,5.040554);
+        TurretConstants.velocityLookUp.put(5.005051,6.205051);
+        TurretConstants.velocityLookUp.put(5.986375,7.986375);
+        TurretConstants.velocityLookUp.put(7.013876,9.563876);
+        TurretConstants.velocityLookUp.put(7.981198,11.381198);
+
     }
 
     @Override 

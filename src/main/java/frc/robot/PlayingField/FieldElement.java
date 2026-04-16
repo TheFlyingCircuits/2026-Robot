@@ -11,7 +11,7 @@ import frc.robot.FlyingCircuitUtils;
 public enum FieldElement {
     // A standard FieldElement with no extra bells or whistles.
     // Just a name, and some alliance-aware pose/tag info.
-    HUB(new int[] {10, 2, 4, 5, 6, 7, 1, 12}, new int[] {9, 11, 3, 8}, new int[] {26, 18, 20, 21, 22, 23, 17, 28}, new int[] {25, 27, 19, 24}),
+    HUB(new int[] {10, 2, 4, 5}, new int[] {9, 11, 3, 8, 6, 7, 1, 12}, new int[] {26, 18, 20, 21}, new int[] {25, 27, 19, 24, 22, 23, 17, 28}),
     TRENCH_LEFT(new int[] {6, 7}, new int[0], new int[] {22, 23}, new int[0]),
     TRENCH_RIGHT(new int[] {1, 12}, new int[0], new int[] {17, 28}, new int[0]),
     OUTPOST(new int[] {13}, new int[] {14}, new int[] {29}, new int[] {30}),

@@ -78,8 +78,10 @@ public class AimAndShoot extends Command {
         // our max surface speed on our hood is about 14.8 so if around max speed cap it
         //23.8325407491 is out max front mps
         // if(requestedOutputVelocityMPS > 14.25) return 14.25;
-
-        double wheelVelocityTarget = TurretConstants.velocityLookUp.get(requestedOutputVelocityMPS);
+        //y=0.0786037x^{2}+0.667384x+1.04922
+        double wheelVelocityTarget = 0.0786037*Math.pow(requestedOutputVelocityMPS, 2)+0.667384*requestedOutputVelocityMPS+1.04922;
+        // double wheelVelocityTarget = TurretConstants.velocityLookUp.get(requestedOutputVelocityMPS);
+        // double wheelVelocityTarget = requestedOutputVelocityMPS + FlyingCircuitUtils.getNumberFromDashboard("MPS to add", 0.0);
         // double wheelVelocityTarget = requestedOutputVelocityMPS * 1.91 + -6.0;
             // FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.91) +
             // FlyingCircuitUtils.getNumberFromDashboard("intercept", -6.0);
@@ -88,7 +90,7 @@ public class AimAndShoot extends Command {
         // Logger.recordOutput("AimAndShoot/fudge_intercept", FlyingCircuitUtils.getNumberFromDashboard("intercept", -6.0));
 
         // if VCF output is lower than original request return original velocity
-        if(requestedOutputVelocityMPS > wheelVelocityTarget) return requestedOutputVelocityMPS;
+        // if(requestedOutputVelocityMPS > wheelVelocityTarget) return requestedOutputVelocityMPS;
 
         return wheelVelocityTarget;
     }
@@ -224,8 +226,8 @@ public class AimAndShoot extends Command {
         // Logger.recordOutput("AimAndShoot/angleOfAttack", angleOfAttack);
 
         // call the log shooting calculations might get rid if causes performance issue I don't think it will though
-        // TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
-        //     robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
+        TurretCalculations.logShootingFunctions(originalTargetTranlsation, 
+            robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
         // this.logPredictedTrajectory();
         Logger.recordOutput("AimAndShoot/desiredSpeedWithoutFudge", fuelVelocityCompensated.getNorm());
         Logger.recordOutput("AimAndShoot/desiredSpeedWithVCF", vcfWheelMPS);

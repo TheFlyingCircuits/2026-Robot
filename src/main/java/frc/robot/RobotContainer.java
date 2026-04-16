@@ -121,6 +121,8 @@ public class RobotContainer {
 
         FlyingCircuitUtils.putNumberOnDashboard("middeVolts", 0.0);
 
+        FlyingCircuitUtils.putNumberOnDashboard("MPS to add", 0.0);
+
         duncanController = duncan.getXboxController();
 
         // AUTO ---------------
@@ -190,7 +192,8 @@ public class RobotContainer {
         duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
         duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
-        duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
+        duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand());
+        duncanController.b().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
     }
 
     public void setDefaultCommands() {
