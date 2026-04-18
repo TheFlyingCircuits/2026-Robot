@@ -48,7 +48,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimit = 130;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // config.Slot0.kS = 4.0; // 4.0 amps to get over friction
@@ -56,12 +56,12 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         // config.Slot0.kD = 0.0;
         // config.Slot0.kV = 0.01;
 
-        //https://www.desmos.com/calculator/3gacwmten2
-        //y=0.12203x+0.369422
+        //https://www.desmos.com/calculator/janq2cvkgo
+        //y=0.120913x+0.375351
         // volts
-        config.Slot1.kS = 0.369422; // voltage to get over static friction
-        config.Slot1.kV = 0.12203; // volts per rps
-        config.Slot2.kP = 0.4;
+        config.Slot1.kS = 0.375351; // voltage to get over static friction
+        config.Slot1.kV = 0.120913; // volts per rps
+        config.Slot1.kP = 0.45;
         // config.Slot1.kP = 0.5; 
         // config.Slot1.kP = 1.5;
         // config.Slot1.kP = 99999999.0;

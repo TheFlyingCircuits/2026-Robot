@@ -61,7 +61,8 @@ public class ShootWithParams extends Command {
         // intake.intakeUpDown();
 
         // driverReadyToShoot is a boolean based off driver button
-        double wheelVelocityTarget = TurretConstants.velocityLookUp.get(targetShotMetersPerSecond.get());
+        // double wheelVelocityTarget = TurretConstants.velocityLookUp.get(targetShotMetersPerSecond.get());
+        double wheelVelocityTarget = targetShotMetersPerSecond.get();
 
         // if driver is ready to shoot we aim at the target with hood and aimer and rev flywheels
         turret.aimAtTargetAndShoot(aimerAngleDeg.get(), hoodAngleDeg.get(), wheelVelocityTarget);
