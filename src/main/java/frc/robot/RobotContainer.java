@@ -63,7 +63,6 @@ public class RobotContainer {
     public final Intake intake;
 
     // private final SendableChooser<String> autoChooser;
-
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
@@ -100,13 +99,12 @@ public class RobotContainer {
                 new SwerveModuleIOSim(){},
                 new SwerveModuleIOSim(){}
             );
-            turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim(drivetrain));
+            turret = new Turret(new AimerIOSim(drivetrain), new FlywheelsIOSim(), new HoodIOSim());
             // leds = new Leds(0,60);
             indexer = new Indexer(new IndexerIOSim());
             intake = new Intake(new IntakeIOSim(drivetrain));
         }
 
-        // canLeds = new LedsCANdle(0, 60);
         // canLedsCounter = new LedsCANdle(45, 60);
 
         // drivetrain.setFocus(FieldElement.HUB);

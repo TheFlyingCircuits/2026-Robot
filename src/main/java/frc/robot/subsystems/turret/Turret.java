@@ -34,13 +34,35 @@ public class Turret extends SubsystemBase{
         flywheelsInputs = new FlywheelsIOInputsAutoLogged();
         hoodInputs = new HoodIOInputsAutoLogged();
 
+        // fake vlaues
         TurretConstants.velocityLookUp.put(0.0,0.0);
-        TurretConstants.velocityLookUp.put(3.030998,3.780998);
-        TurretConstants.velocityLookUp.put(3.990554,5.040554);
-        TurretConstants.velocityLookUp.put(5.005051,6.205051);
-        TurretConstants.velocityLookUp.put(5.986375,7.986375);
-        TurretConstants.velocityLookUp.put(7.013876,9.563876);
-        TurretConstants.velocityLookUp.put(7.981198,11.381198);
+        TurretConstants.velocityLookUp.put(1.0,1.2);
+        TurretConstants.velocityLookUp.put(2.0,2.3);
+        TurretConstants.velocityLookUp.put(3.0,3.4);
+        TurretConstants.velocityLookUp.put(4.0,4.5);
+        TurretConstants.velocityLookUp.put(5.0,6.1);
+        TurretConstants.velocityLookUp.put(5.5,6.3);
+        TurretConstants.velocityLookUp.put(6.419948,7.6);
+
+        // realer values 
+        TurretConstants.velocityLookUp.put(7.059305,8.559305);
+        TurretConstants.velocityLookUp.put(7.54,9.14665);
+        TurretConstants.velocityLookUp.put(8.036901,10.136901);
+        TurretConstants.velocityLookUp.put(8.359459,11.047191);
+        TurretConstants.velocityLookUp.put(8.974041,12.274041);
+        TurretConstants.velocityLookUp.put(9.5,13.42154);
+        TurretConstants.velocityLookUp.put(10.0,14.58644);
+        TurretConstants.velocityLookUp.put(10.5,15.7972);
+        TurretConstants.velocityLookUp.put(11.0,17.05382);
+        TurretConstants.velocityLookUp.put(11.5,18.35631);
+        TurretConstants.velocityLookUp.put(12.0,19.70466);
+        TurretConstants.velocityLookUp.put(12.5,21.09887);
+        TurretConstants.velocityLookUp.put(13.0,22.53894);
+        TurretConstants.velocityLookUp.put(13.5, 24.02487);
+        // TurretConstants.velocityLookUp.put(7.059305,8.559305);
+
+        // TurretConstants.velocityLookUp.put(7.059305,8.559305);
+
 
     }
 

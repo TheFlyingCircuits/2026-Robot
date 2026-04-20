@@ -1,7 +1,6 @@
 package frc.robot.subsystems.turret.hood;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -21,9 +20,6 @@ public class HoodIOKraken implements HoodIO{
 
     private final PositionVoltage m_request = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(60.0);
-
-    private final PositionTorqueCurrentFOC positionTorqueFOC = new PositionTorqueCurrentFOC(0.0).withSlot(1)
-    .withUpdateFreqHz(0.0);
 
     public HoodIOKraken() {
         hoodKraken = new Kraken(TurretConstants.hoodKrakenID, UniversalConstants.canivoreName);
@@ -81,10 +77,10 @@ public class HoodIOKraken implements HoodIO{
     @Override
     public void setTargetHoodPosition(double targetPositionDegrees) {
         targetHoodDegreesLocal = targetPositionDegrees;
-        if(targetPositionDegrees < TurretConstants.minHoodAngle + 0.5) {
-            targetPositionDegrees = TurretConstants.minHoodAngle + 0.5;
-        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -0.5) {
-            targetPositionDegrees = TurretConstants.maxHoodAngle - 0.5;
+        if(targetPositionDegrees < TurretConstants.minHoodAngle + 0.25) {
+            targetPositionDegrees = TurretConstants.minHoodAngle + 0.25;
+        } else if(targetPositionDegrees > TurretConstants.maxHoodAngle -0.25) {
+            targetPositionDegrees = TurretConstants.maxHoodAngle - 0.25;
         }
         hoodKraken.setControl(m_request.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));
         // hoodKraken.setControl(positionTorqueFOC.withPosition(Units.degreesToRotations(targetPositionDegrees)).withFeedForward(hoodFeedForwardGravity));

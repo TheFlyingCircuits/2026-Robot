@@ -78,9 +78,9 @@ public class AimAndShoot extends Command {
         // our max surface speed on our hood is about 14.8 so if around max speed cap it
         //23.8325407491 is out max front mps
         // if(requestedOutputVelocityMPS > 14.25) return 14.25;
-        //y=0.0786037x^{2}+0.667384x+1.04922
-        double wheelVelocityTarget = 0.0786037*Math.pow(requestedOutputVelocityMPS, 2)+0.667384*requestedOutputVelocityMPS+1.04922;
-        // double wheelVelocityTarget = TurretConstants.velocityLookUp.get(requestedOutputVelocityMPS);
+        //y=0.0917253x^{2}+0.54115x+0.00240854
+        // double wheelVelocityTarget = 0.0917253*Math.pow(requestedOutputVelocityMPS, 2)+0.54115*requestedOutputVelocityMPS+0.00240854;
+        double wheelVelocityTarget = TurretConstants.velocityLookUp.get(requestedOutputVelocityMPS);
         // double wheelVelocityTarget = requestedOutputVelocityMPS + FlyingCircuitUtils.getNumberFromDashboard("MPS to add", 0.0);
         // double wheelVelocityTarget = requestedOutputVelocityMPS * 1.91 + -6.0;
             // FlyingCircuitUtils.getNumberFromDashboard("proportion", 1.91) +
@@ -175,7 +175,8 @@ public class AimAndShoot extends Command {
         if(driverReadyToShoot.get()) {
 
             if(Math.abs(robotFieldOrientedVelocity.get().vxMetersPerSecond) + Math.abs(robotFieldOrientedVelocity.get().vyMetersPerSecond) < 0.025) {
-                intake.intakeUpDown();
+                // intake.intakeUpDown();
+                intake.intakeDefualtAndIntake();
             } else {
                 intake.intakeDefualtAndIntake();
             }
@@ -183,7 +184,7 @@ public class AimAndShoot extends Command {
             
             // caps both speeds to almost max
             // double hoodMPSReq = (vcfWheelMPS > 14.25) ? 14.25 : vcfWheelMPS;
-            double mainMPSReq = (vcfWheelMPS > 22.0) ? 22.0 : vcfWheelMPS;
+            double mainMPSReq = (vcfWheelMPS > 23.0) ? 23.0 : vcfWheelMPS;
             turret.aimAtTargetAndShoot(targetAimerDed, tagetHoodAngle, mainMPSReq); // * 1.65 too much *1.61)-1.385 woked good
             //*1.58)-1.37 good middle bad from far *1.58)-1.37 was at fingerlakes // *1.585)-1.385 overshot *1.58)-1.37
 

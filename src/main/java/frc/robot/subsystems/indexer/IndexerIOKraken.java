@@ -97,8 +97,8 @@ public class IndexerIOKraken implements IndexerIO {
         // config.Slot0.kV = 0.0;
 
         config.Slot1.kS = 1.1;
-        config.Slot1.kV = 0.178;
-        config.Slot1.kP = 0.2;
+        config.Slot1.kV = 0.15;
+        config.Slot1.kP = 9999.0;
 
         config.Voltage.PeakForwardVoltage = 11.0;
         config.Voltage.PeakReverseVoltage = 0.0;

@@ -1,13 +1,10 @@
 package frc.robot.subsystems.turret.hood;
 
-import frc.robot.subsystems.drivetrain.Drivetrain;
-
 public class HoodIOSim implements HoodIO{
-    private Drivetrain drivetrain;
     private double deltaT = 0.02;
 
-    public HoodIOSim(Drivetrain drivetrain) {
-        this.drivetrain=drivetrain;
+    public HoodIOSim() {
+
     }
 
     double simulatedPositionDegrees = 0.0;
