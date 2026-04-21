@@ -27,7 +27,7 @@ public class AimerIOKraken implements AimerIO{
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
 
-    private double ksForConstantForceSpring = 0.60;
+    private double ksForConstantForceSpring = 0.65;
     private double kVVoltsVoltsPerRotation = 1.80594;
     private Timer timer;
 
@@ -36,7 +36,7 @@ public class AimerIOKraken implements AimerIO{
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(100.0).withSlot(0);
 
-    private final PIDController turretPIDToTarget = new PIDController(100.0,0.0,0.05);
+    private final PIDController turretPIDToTarget = new PIDController(110.0,25.0,0.06);
     // private final PIDController turretPIDToTargetFar = new PIDController(35.0,0.0,0.0);
     private final PIDController turretPIDToSetpoint = new PIDController(1.5,0.0,0.0);
 

@@ -188,7 +188,7 @@ public class RobotContainer {
         duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
         duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
         duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
-        duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
+        // duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
         duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand());
         duncanController.b().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
@@ -281,8 +281,8 @@ public class RobotContainer {
     // AUTOS -------------------------------------------------------------------------------
 
     public Command getAutonomousCommand() {
-        return new MeasureWheelDiameter(drivetrain);
-        // return trenchAutos();
+        // return new MeasureWheelDiameter(drivetrain);
+        return bumpAuto();
     }
 
     private Command passingLeftAuto() {
@@ -302,6 +302,31 @@ public class RobotContainer {
                 DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
                 return Commands.none();
         }
+    }
+
+    private Command bumpAuto() {
+        try{
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Bump P1");
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Agressive Bump P2");
+
+        // flip based on left or right
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        if ( distFromRightTrench < distFromLeftTrench) {
+            firstPath = firstPath.mirrorPath();
+            secondPath = secondPath.mirrorPath();
+        }
+
+        return new SequentialCommandGroup(
+            new ProxyCommand(AutoBuilder.followPath(firstPath)),
+            new ProxyCommand(AutoBuilder.followPath(secondPath)),
+            Commands.waitSeconds(2)
+        );
+    } catch (Exception e) {
+        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        return Commands.none();
+    }
     }
 
     private Command agressiveDipAuto() {

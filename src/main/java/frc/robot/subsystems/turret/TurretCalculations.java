@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.UniversalConstants;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
@@ -158,6 +159,7 @@ public class TurretCalculations {
 
     public static Translation3d getTargetFromEnum(PossibeTargets target, Supplier<Translation2d> robotTranslation) {
         // return new Translation3d(0.500, 6.448,0.0);
+        if(DriverStation.isAutonomous()) return getHubShootingTargetTranslation();
         return target == PossibeTargets.HUB ? getHubShootingTargetTranslation() : getPassingTargetTranslation(target);
     }
 
@@ -185,7 +187,7 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-57.0, -45.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-55.0, -44.0, distanceToTargetMeters, 5.65);
         } else {
             // return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
             return getAdjustedAngleOfAttack(-50.0, -40.0, distanceToTargetMeters, 7.5);

@@ -18,13 +18,16 @@ public class Indexer extends SubsystemBase {
     IndexerIOInputs indexerIOInputs;
     LinearFilter filter;
     Timer timer;
+    Timer sinTimer;
 
     public Indexer(IndexerIO indexerIO) {
         this.indexerIO=indexerIO;
         indexerInputs = new IndexerIOInputsAutoLogged();
         indexerIOInputs = new IndexerIOInputs();
-        filter = LinearFilter.singlePoleIIR(1.0, 0.02);
+        filter = LinearFilter.singlePoleIIR(0.4, 0.02);
         timer = new Timer();
+        sinTimer = new Timer();
+        sinTimer.start();
     }
 
     @Override
@@ -56,22 +59,25 @@ public class Indexer extends SubsystemBase {
         indexerIO.setTargetMidRollerVelocity(midRollerVelRPS);
     }
 
-    public void indexFuel() {
-        setAllTargetVelocity(5.5,45.0,2.5, 50.0);
-    }
+    // public void indexFuel() {
+    //     setAllTargetVelocity(5.5,45.0,2.5, 50.0);
+    // }
     
     public void shootFuel(double targetKickerMPS) {
-        if (filter.lastValue() > 125) 
+        if (filter.calculate(indexerIOInputs.bigSpinnerAmps) > 130) 
             timer.start();
-        if (timer.get() > 0) 
-            setAllTargetVelocity(5.5,45.0,-2.5, 50.0);// 2.5 original
-            if (timer.get() > .2) {
-                timer.stop();
+        if (timer.get() > 0)  {
+            Logger.recordOutput("unjamming", true);
+            setAllTargetVelocity(0.0,0.0,0.0, 0.0);// 2.5 original
+            if (timer.get() > 0.6) {
                 timer.reset();
+                timer.stop();
             }
-        else 
-            setAllTargetVelocity(5.5,45.0,2.5, 50.0);// 2.5 original
-
+        } else {
+            Logger.recordOutput("unjamming", false);
+            double bigSpinnerSinSpeed = 2.25 + 0.5 * Math.sin(sinTimer.get() * 3);
+            setAllTargetVelocity(5.5,45.0,2.0, 30.0);// 2.5 original
+        }
     }
 
     public void reverseIndexer() {
@@ -91,9 +97,9 @@ public class Indexer extends SubsystemBase {
     }
 
     // EDIT THIS FOR DIFFERENT INDEXER SPEEDS
-    public Command indexFuelCommand() {
-        return(this.run(() -> indexFuel()));
-    }
+    // public Command indexFuelCommand() {
+    //     return(this.run(() -> indexFuel()));
+    // }
 
     public Command reverseIndexerCommand() {
         return(this.run(() -> reverseIndexer()));
