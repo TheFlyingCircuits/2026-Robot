@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -18,6 +19,7 @@ import frc.robot.VendorWrappers.Kraken;
 public class SwerveModuleIOKraken implements SwerveModuleIO {
 
     private double desiredAngleDeg = 0.0;
+    private Orchestra orchestra;
 
     final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0).withEnableFOC(true)
         .withUpdateFreqHz(60.0);
@@ -62,6 +64,9 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         } else {
             configDriveMotor(InvertedValue.Clockwise_Positive);
         }
+        orchestra = new Orchestra();
+        orchestra.addInstrument(driveMotor);
+        orchestra.addInstrument(angleMotor);
     }
 
     private void configCANCoder(double angleOffsetRotations) {
@@ -144,5 +149,16 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
     @Override
     public void setAngleVoltage(double volts) {
         angleMotor.setVoltage(volts);
+    }
+    
+    @Override
+    public void playMusic(String songName) {
+        orchestra.loadMusic(songName);
+        orchestra.play();
+    }
+
+    @Override
+    public void stopMusic() {
+        orchestra.stop();
     }
 }

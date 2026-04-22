@@ -45,7 +45,6 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldConstants;
 import frc.robot.PlayingField.FieldElement;
-import frc.robot.PlayingField.Shift;
 import frc.robot.subsystems.vision.SingleTagCam;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
 
@@ -549,6 +548,20 @@ public class Drivetrain extends SubsystemBase {
         return shiftTime;
     
     }
+
+    public void playMusic(String song) {
+        for (SwerveModule mod : swerveModules) {
+            // mod.playMusic(song); 
+        }
+    }
+
+    public void stopMusic() {
+        for (SwerveModule mod : swerveModules) {
+            mod.stopMusic(); 
+        }
+    }
+
+
 
     @Override
     public void periodic() {

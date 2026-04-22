@@ -29,6 +29,13 @@ public class SwerveModule {
         Logger.processInputs("swerveModuleInputs/"+name, inputs);
     }
 
+    public void playMusic(String song) {
+        io.playMusic(song);
+    }
+
+    public void stopMusic() {
+        io.stopMusic();
+    }
 
     private SwerveModuleState constrainState(SwerveModuleState toConstrain) {
         double originalDegrees = toConstrain.angle.getDegrees();

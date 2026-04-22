@@ -26,5 +26,9 @@ public interface SwerveModuleIO {
     
     public default void setAngleVoltage(double volts) {};
 
+    public default void playMusic(String songName) {};
+    
+    public default void stopMusic() {};
+
 
 }

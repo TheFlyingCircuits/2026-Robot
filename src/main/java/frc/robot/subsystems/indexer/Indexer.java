@@ -24,7 +24,7 @@ public class Indexer extends SubsystemBase {
         this.indexerIO=indexerIO;
         indexerInputs = new IndexerIOInputsAutoLogged();
         indexerIOInputs = new IndexerIOInputs();
-        filter = LinearFilter.singlePoleIIR(0.4, 0.02);
+        filter = LinearFilter.singlePoleIIR(0.25, 0.02);
         timer = new Timer();
         sinTimer = new Timer();
         sinTimer.start();
@@ -64,7 +64,7 @@ public class Indexer extends SubsystemBase {
     // }
     
     public void shootFuel(double targetKickerMPS) {
-        if (filter.calculate(indexerIOInputs.bigSpinnerAmps) > 130) 
+        if (filter.calculate(indexerIOInputs.bigSpinnerAmps) > 90) 
             timer.start();
         if (timer.get() > 0)  {
             Logger.recordOutput("unjamming", true);
@@ -75,8 +75,8 @@ public class Indexer extends SubsystemBase {
             }
         } else {
             Logger.recordOutput("unjamming", false);
-            double bigSpinnerSinSpeed = 2.25 + 0.5 * Math.sin(sinTimer.get() * 3);
-            setAllTargetVelocity(5.5,45.0,2.0, 30.0);// 2.5 original
+            double midRoller = 50 + 20 * Math.sin(sinTimer.get() * 6);
+            setAllTargetVelocity(5.5,45.0,2.67, midRoller);// 2.5 original
         }
     }
 

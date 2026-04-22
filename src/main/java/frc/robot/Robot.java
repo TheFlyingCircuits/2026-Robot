@@ -61,7 +61,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
 
     // TODO: try using this and see if auto starts faster
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
   }
 
   @Override

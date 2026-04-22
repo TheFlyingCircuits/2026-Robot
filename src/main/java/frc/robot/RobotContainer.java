@@ -22,13 +22,13 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.MeasureWheelDiameter;
 import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -61,6 +61,9 @@ public class RobotContainer {
     public final Turret turret;
     public final Indexer indexer;
     public final Intake intake;
+
+    PathPlannerPath bumpP1Path;
+    PathPlannerPath bumpP2Path;
 
     // private final SendableChooser<String> autoChooser;
     
@@ -145,6 +148,14 @@ public class RobotContainer {
 
         configureBindings();
         setDefaultCommands();
+
+        try {
+            bumpP1Path = PathPlannerPath.fromPathFile("Agressive Bump P1");
+            bumpP2Path = PathPlannerPath.fromPathFile("Agressive Bump P2");
+        } catch(Exception e) {
+            bumpP1Path = null;
+            bumpP2Path = null;
+        }
     }
 
     private void configureBindings() {
@@ -187,7 +198,7 @@ public class RobotContainer {
         // duncanController.a().whileTrue(intake.intakeDownCommand());
         duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
         duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
-        duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
+        // duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
         // duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
         duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand());
@@ -195,7 +206,10 @@ public class RobotContainer {
     }
 
     public void setDefaultCommands() {
-        drivetrain.setDefaultCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"));
+        drivetrain.setDefaultCommand(new ConditionalCommand(driverFullyControlDrivetrain().withName("driveDefualtCommand"),
+            drivetrain.run(() ->drivetrain.playMusic("song"))
+                .finallyDo(() -> drivetrain.stopMusic()), 
+                () -> DriverStation.isEnabled()));
         turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
         indexer.setDefaultCommand(indexer.stopIndexingCommand());
         intake.setDefaultCommand(intake.noVoltageCommand());
@@ -282,7 +296,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return new MeasureWheelDiameter(drivetrain);
-        return bumpAuto();
+        return agressiveDipAuto();
     }
 
     private Command passingLeftAuto() {
@@ -306,21 +320,19 @@ public class RobotContainer {
 
     private Command bumpAuto() {
         try{
-        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Bump P1");
-        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Agressive Bump P2");
 
         // flip based on left or right
         double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
         double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
 
-        if ( distFromRightTrench < distFromLeftTrench) {
-            firstPath = firstPath.mirrorPath();
-            secondPath = secondPath.mirrorPath();
+        if (distFromRightTrench < distFromLeftTrench) {
+            bumpP1Path = bumpP1Path.mirrorPath();
+            bumpP2Path = bumpP2Path.mirrorPath();
         }
 
         return new SequentialCommandGroup(
-            new ProxyCommand(AutoBuilder.followPath(firstPath)),
-            new ProxyCommand(AutoBuilder.followPath(secondPath)),
+            new ProxyCommand(AutoBuilder.followPath(bumpP1Path)),
+            new ProxyCommand(AutoBuilder.followPath(bumpP2Path)),
             Commands.waitSeconds(2)
         );
     } catch (Exception e) {

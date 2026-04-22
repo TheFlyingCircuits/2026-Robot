@@ -40,7 +40,7 @@ public class Turret extends SubsystemBase{
         TurretConstants.velocityLookUp.put(2.0,2.3);
         TurretConstants.velocityLookUp.put(3.0,3.4);
         TurretConstants.velocityLookUp.put(4.0,4.5);
-        TurretConstants.velocityLookUp.put(5.0,6.1);
+        TurretConstants.velocityLookUp.put(5.0,5.7);
         TurretConstants.velocityLookUp.put(5.5,6.3);
         TurretConstants.velocityLookUp.put(6.419948,7.6);
 

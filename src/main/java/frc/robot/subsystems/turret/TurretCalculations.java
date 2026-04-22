@@ -132,7 +132,7 @@ public class TurretCalculations {
     }
 
     public static Translation3d getHubShootingTargetTranslation() {
-        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.64));
+        Translation3d shootingPose = FieldElement.HUB.getLocation().plus(new Translation3d(0.0,0.0,0.63));
         return shootingPose;
     }
 
@@ -187,7 +187,7 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-55.0, -44.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-50.0, -43.0, distanceToTargetMeters, 5.65);
         } else {
             // return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
             return getAdjustedAngleOfAttack(-50.0, -40.0, distanceToTargetMeters, 7.5);
