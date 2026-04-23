@@ -151,7 +151,7 @@ public class RobotContainer {
 
         try {
             bumpP1Path = PathPlannerPath.fromPathFile("Agressive Bump P1");
-            bumpP2Path = PathPlannerPath.fromPathFile("Agressive Bump P2");
+            bumpP2Path = PathPlannerPath.fromPathFile("Bump P2 test");
         } catch(Exception e) {
             bumpP1Path = null;
             bumpP2Path = null;
@@ -296,7 +296,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return new MeasureWheelDiameter(drivetrain);
-        return agressiveDipAuto();
+        return bumpAuto();
     }
 
     private Command passingLeftAuto() {

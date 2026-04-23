@@ -23,7 +23,9 @@ public class TurretCalculations {
         HUB,
         PASSING,
         PASSING_LEFT,
-        PASSING_RIGHT
+        PASSING_RIGHT,
+        PASSING_MID_RIGHT,
+        PASSING_MID_LEFT
     }
 
     /**
@@ -143,10 +145,13 @@ public class TurretCalculations {
 
         if(passingTarget == PossibeTargets.PASSING_LEFT) {
             // new Translation3d(0.500, 6.448,0.0); for test
-
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.1));
-        } else {
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.1));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.15));
+        } else if (passingTarget == PossibeTargets.PASSING_RIGHT){
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.15));
+        } else if (passingTarget == PossibeTargets.PASSING_MID_LEFT){
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(3.5*inverIfRed,-1.5*inverIfRed,-0.3));
+        }else {
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(3.5*inverIfRed,1.5*inverIfRed,-0.3));
         }
 
         return target;

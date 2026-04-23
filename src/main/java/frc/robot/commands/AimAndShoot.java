@@ -11,8 +11,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.AdvantageScopeDrawingUtils;
-import frc.robot.FlyingCircuitUtils;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
@@ -116,19 +116,36 @@ public class AimAndShoot extends Command {
             double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
 
             try {
-                if(shootingTarget.get() == PossibeTargets.PASSING_LEFT) {
+                if(shootingTarget.get() == PossibeTargets.PASSING_LEFT || shootingTarget.get() == PossibeTargets.PASSING_MID_LEFT) {
+                    if(!(shootingTarget.get() == PossibeTargets.PASSING_MID_LEFT)) {
+                        distanceToLeftTrench = distanceToLeftTrench - sideWaysToleranceMeters;
+                    }
                     distanceToLeftTrench = distanceToLeftTrench - sideWaysToleranceMeters;
                 } else {
-                    distanceToRightTrench = distanceToRightTrench - sideWaysToleranceMeters;
+                    if(!(shootingTarget.get() == PossibeTargets.PASSING_MID_RIGHT)) {
+                        distanceToRightTrench = distanceToRightTrench - sideWaysToleranceMeters;
+                    }
                 }
-            } catch(NullPointerException e) {
                 
-            }
+                
+            } catch(NullPointerException e) {}
 
+
+            boolean isPastRedHub = turretTranslation.get().getX() > FieldElement.Enemy_HUB.getLocation().getX();
+            boolean isPastBlueHub = !isPastRedHub;
+            boolean shouldMidPass = FlyingCircuitUtils.getAllianceDependentValue(isPastBlueHub, isPastRedHub, true);
             if(distanceToLeftTrench<distanceToRightTrench) {
-                shootingTarget = ()-> PossibeTargets.PASSING_LEFT;
+                if(!(shouldMidPass)) {
+                    shootingTarget = ()-> PossibeTargets.PASSING_LEFT;
+                } else {
+                    shootingTarget = ()-> PossibeTargets.PASSING_MID_LEFT;
+                }
             } else {
-                shootingTarget = ()-> PossibeTargets.PASSING_RIGHT;
+                if(!(shouldMidPass)) {
+                    shootingTarget = ()-> PossibeTargets.PASSING_RIGHT;
+                } else {
+                    shootingTarget = ()-> PossibeTargets.PASSING_MID_RIGHT;
+                }
             }
         }
     }
