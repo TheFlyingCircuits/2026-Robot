@@ -5,6 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.PlayingField.FieldConstants;;
 
 //perform an experiment.  Place the robot on the field.  Collect location data (x,y, theta).  Use the statistic tab in advandave scope to calculate the standard deviation
@@ -16,7 +17,7 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
     public Matrix<N3, N1> getStandardDeviations(boolean isScoringInHub) {
         // double slopeStdDevMeters_PerMeter = 0.0023;
         double slopeStdDevMeters_PerMeter;
-        if(isScoringInHub) {
+        if(isScoringInHub || DriverStation.isAutonomous()) {
             slopeStdDevMeters_PerMeter = 0.0;
         } else {
             slopeStdDevMeters_PerMeter = 0.00225;
