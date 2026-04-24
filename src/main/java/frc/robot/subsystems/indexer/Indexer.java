@@ -64,9 +64,9 @@ public class Indexer extends SubsystemBase {
     // }
     
     public void shootFuel(double targetKickerMPS) {
-        if (filter.calculate(indexerIOInputs.bigSpinnerAmps) > 90) 
+        if (filter.calculate(indexerIOInputs.bigSpinnerAmps) > 90.0) 
             timer.start();
-        if (timer.get() > 0)  {
+        if (timer.get() > 0.0)  {
             Logger.recordOutput("unjamming", true);
             setAllTargetVelocity(0.0,0.0,0.0, 0.0);// 2.5 original
             if (timer.get() > 0.6) {
@@ -76,7 +76,7 @@ public class Indexer extends SubsystemBase {
         } else {
             Logger.recordOutput("unjamming", false);
             double midRoller = 50 + 20 * Math.sin(sinTimer.get() * 6);
-            setAllTargetVelocity(5.5,45.0,2.67, midRoller);// 2.5 original
+            setAllTargetVelocity(5.5,45.0,2.25, midRoller);// 2.5 original
         }
     }
 

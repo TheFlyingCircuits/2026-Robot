@@ -68,7 +68,7 @@ public class HumanDriver {
         // Increase sensitivity at slower speeds
         // adjust this power value for diffferences in how the robot handles (recommended between 1.5 and 3)
         // ^ old comment from original JoystickDrive command
-        totalThrottle = Math.pow(totalThrottle, 3);
+        totalThrottle = Math.pow(totalThrottle, 2);
         double desiredSpeed = totalThrottle * DrivetrainConstants.maxDesiredTeleopVelocityMetersPerSecond;
 
         // Get desired rotation speed from right stick
