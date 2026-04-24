@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -318,10 +319,7 @@ public class RobotContainer {
         }
     }
 
-    private Command bumpAuto() {
-        try{
-
-        // flip based on left or right
+    public void flipBumpPathIfNeeded() {
         double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
         double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
 
@@ -329,17 +327,30 @@ public class RobotContainer {
             bumpP1Path = bumpP1Path.mirrorPath();
             bumpP2Path = bumpP2Path.mirrorPath();
         }
+    }
 
+    private Command bumpAuto() {
+        try{
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Bump P1");
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Agressive Bump P2");
+
+        // flip based on left or right
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        if ( distFromRightTrench < distFromLeftTrench) {
+            firstPath = firstPath.mirrorPath();
+            secondPath = secondPath.mirrorPath();
+        }
+        
         return new SequentialCommandGroup(
-            new ProxyCommand(AutoBuilder.followPath(bumpP1Path)),
-            new ProxyCommand(AutoBuilder.followPath(bumpP2Path)),
-            Commands.waitSeconds(2)
+            AutoBuilder.followPath(firstPath),
+            AutoBuilder.followPath(secondPath)
         );
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
-    }
-    }
+        }catch (Exception e) {
+            return new InstantCommand();
+        }
+    } 
 
     private Command agressiveDipAuto() {
         try{

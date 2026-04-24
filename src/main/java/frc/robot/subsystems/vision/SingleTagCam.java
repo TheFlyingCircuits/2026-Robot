@@ -44,7 +44,7 @@ public class SingleTagCam {
         int apriltagTiles = 100;
         int pixelsPerTile = 3 * 3;
         simCamera.setMinTargetAreaPixels(apriltagTiles * pixelsPerTile);
-        FieldConstants.simulatedTagLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
+        // FieldConstants.simulatedTagLayout.addCamera(simCamera, new Transform3d(camLocation_robotFrame, camOrientation_robotFrame));
     }
     public SingleTagCam(String name, Pose3d camPose_robotFrame) {
         this(name, camPose_robotFrame.getTranslation(), camPose_robotFrame.getRotation());
