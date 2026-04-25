@@ -71,7 +71,7 @@ public class IndexerIOKraken implements IndexerIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 5.2;
-        config.Slot0.kP = 13.5; 
+        config.Slot0.kP = 12.0; 
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.0;
 
