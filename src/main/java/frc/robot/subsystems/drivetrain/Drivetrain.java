@@ -397,7 +397,7 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 6.0) {
+            if (poseObservation.tagToCamMeters() > 7.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
