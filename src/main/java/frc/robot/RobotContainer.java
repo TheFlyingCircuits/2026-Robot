@@ -319,6 +319,19 @@ public class RobotContainer {
         }
     }
 
+    public Command depotAuto() {
+        try{
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Depot");
+
+        return new SequentialCommandGroup(
+            AutoBuilder.followPath(firstPath),
+            Commands.waitSeconds(15)
+        );
+        }catch (Exception e) {
+            return new InstantCommand();
+        }
+    }
+
     public void flipBumpPathIfNeeded() {
         double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
         double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
