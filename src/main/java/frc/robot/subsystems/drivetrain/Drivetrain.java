@@ -397,20 +397,20 @@ public class Drivetrain extends SubsystemBase {
             Translation2d locationNow = getPoseMeters().getTranslation();
 
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 7.0) {
+            if (poseObservation.tagToCamMeters() > 6.0) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
 
             // reject pose observations that claim the robot
             // is in the air or beneath the floor
-            if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(15)) {
+            if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(7)) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }
 
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.4) {
+            if (poseObservation.ambiguity() > 0.25) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }

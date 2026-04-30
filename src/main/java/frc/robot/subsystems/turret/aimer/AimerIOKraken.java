@@ -36,7 +36,7 @@ public class AimerIOKraken implements AimerIO{
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(60.0).withSlot(0);
 
-    private final PIDController turretPIDToTarget = new PIDController(115.0,20.0,0.06);
+    private final PIDController turretPIDToTarget = new PIDController(125.0,20.0,0.06);
     // private final PIDController turretPIDToTargetFar = new PIDController(35.0,0.0,0.0);
     private final PIDController turretPIDToSetpoint = new PIDController(1.5,0.0,0.0);
 

@@ -110,7 +110,7 @@ public class AimAndShoot extends Command {
         } else {
 
             drivetrain.resetFocus();
-            double sideWaysToleranceMeters = 1.5;
+            double sideWaysToleranceMeters = 0.75;
 
             double distanceToLeftTrench = FieldElement.TRENCH_LEFT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());
             double distanceToRightTrench = FieldElement.TRENCH_RIGHT.getLocation2d().getDistance(turretTranslation.get().toTranslation2d());

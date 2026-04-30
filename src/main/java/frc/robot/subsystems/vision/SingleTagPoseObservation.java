@@ -17,14 +17,16 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
     public Matrix<N3, N1> getStandardDeviations(boolean isScoringInHub) {
         // double slopeStdDevMeters_PerMeter = 0.0023;
         double slopeStdDevMeters_PerMeter;
-        if(isScoringInHub || DriverStation.isAutonomous()) {
+        if(isScoringInHub) {
             slopeStdDevMeters_PerMeter = 0.0;
+        } else if(DriverStation.isAutonomous()) {
+            slopeStdDevMeters_PerMeter = 0.0025;
         } else {
-            slopeStdDevMeters_PerMeter = 0.00225;
+            slopeStdDevMeters_PerMeter = 0.0055;
             if (tagToCamMeters < 1.5) {
-                slopeStdDevMeters_PerMeter = 0.001;
+                slopeStdDevMeters_PerMeter = 0.0025;
             } else if (tagToCamMeters < 3) {
-                slopeStdDevMeters_PerMeter = 0.0015;
+                slopeStdDevMeters_PerMeter = 0.004;
             }
         }
 

@@ -75,8 +75,8 @@ public class Indexer extends SubsystemBase {
             }
         } else {
             Logger.recordOutput("unjamming", false);
-            double midRoller = 50 + 20 * Math.sin(sinTimer.get() * 6);
-            setAllTargetVelocity(5.5,50.0,2.5, midRoller);// 2.5 original
+            // double midRoller = 50 + 20 * Math.sin(sinTimer.get() * 6);
+            setAllTargetVelocity(5.5,50.0,2.5, 40.0);// 2.5 original
         }
     }
 
