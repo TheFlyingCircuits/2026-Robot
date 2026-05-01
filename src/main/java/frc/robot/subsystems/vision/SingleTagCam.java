@@ -55,7 +55,7 @@ public class SingleTagCam {
     
     
     public List<SingleTagPoseObservation> getFreshPoseObservations() {
-        // calibrateCamPose_robotFrame();
+        calibrateCamPose_robotFrame();
         List<SingleTagPoseObservation> output = new ArrayList<>();
 
         // advantage scope viz hacks
@@ -174,12 +174,12 @@ public class SingleTagCam {
 
         double frameXDistanceFrameTag = Units.inchesToMeters(27.5);
         // double tagX_robotFrame = (DrivetrainConstants.frameWidthMeters/2.0) + frameXDistanceFrameTag;
-        double tagX_robotFrame = frameXDistanceFrameTag;
+        double tagX_robotFrame = -frameXDistanceFrameTag;
         double tagY_robotFrame = 0.0;
         double tagZ_robotFrame = Units.inchesToMeters(26.0625); // this will be prob be the height of the calibration tag
 
         // boolean facingTag = FlyingCircuitUtils.getBooleanFromDashboard("facingCalibrationTag", false);
-        Rotation3d tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg); // change based off cam
+        Rotation3d tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg.minus(Rotation2d.k180deg)); // change based off cam
         // if (facingTag) {
         //     tagOrientation_robotFrame = new Rotation3d(Rotation2d.k180deg);
         // }
