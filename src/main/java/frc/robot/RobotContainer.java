@@ -345,7 +345,7 @@ public class RobotContainer {
     private Command bumpAuto() {
         try{
         PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Bump P1");
-        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Agressive Bump P2");
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Bump P2 test");
 
         // flip based on left or right
         double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());

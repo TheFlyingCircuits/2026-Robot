@@ -126,7 +126,7 @@ public final class Constants {
          * <br>
          * This value will be tuned based off of driver preference.
          */
-        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(0.85);
+        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.0);
 
 
         public static final PathConstraints pathfindingConstraints = new PathConstraints(

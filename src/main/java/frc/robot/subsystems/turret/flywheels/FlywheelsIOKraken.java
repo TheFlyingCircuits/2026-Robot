@@ -42,10 +42,10 @@ public class FlywheelsIOKraken implements FlywheelsIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         //https://www.desmos.com/calculator/janq2cvkgo
-        //y=0.120913x+0.375351
+        //old y=0.120913x+0.375351  new y=0.121122x+0.390959
         // volts
-        config.Slot1.kS = 0.375351; // voltage to get over static friction
-        config.Slot1.kV = 0.120913; // volts per rps
+        config.Slot1.kS = 0.390959; // voltage to get over static friction
+        config.Slot1.kV = 0.121122; // volts per rps
         config.Slot1.kP = 0.0;
 
         // current bang bang 

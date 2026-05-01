@@ -27,7 +27,7 @@ public class AimerIOKraken implements AimerIO{
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
 
-    private double ksForConstantForceSpring = 0.65;
+    private double ksForConstantForceSpring = 0.7;
     private double kVVoltsVoltsPerRotation = 1.80594;
     private Timer timer;
 
@@ -36,9 +36,9 @@ public class AimerIOKraken implements AimerIO{
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(60.0).withSlot(0);
 
-    private final PIDController turretPIDToTarget = new PIDController(125.0,20.0,0.06);
+    private final PIDController turretPIDToTarget = new PIDController(145.0,25.0,0.07);
     // private final PIDController turretPIDToTargetFar = new PIDController(35.0,0.0,0.0);
-    private final PIDController turretPIDToSetpoint = new PIDController(1.5,0.0,0.0);
+    private final PIDController turretPIDToSetpoint = new PIDController(1.6,0.0,0.0);
 
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;
@@ -70,7 +70,7 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 160;
+        config.CurrentLimits.StatorCurrentLimit = 90;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
 
@@ -254,11 +254,11 @@ public class AimerIOKraken implements AimerIO{
         // double feedForwardVolts = feedForwardsSpringVolts + m_setpoint.velocity*kVVoltsVoltsPerRotation;
         double feedForwardVolts = feedForwardsSpringVolts + velocitySetpoint*kVVoltsVoltsPerRotation;
         // pidOutputVolts = turretPID.calculate(aimerKraken.getVelocity().getValueAsDouble(), profiledController.getSetpoint().velocity);
-        double outputVolts = MathUtil.clamp(pidOutputVolts + feedForwardVolts, -8.0, 8.0);
+        double outputVolts = MathUtil.clamp(pidOutputVolts + feedForwardVolts, -6.5, 6.5);
         // double outputVolts = MathUtil.clamp(pidOutputVolts+ feedForwardsSpringVolts + robotRotationFeedForward, -8.0, 8.0);
 
 
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 80.0) {
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 100.0) {
             aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
         } else {
             aimerKraken.setVoltage(outputVolts);

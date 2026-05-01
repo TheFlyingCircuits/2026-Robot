@@ -145,13 +145,13 @@ public class TurretCalculations {
 
         if(passingTarget == PossibeTargets.PASSING_LEFT) {
             // new Translation3d(0.500, 6.448,0.0); for test
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.8*inverIfRed,-1.5*inverIfRed,-0.15));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(-1.5*inverIfRed,-1.5*inverIfRed,-0.55));
         } else if (passingTarget == PossibeTargets.PASSING_RIGHT){
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.8*inverIfRed,1.5*inverIfRed,-0.15));
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(-1.5*inverIfRed,1.5*inverIfRed,-0.55));
         } else if (passingTarget == PossibeTargets.PASSING_MID_LEFT){
-            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(3.5*inverIfRed,-1.5*inverIfRed,-0.3));
+            target=FieldElement.TRENCH_LEFT.getLocation().plus(new Translation3d(3.5*inverIfRed,-1.5*inverIfRed,-0.55));
         }else {
-            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(3.5*inverIfRed,1.5*inverIfRed,-0.3));
+            target=FieldElement.TRENCH_RIGHT.getLocation().plus(new Translation3d(3.5*inverIfRed,1.5*inverIfRed,-0.55));
         }
 
         return target;
@@ -192,10 +192,10 @@ public class TurretCalculations {
             // if(distanceToTargetMeters < 2) {
             //     return getAdjustedAngleOfAttack(-75.0, -48.0, distanceToTargetMeters, 5.65);
             // }
-            return getAdjustedAngleOfAttack(-50.0, -45.0, distanceToTargetMeters, 5.65);
+            return getAdjustedAngleOfAttack(-47.5, -51.0, distanceToTargetMeters, 5.65);
         } else {
             // return getAdjustedAngleOfAttack(-72.0, -51.0, distanceToTargetMeters, 5.65);
-            return getAdjustedAngleOfAttack(-50.0, -40.0, distanceToTargetMeters, 7.5);
+            return getAdjustedAngleOfAttack(-45.0, -43.0, distanceToTargetMeters, 7.5);
         }
     }
     

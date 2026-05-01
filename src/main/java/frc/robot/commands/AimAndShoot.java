@@ -106,7 +106,11 @@ public class AimAndShoot extends Command {
 
         if (shouldTargetHub) {
             shootingTarget = () -> PossibeTargets.HUB;
-            drivetrain.setFocus(FieldElement.HUB);
+            if(driverReadyToShoot.get()) {
+                drivetrain.setFocus(FieldElement.HUB);
+            } else {
+                drivetrain.resetFocus();
+            }
         } else {
 
             drivetrain.resetFocus();
