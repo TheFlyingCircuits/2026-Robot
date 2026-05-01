@@ -410,7 +410,7 @@ public class Drivetrain extends SubsystemBase {
             }
 
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.2) {
+            if (poseObservation.ambiguity() > 0.25) {
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
             }

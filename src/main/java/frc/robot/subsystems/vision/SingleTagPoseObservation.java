@@ -20,13 +20,13 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
         if(isScoringInHub) {
             slopeStdDevMeters_PerMeter = 0.0;
         } else if(DriverStation.isAutonomous()) {
-            slopeStdDevMeters_PerMeter = 0.0035;
+            slopeStdDevMeters_PerMeter = 0.004;
         } else {
-            slopeStdDevMeters_PerMeter = 0.008;
+            slopeStdDevMeters_PerMeter = 0.010;
             if (tagToCamMeters < 1.5) {
-                slopeStdDevMeters_PerMeter = 0.004;
+                slopeStdDevMeters_PerMeter = 0.005;
             } else if (tagToCamMeters < 3) {
-                slopeStdDevMeters_PerMeter = 0.006;
+                slopeStdDevMeters_PerMeter = 0.008;
             }
         }
 

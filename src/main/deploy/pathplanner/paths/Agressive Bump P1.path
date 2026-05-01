@@ -166,12 +166,12 @@
     {
       "name": "aim",
       "waypointRelativePos": 0.4194078947368946,
-      "endWaypointRelativePos": 2.635235732009924,
+      "endWaypointRelativePos": 2.7008777852802073,
       "command": null
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 2.87,
+      "waypointRelativePos": 2.8,
       "endWaypointRelativePos": 3.39,
       "command": null
     },

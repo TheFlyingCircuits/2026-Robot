@@ -27,7 +27,7 @@ public class AimerIOKraken implements AimerIO{
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
 
-    private double ksForConstantForceSpring = 0.7;
+    private double ksForConstantForceSpring = 0.55;
     private double kVVoltsVoltsPerRotation = 1.80594;
     private Timer timer;
 
@@ -36,9 +36,9 @@ public class AimerIOKraken implements AimerIO{
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(60.0).withSlot(0);
 
-    private final PIDController turretPIDToTarget = new PIDController(145.0,25.0,0.07);
+    private final PIDController turretPIDToTarget = new PIDController(150.0,25.0,0.07);
     // private final PIDController turretPIDToTargetFar = new PIDController(35.0,0.0,0.0);
-    private final PIDController turretPIDToSetpoint = new PIDController(1.6,0.0,0.0);
+    private final PIDController turretPIDToSetpoint = new PIDController(1.4,0.0,0.01);
 
     // DO NOT use anything besides get pose meters we don't want conflicts
     private Drivetrain drivetrain;
@@ -238,16 +238,20 @@ public class AimerIOKraken implements AimerIO{
         double pidOutputToTarget;
         if(Units.rotationsToDegrees(errorRotations) < 15.0) {
             velocitySetpoint = -robotRotationVelocityRotations;
-            turretPIDToTarget.setP(100.0);
-            pidOutputToTarget = MathUtil.clamp(turretPIDToTarget.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle)), -4.0,4.0);
+            turretPIDToTarget.setP(120.0);
+            pidOutputToTarget = MathUtil.clamp(turretPIDToTarget.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle)), -3.5,3.5);
         } else {
-            turretPIDToTarget.setP(35.0);
-            pidOutputToTarget = MathUtil.clamp(turretPIDToTarget.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle)), -1.1, 1.1);
+            turretPIDToTarget.setP(20.0);
+            pidOutputToTarget = MathUtil.clamp(turretPIDToTarget.calculate(turretPositionRotations, Units.degreesToRotations(safeAngle)), -1.2, 1.2);
         }
         Logger.recordOutput("profile velcity setpoint", velocitySetpoint);
         Logger.recordOutput("aimer timer", timer.get());
 
+
         double pidOutputToVelocitySetpoint = MathUtil.clamp(turretPIDToSetpoint.calculate(turretVelocityRotationsPerSec, velocitySetpoint), -0.8, 0.8);
+        if(Math.abs(Units.rotationsToDegrees(turretVelocityRotationsPerSec)) < 5.0) {
+            pidOutputToVelocitySetpoint = 0.0;
+        }
 
         pidOutputVolts = pidOutputToTarget + pidOutputToVelocitySetpoint;
 

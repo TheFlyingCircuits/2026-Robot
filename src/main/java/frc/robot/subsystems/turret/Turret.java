@@ -46,19 +46,19 @@ public class Turret extends SubsystemBase{
 
         // realer values 
         TurretConstants.velocityLookUp.put(7.059305,8.7);
-        TurretConstants.velocityLookUp.put(7.54,9.7);
-        TurretConstants.velocityLookUp.put(7.921,10.8);
-        TurretConstants.velocityLookUp.put(8.359459,11.5);
-        TurretConstants.velocityLookUp.put(8.974041,12.7);
-        TurretConstants.velocityLookUp.put(9.5,13.42154);
+        TurretConstants.velocityLookUp.put(7.54,9.8);
+        TurretConstants.velocityLookUp.put(8.026291,12.0);
+        TurretConstants.velocityLookUp.put(8.359459,12.5);
+        TurretConstants.velocityLookUp.put(8.974041,13.7);
+        TurretConstants.velocityLookUp.put(9.5,14.42154);
         
-        TurretConstants.velocityLookUp.put(10.0,14.58644);
-        TurretConstants.velocityLookUp.put(10.5,15.7972);
-        TurretConstants.velocityLookUp.put(11.0,17.05382);
-        TurretConstants.velocityLookUp.put(11.5,18.35631);
-        TurretConstants.velocityLookUp.put(12.0,19.70466);
-        TurretConstants.velocityLookUp.put(12.5,21.09887);
-        TurretConstants.velocityLookUp.put(13.0,22.53894);
+        TurretConstants.velocityLookUp.put(10.0,15.58644);
+        TurretConstants.velocityLookUp.put(10.5,16.7972);
+        TurretConstants.velocityLookUp.put(11.0,18.05382);
+        TurretConstants.velocityLookUp.put(11.5,19.35631);
+        TurretConstants.velocityLookUp.put(12.0,12.70466);
+        TurretConstants.velocityLookUp.put(12.5,22.09887);
+        TurretConstants.velocityLookUp.put(13.0,23.53894);
         TurretConstants.velocityLookUp.put(13.5, 24.02487);
         // TurretConstants.velocityLookUp.put(7.059305,8.559305);
 

@@ -125,8 +125,9 @@ public final class Constants {
          * If the controller rotation joystick is maxed in one direction, it will rotate at this speed.
          * <br>
          * This value will be tuned based off of driver preference.
-         */
-        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.0);
+         */ 
+        // 1.7 rot per sec is about our max
+        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.1);
 
 
         public static final PathConstraints pathfindingConstraints = new PathConstraints(
