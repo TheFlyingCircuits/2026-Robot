@@ -52,10 +52,13 @@ public class SingleTagCam {
     public SingleTagCam(String name, Transform3d camPose_robotFrame) {
         this(name, camPose_robotFrame.getTranslation(), camPose_robotFrame.getRotation());
     }
+
     
     
-    public List<SingleTagPoseObservation> getFreshPoseObservations() {
-        calibrateCamPose_robotFrame();
+    public List<SingleTagPoseObservation> getFreshPoseObservations(boolean usingTrig, 
+    double robotAngleDeg) {
+
+        // calibrateCamPose_robotFrame();
         List<SingleTagPoseObservation> output = new ArrayList<>();
 
         // advantage scope viz hacks
@@ -111,7 +114,13 @@ public class SingleTagCam {
                 for (PhotonTrackedTarget tag : frame.targets) {
                     // Extract data from PhotonVision.
                     int tagID = tag.fiducialId;
-                    Pose3d robotPose = this.getRobotPoseFromSingleTag(tag);
+                    Pose3d robotPose;
+                    if(usingTrig) {
+                        robotPose = this.getRobotPoseFromSingleTagTrig(tag, robotAngleDeg);
+                    } else {
+                        robotPose = this.getRobotPoseFromSingleTag(tag);
+                    }
+
                     double timestamp = frame.getTimestampSeconds();
                     double tagToCamDistance = tag.getBestCameraToTarget().getTranslation().getNorm();
                     double ambiguity = tag.poseAmbiguity;
@@ -141,6 +150,27 @@ public class SingleTagCam {
         return cam.getName();
     }
 
+    private Pose3d getRobotPoseFromSingleTagTrig(PhotonTrackedTarget singleTag, double robotAngleDeg) {
+        Transform3d camPose_robotFrame = new Transform3d(camLocation_robotFrame, camOrientation_robotFrame);
+        Transform3d robotPose_camFrame = camPose_robotFrame.inverse();
+
+
+        Transform3d tagPose_fieldFrame = FieldConstants.tagPoseAsTransform(singleTag.fiducialId);
+        new Rotation2d();
+        // Transform3d sightlineCamToTag = new Transform3d()
+        double trigangleThetaRad = Units.degreesToRadians
+            (singleTag.pitch + Units.radiansToDegrees(camOrientation_robotFrame.getY()));
+
+        double camToTagDistance = tagPose_fieldFrame.getZ() / Math.sin(trigangleThetaRad);
+
+        Translation3d camTranslation = tagPose_fieldFrame.getTranslation().minus(
+            new Translation3d(camToTagDistance, camToTagDistance,
+            camToTagDistance*Math.sin(trigangleThetaRad))
+        );
+
+
+        return new Pose3d();
+    }
 
     private Pose3d getRobotPoseFromSingleTag(PhotonTrackedTarget singleTag) {
 

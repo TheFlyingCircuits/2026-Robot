@@ -297,7 +297,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return new MeasureWheelDiameter(drivetrain);
-        return bumpAuto();
+        return delayedBumpDepotAuto();
     }
 
     private Command passingLeftAuto() {
@@ -341,6 +341,30 @@ public class RobotContainer {
             bumpP2Path = bumpP2Path.mirrorPath();
         }
     }
+
+    private Command delayedBumpDepotAuto() {
+        try{
+        PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Bump P1 depot");
+        PathPlannerPath secondPath = PathPlannerPath.fromPathFile("Bump P2 depot");
+
+        // flip based on left or right
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        if ( distFromRightTrench < distFromLeftTrench) {
+            firstPath = firstPath.mirrorPath();
+            secondPath = secondPath.mirrorPath();
+        }
+        
+        return new SequentialCommandGroup(
+            Commands.waitSeconds(3),
+            AutoBuilder.followPath(firstPath),
+            AutoBuilder.followPath(secondPath)
+        );
+        }catch (Exception e) {
+            return new InstantCommand();
+        }
+    } 
 
     private Command bumpAuto() {
         try{

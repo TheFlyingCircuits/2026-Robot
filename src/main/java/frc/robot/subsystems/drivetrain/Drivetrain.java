@@ -378,7 +378,7 @@ public class Drivetrain extends SubsystemBase {
         // get all pose observations from each camera
         List<SingleTagPoseObservation> allFreshPoseObservations = new ArrayList<>();
         for (SingleTagCam tagCam : tagCams) {
-            allFreshPoseObservations.addAll(tagCam.getFreshPoseObservations());
+            allFreshPoseObservations.addAll(tagCam.getFreshPoseObservations(false, getPoseMeters().getRotation().getDegrees()));
         }
 
         // process pose obvervations in chronological order
