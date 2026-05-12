@@ -193,7 +193,7 @@ public class Drivetrain extends SubsystemBase {
     }
  
     
-    private void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.maxDesiredTeleopVelocityMetersPerSecond);
         for (SwerveModule mod : swerveModules) {
             mod.setDesiredState(desiredStates[mod.moduleIndex]);

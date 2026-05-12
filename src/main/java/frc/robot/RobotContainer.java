@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.AimAndShootAuto;
 import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -142,8 +143,8 @@ public class RobotContainer {
         new EventTrigger("intakeDown").onTrue(new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand())));
         // new EventTrigger("intake").onTrue(new ProxyCommand(intake.inAutoIntakeCommand()));
         // new EventTrigger("aim").whileTrue(aimAndShoot(() -> TurretCalculations.possibeTargets.hub, () -> false, () -> true));
-        new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain, intake, () -> true)));
+        new EventTrigger("aim").whileTrue(new ProxyCommand(new AimAndShootAuto(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
+        () -> drivetrain.getFieldOrientedVelocity(), () -> false, true, drivetrain, intake, () -> true, () -> new ChassisSpeeds())));
 
         new EventTrigger("shoot").onTrue(new ProxyCommand(aimAndShoot(() -> true, () -> true, () ->true)));
 
@@ -233,14 +234,19 @@ public class RobotContainer {
     // }
 
     private Command aimAndShoot(Supplier<Boolean> driverReadyToShoot, Supplier<Boolean> needsReqs, Supplier<Boolean> shouldIntake) {
+        if(DriverStation.isAutonomous()) {
+            return new AimAndShootAuto(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
+            () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake, () -> duncan.getRequestedFieldOrientedVelocity());
+        } 
+        // else
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake, () -> duncan.getRequestedFieldOrientedVelocity());
     }
 
     private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
     Supplier<Translation3d> manualTurretPose) {
         return new AimAndShoot(turret, indexer, manualTurretPose, 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain, intake, () -> true);
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain, intake, () -> true, () -> duncan.getRequestedFieldOrientedVelocity());
     }
 
     // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
@@ -297,7 +303,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // return new MeasureWheelDiameter(drivetrain);
-        return delayedBumpDepotAuto();
+        return bumpAuto();
     }
 
     private Command passingLeftAuto() {

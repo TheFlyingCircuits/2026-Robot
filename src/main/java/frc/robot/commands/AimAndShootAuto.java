@@ -23,7 +23,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretCalculations;
 import frc.robot.subsystems.turret.TurretCalculations.PossibeTargets;
 
-public class AimAndShoot extends Command {
+public class AimAndShootAuto extends Command {
 
     private Turret turret;
     private Indexer indexer;
@@ -49,7 +49,7 @@ public class AimAndShoot extends Command {
 
     
 
-    public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
+    public AimAndShootAuto(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
     Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain, Intake intake, Supplier<Boolean> shouldIntake, Supplier<ChassisSpeeds> driverRequsetedVel) {
         this.turret=turret;
         this.indexer=indexer;
@@ -247,9 +247,8 @@ public class AimAndShoot extends Command {
 
         if(DriverStation.isTeleop() && shootingTarget.get() == TurretCalculations.PossibeTargets.HUB
             && driverReadyToShoot.get()) {
-            SwerveModuleState state = new SwerveModuleState(0.0, new Rotation2d().fromDegrees(135));
-            SwerveModuleState state2 = new SwerveModuleState(0.0, new Rotation2d().fromDegrees(45));
-            SwerveModuleState[] states = {state2,state,state,state2};
+            SwerveModuleState state = new SwerveModuleState(0.0, new Rotation2d().fromDegrees(45));
+            SwerveModuleState[] states = {state,state,state,state};
             drivetrain.setModuleStates(states);
         } else if (DriverStation.isTeleop()) {
             drivetrain.fieldOrientedDrive(driverRequsetedVel.get());
