@@ -45,7 +45,7 @@ public final class Constants {
     }
 
     public final static class ControllerConstants {
-        public static final double controllerDeadzone = 0.075;
+        public static final double controllerDeadzone = 0.06;
         public static final double maxThrottle = 1.0;
     }
 
@@ -127,7 +127,7 @@ public final class Constants {
          * This value will be tuned based off of driver preference.
          */ 
         // 1.7 rot per sec is about our max
-        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.1);
+        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.5);
 
 
         public static final PathConstraints pathfindingConstraints = new PathConstraints(

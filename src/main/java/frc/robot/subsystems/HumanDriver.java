@@ -79,7 +79,7 @@ public class HumanDriver {
         if (Math.abs(angularThrottle) > 1.0) {
             angularThrottle = Math.signum(angularThrottle) * 1.0;
         }
-        angularThrottle = Math.signum(angularThrottle) * Math.pow(Math.abs(angularThrottle), 3);
+        angularThrottle = Math.signum(angularThrottle) * Math.pow(Math.abs(angularThrottle), 2);
         double desiredAngularSpeed = angularThrottle * DrivetrainConstants.maxDesiredTeleopAngularVelocityRadiansPerSecond;
 
         ChassisSpeeds requestedVelocity = new ChassisSpeeds();
