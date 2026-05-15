@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -27,14 +28,17 @@ public class AimerIOKraken implements AimerIO{
     private Kraken aimerKraken;
     private CANcoder absoluteEncoder;
 
-    private double ksForConstantForceSpring = 0.55;
-    private double kVVoltsVoltsPerRotation = 1.80594;
+    private double ksForConstantForceSpring = 0.5;
+    private double kVVoltsVoltsPerRotation = 1.79675;
     private Timer timer;
 
     private double turretMaxOneSideDeg = 250;// TODO: get real
 
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(60.0).withSlot(0);
+
+    PositionVoltage positionVoltage = new PositionVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
+        .withUpdateFreqHz(60.0).withSlot(1);
 
     private final PIDController turretPIDToTarget = new PIDController(150.0,25.0,0.07);
     // private final PIDController turretPIDToTargetFar = new PIDController(35.0,0.0,0.0);
@@ -74,22 +78,20 @@ public class AimerIOKraken implements AimerIO{
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
 
-        // motion magic y=1.80594x+0.78592
+        // motion magic y=1.79675x+0.530416
         // config.Slot0.kG = ksForConstantForceSpring; 
-        config.Slot0.kP = 210.0;
+        config.Slot0.kP = 80.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 1.80594; // rps/volts 0.82 rps 2v - 1.4rps - 3v
-
+        config.Slot0.kV = 1.79675; // rps/volts 0.82 rps 2v - 1.4rps - 3v
+        config.Slot0.kS = 0.2;
         // config.Slot1.kG = -ksForConstantForceSpring; 
-        config.Slot1.kP = 125.0;
-        config.Slot1.kV = 1.80594;
+        config.Slot1.kP = 50.0;//50
+        config.Slot0.kV = 1.79675;
+        config.Slot0.kS = 0.12;
         config.Slot1.kI = 0.0;
-        config.Slot1.kD = 0.0;
+        config.Slot1.kD = 0.1;
         // config.Slot1.kV = 1.80594; 
 
-        config.Slot2.kP = 0.0;
-        config.Slot2.kD = 0.0;
-        config.Slot2.kV = 1.80594;
 
         // close voltage feedback
         // ks is over 0.0 because in either direction 0.001 volts of feedback pid is not enough
@@ -102,24 +104,23 @@ public class AimerIOKraken implements AimerIO{
         config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
         config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.05);
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1.5; //rps
-        config.MotionMagic.MotionMagicAcceleration = 4.0; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 1.7; //rps
+        config.MotionMagic.MotionMagicAcceleration = 5.0; //rotations per second squared
 
         config.Voltage.PeakForwardVoltage = 8.0;
-        config.Voltage.PeakReverseVoltage = -8.0;
+        config.Voltage.PeakReverseVoltage = 8.0;
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
         double encoderGearAnglePositionInRotations = absoluteEncoder.getAbsolutePosition().getValueAsDouble();
 
-        // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        // config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
-        // config.Feedback.RotorToSensorRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio;
-        // config.Feedback.SensorToMechanismRatio = TurretConstants.canCoderToTurretRotationsGearRatio;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
+        config.Feedback.RotorToSensorRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio;
+        config.Feedback.SensorToMechanismRatio = TurretConstants.canCoderToTurretRotationsGearRatio;
 
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Feedback.SensorToMechanismRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio*TurretConstants.canCoderToTurretRotationsGearRatio;
         config.ClosedLoopGeneral.ContinuousWrap = false;
 
         aimerKraken.applyConfig(config);
@@ -219,7 +220,15 @@ public class AimerIOKraken implements AimerIO{
 
         if(turretPositionRotations < 0) {
             feedForwardsSpringVolts = feedForwardsSpringVolts*-1.0;
+            // if((Units.degreesToRotations(turretPositionRotations) > -10)) {
+            //     feedForwardsSpringVolts = feedForwardsSpringVolts*-1.0;
+            // } 
         }
+
+        // if((Units.degreesToRotations(turretPositionRotations) > -30) &&
+        //      ((Units.degreesToRotations(turretPositionRotations) < -10)) ){
+        //         feedForwardsSpringVolts = feedForwardsSpringVolts * 0.4;
+        // }
 
         double targetAngleDegreesTurretToTargetIfTurretWasFront = targetPositionDegreesRobotToTarget - drivetrain.getPoseMeters().getRotation().getDegrees();
 
@@ -261,11 +270,12 @@ public class AimerIOKraken implements AimerIO{
         double outputVolts = MathUtil.clamp(pidOutputVolts + feedForwardVolts, -6.5, 6.5);
         // double outputVolts = MathUtil.clamp(pidOutputVolts+ feedForwardsSpringVolts + robotRotationFeedForward, -8.0, 8.0);
 
-
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 100.0) {
+        // feedForwardsSpringVolts = 0.0;
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 45.0) {
             aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
         } else {
-            aimerKraken.setVoltage(outputVolts);
+            aimerKraken.setControl(positionVoltage.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
+            // aimerKraken.setControl(outputVolts); (feedForwardsSpringVolts + robotRotationFeedForward)
         }
     }
 

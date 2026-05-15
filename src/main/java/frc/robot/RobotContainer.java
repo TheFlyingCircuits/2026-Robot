@@ -122,9 +122,9 @@ public class RobotContainer {
         FlyingCircuitUtils.putNumberOnDashboard("targetMPS", 0.0);
         FlyingCircuitUtils.putNumberOnDashboard("angleDeg", 0.0);
 
-        FlyingCircuitUtils.putNumberOnDashboard("middeVolts", 0.0);
-
         FlyingCircuitUtils.putNumberOnDashboard("MPS to add", 0.0);
+
+        FlyingCircuitUtils.putNumberOnDashboard("turretVolts", 0.0);
 
         duncanController = duncan.getXboxController();
 
@@ -164,6 +164,7 @@ public class RobotContainer {
         duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
          () -> FlyingCircuitUtils.getNumberFromDashboard("angleDeg", 0.0),
          () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0), intake, () -> drivetrain.getFieldOrientedVelocity()));
+
 
         // duncanController.a().whileTrue(Commands.run(() ->indexer.setAllTargetVolts(0.0,0.0,0.0, FlyingCircuitUtils.getNumberFromDashboard("middeVolts", 0.0))))
         // .whileFalse(Commands.run(() ->indexer.setAllTargetVolts(0.0,0.0,0.0, 0.0)));
