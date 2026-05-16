@@ -245,8 +245,8 @@ public class AimAndShoot extends Command {
             isShooting = false;
         }
 
-        if(DriverStation.isTeleop() && shootingTarget.get() == TurretCalculations.PossibeTargets.HUB
-            && driverReadyToShoot.get()) {
+        if((DriverStation.isTeleop() && shootingTarget.get() == TurretCalculations.PossibeTargets.HUB
+            && driverReadyToShoot.get()) &&  0.02 > (Math.abs(driverRequsetedVel.get().vxMetersPerSecond) + Math.abs(driverRequsetedVel.get().vyMetersPerSecond))) {
             SwerveModuleState state = new SwerveModuleState(0.0, new Rotation2d().fromDegrees(135));
             SwerveModuleState state2 = new SwerveModuleState(0.0, new Rotation2d().fromDegrees(45));
             SwerveModuleState[] states = {state2,state,state,state2};

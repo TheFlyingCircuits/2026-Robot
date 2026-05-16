@@ -74,7 +74,7 @@ public class AimerIOKraken implements AimerIO{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.StatorCurrentLimit = 90;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
 
@@ -83,13 +83,13 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kP = 80.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 1.79675; // rps/volts 0.82 rps 2v - 1.4rps - 3v
-        config.Slot0.kS = 0.2;
+        config.Slot0.kS = 0.25;
         // config.Slot1.kG = -ksForConstantForceSpring; 
-        config.Slot1.kP = 50.0;//50
+        config.Slot1.kP = 60.0;//50
         config.Slot0.kV = 1.79675;
-        config.Slot0.kS = 0.12;
+        config.Slot0.kS = 0.25;
         config.Slot1.kI = 0.0;
-        config.Slot1.kD = 0.1;
+        config.Slot1.kD = 0.0;
         // config.Slot1.kV = 1.80594; 
 
 
@@ -99,16 +99,11 @@ public class AimerIOKraken implements AimerIO{
         // config.Slot1.kS = 0.1;
         // config.Slot1.kP = 195.0; 
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 160;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -160;
-        config.TorqueCurrent.TorqueNeutralDeadband = 0.0;
-        config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.05);
-
         config.MotionMagic.MotionMagicCruiseVelocity = 1.7; //rps
         config.MotionMagic.MotionMagicAcceleration = 5.0; //rotations per second squared
 
         config.Voltage.PeakForwardVoltage = 8.0;
-        config.Voltage.PeakReverseVoltage = 8.0;
+        config.Voltage.PeakReverseVoltage = -8.0;
         // Units.degreesToRotations(1100);
         // config.ClosedLoopGeneral.GainSchedErrorThreshold = Units.degreesToRotations(0.0);
 
@@ -118,8 +113,6 @@ public class AimerIOKraken implements AimerIO{
         config.Feedback.FeedbackRemoteSensorID = TurretConstants.aimerCANcoderID;
         config.Feedback.RotorToSensorRatio = TurretConstants.aimerKrakenRotorToCANcoderGearRatio;
         config.Feedback.SensorToMechanismRatio = TurretConstants.canCoderToTurretRotationsGearRatio;
-
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
         config.ClosedLoopGeneral.ContinuousWrap = false;
 
