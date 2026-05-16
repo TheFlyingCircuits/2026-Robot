@@ -52,7 +52,7 @@
         "y": 3.8344507845934377
       },
       "prevControl": {
-        "x": 2.8487018544935796,
+        "x": 2.848701854493579,
         "y": 6.292796005706133
       },
       "nextControl": null,
@@ -107,10 +107,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.3,
-    "maxAcceleration": 5.8,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 361.0,
+    "maxVelocity": 4.1,
+    "maxAcceleration": 5.2,
+    "maxAngularVelocity": 340.0,
+    "maxAngularAcceleration": 340.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

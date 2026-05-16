@@ -32,7 +32,7 @@ public class AimerIOKraken implements AimerIO{
     private double kVVoltsVoltsPerRotation = 1.79675;
     private Timer timer;
 
-    private double turretMaxOneSideDeg = 250;// TODO: get real
+    private double turretMaxOneSideDeg = 200;// TODO: get real
 
     MotionMagicVoltage motionMagic = new MotionMagicVoltage(Units.degreesToRotations(0.0)).withEnableFOC(true)
         .withUpdateFreqHz(60.0).withSlot(0);
@@ -99,8 +99,8 @@ public class AimerIOKraken implements AimerIO{
         // config.Slot1.kS = 0.1;
         // config.Slot1.kP = 195.0; 
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1.7; //rps
-        config.MotionMagic.MotionMagicAcceleration = 5.0; //rotations per second squared
+        config.MotionMagic.MotionMagicCruiseVelocity = 1.25; //rps
+        config.MotionMagic.MotionMagicAcceleration = 2.5; //rotations per second squared
 
         config.Voltage.PeakForwardVoltage = 8.0;
         config.Voltage.PeakReverseVoltage = -8.0;
@@ -264,8 +264,8 @@ public class AimerIOKraken implements AimerIO{
         // double outputVolts = MathUtil.clamp(pidOutputVolts+ feedForwardsSpringVolts + robotRotationFeedForward, -8.0, 8.0);
 
         // feedForwardsSpringVolts = 0.0;
-        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 45.0) {
-            aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
+        if(Math.abs(safeAngle-(Units.rotationsToDegrees(aimerKraken.getPosition().getValueAsDouble()))) > 22.0) {
+            aimerKraken.setControl(motionMagic.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts));
         } else {
             aimerKraken.setControl(positionVoltage.withPosition(Units.degreesToRotations(safeAngle)).withFeedForward(feedForwardsSpringVolts + robotRotationFeedForward));
             // aimerKraken.setControl(outputVolts); (feedForwardsSpringVolts + robotRotationFeedForward)
