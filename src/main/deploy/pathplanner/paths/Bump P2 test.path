@@ -127,7 +127,7 @@
     },
     {
       "waypointRelativePos": 3.6199170124481346,
-      "rotationDegrees": 45.0
+      "rotationDegrees": 55.0
     },
     {
       "waypointRelativePos": 5.347547974413647,
@@ -151,9 +151,9 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 3.9,
-      "maxWaypointRelativePos": 4.45,
+      "maxWaypointRelativePos": 4.55,
       "constraints": {
-        "maxVelocity": 0.3,
+        "maxVelocity": 0.25,
         "maxAcceleration": 0.4,
         "maxAngularVelocity": 5.0,
         "maxAngularAcceleration": 5.0,
@@ -192,12 +192,12 @@
     {
       "name": "shoot",
       "waypointRelativePos": 3.8,
-      "endWaypointRelativePos": 4.45,
+      "endWaypointRelativePos": 4.55,
       "command": null
     },
     {
       "name": "aim",
-      "waypointRelativePos": 4.47,
+      "waypointRelativePos": 4.926401080351109,
       "endWaypointRelativePos": 6.0,
       "command": null
     }

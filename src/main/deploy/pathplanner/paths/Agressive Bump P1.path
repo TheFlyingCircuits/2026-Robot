@@ -115,7 +115,7 @@
     },
     {
       "waypointRelativePos": 2.761194029850747,
-      "rotationDegrees": 45.0
+      "rotationDegrees": 55.0
     }
   ],
   "constraintZones": [
@@ -135,9 +135,9 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 2.87,
-      "maxWaypointRelativePos": 3.3,
+      "maxWaypointRelativePos": 3.42,
       "constraints": {
-        "maxVelocity": 0.3,
+        "maxVelocity": 0.27,
         "maxAcceleration": 0.4,
         "maxAngularVelocity": 5.0,
         "maxAngularAcceleration": 5.0,
@@ -163,7 +163,7 @@
   "eventMarkers": [
     {
       "name": "intakeDown",
-      "waypointRelativePos": 0.32410533423362664,
+      "waypointRelativePos": 0.15,
       "endWaypointRelativePos": 5.0,
       "command": null
     },
@@ -175,13 +175,13 @@
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 2.8,
-      "endWaypointRelativePos": 3.39,
+      "waypointRelativePos": 2.77,
+      "endWaypointRelativePos": 3.45,
       "command": null
     },
     {
       "name": "aim",
-      "waypointRelativePos": 3.4590570719603115,
+      "waypointRelativePos": 3.673193787981072,
       "endWaypointRelativePos": 5.0,
       "command": null
     }
