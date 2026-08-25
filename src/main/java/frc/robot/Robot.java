@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -12,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.PlayingField.ShiftTracker;
@@ -24,6 +26,12 @@ public class Robot extends LoggedRobot {
   public Robot() {
     initAdvantageKit();
     m_robotContainer = new RobotContainer();
+
+    // Obtains the default instance of the simulation world, which is a Rebuilt Arena.
+    SimulatedArena.getInstance();
+    // Overrides the default simulation
+    // SimulatedArena.overrideInstance(new ); 
+
     FollowPathCommand.warmupCommand().schedule(); 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
@@ -47,7 +55,15 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    
+    if(!(RobotBase.isReal())){
+      simulationPeriod();
+    }
     // m_robotContainer.periodic();
+  }
+
+  public void simulationPeriod() {
+    SimulatedArena.getInstance().simulationPeriodic();
   }
 
   @Override
