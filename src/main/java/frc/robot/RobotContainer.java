@@ -177,10 +177,10 @@ public class RobotContainer {
         //         TurretCalculations.getTargetFromEnum(PossibeTargets.HUB, () -> drivetrain.getPoseMeters().getTranslation()).toTranslation2d(), 
         //     drivetrain.getPoseMeters().getTranslation())));
 
-        duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true, () -> false));
-        duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
+        // duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true, () -> false));
+        // duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
 
-        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
+        // duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
         // .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
 
         // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
