@@ -24,7 +24,7 @@ public class ShootWithParams extends Command {
 
     // 0 is aimer deg, 1 is hood deg, 2 is mainWheel M/S, 3 is hoodWheel M/S
     // private double[] notShootingTolerances = new double[] {5.0, 5.0, 1.0, 1.0};
-    private double[] notShootingTolerances = new double[] {3.0, 1.3, 0.15};
+    private double[] notShootingTolerances = new double[] {5.0, 1.8, 0.15};
     // private double[] whileShootingTolerances = new double[] {5.0, 5.0, 4.0, 4.0};
     private double[] whileShootingTolerances = new double[] {10.0, 5.0, 6.0};
 

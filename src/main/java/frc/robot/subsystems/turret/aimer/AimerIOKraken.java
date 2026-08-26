@@ -89,7 +89,7 @@ public class AimerIOKraken implements AimerIO{
         config.Slot0.kV = 1.79675;
         config.Slot0.kS = 0.25;
         config.Slot1.kI = 0.0;
-        config.Slot1.kD = 0.0;
+        config.Slot1.kD = 0.15;
         // config.Slot1.kV = 1.80594; 
 
 
