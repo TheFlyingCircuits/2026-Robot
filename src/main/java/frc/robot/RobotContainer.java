@@ -36,10 +36,10 @@ public class RobotContainer {
             // NOODLE OFFSETS: FL -0.184814453125, FR 0.044677734375, BL -0.3349609375, BR 0.088134765625 
             drivetrain = new Drivetrain( 
                 new GyroIOPigeon(),
-                new SwerveModuleIOKraken(4, 5, 0.062012, 6, "FL", false), 
-                new SwerveModuleIOKraken(1, 2, 0.450928, 3, "FR", true),
-                new SwerveModuleIOKraken(7, 8,0.080811, 9, "BL", false),
-                new SwerveModuleIOKraken(10, 11,  0.160889, 12, "BR", true) 
+                new SwerveModuleIOKraken(4, 5, 0.066162, 6, "FL", false), 
+                new SwerveModuleIOKraken(1, 2, 0.449707, 3, "FR", true),
+                new SwerveModuleIOKraken(7, 8,0.083740, 9, "BL", false),
+                new SwerveModuleIOKraken(10, 11,  0.152344, 12, "BR", true) 
             );
         } else {
             drivetrain = new Drivetrain(

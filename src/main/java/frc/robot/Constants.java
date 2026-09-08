@@ -24,7 +24,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-    public final static boolean atCompetition = true;
+    public final static boolean atCompetition = false;
 
     public final class UniversalConstants {
         // robot weight 131.6 lbs
@@ -152,13 +152,13 @@ public final class Constants {
                 /** Rotations of the drive wheel per rotations of the drive motor. */
         public static final double driveGearReductionSIM = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
-        // max torque ratio
-        public static final double driveGearReduction = 0.33333;
+        // max torque ratio 
+        public static final double driveGearReduction = (1.0/1.365);
 
         // public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
         /** Rotations of the steering column per rotations of the angle motor. */
-        public static final double steerGearReduction = (14.0 / 50.0) * (10.0 / 60.0);
+        public static final double steerGearReduction = (1.0/1.829);
 
         // The wheels have a 2 inch radius, but sink into the capet about (1/16) of an inch.
         // As an estimate, the wheel radius is Units.inchesToMeters(2.-1./16.), or 0.0492m
@@ -197,9 +197,9 @@ public final class Constants {
 
 
         //Follow the mount calibration process in Phoenix Tuner to determine these
-        public static final double mountPoseYawDegrees = -90.45111083984375;
-        public static final double mountPosePitchDegrees = -16.21670913696289;
-        public static final double mountPoseRollDegrees = 89.97844696044922;
+        public static final double mountPoseYawDegrees = 0.0;
+        public static final double mountPosePitchDegrees = 0.0;
+        public static final double mountPoseRollDegrees = 0.0;
     }
 
     public final static class TurretConstants {

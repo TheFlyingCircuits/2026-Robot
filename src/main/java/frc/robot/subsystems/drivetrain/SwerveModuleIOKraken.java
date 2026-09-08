@@ -83,11 +83,11 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 40; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
+        config.CurrentLimits.StatorCurrentLimit = 50; // re-determined after firmware upgrade to prevent wheel slip. Feels pretty low though
 
-        config.Slot1.kS = 0.25; 
-        config.Slot1.kV = 0.872844827583;// 2.1volts - 0.8 mps
-        config.Slot1.kP = 0.2;
+        config.Slot1.kS = 0.2; 
+        config.Slot1.kV = 0.169448275862;// 2.1volts - 0.8 mps
+        config.Slot1.kP = 0.0;
         config.Slot1.kI = 0.0;
         config.Slot1.kD = 0.0;
 
@@ -102,11 +102,11 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.MotorOutput.Inverted = invertedValue;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.CurrentLimits.StatorCurrentLimit = 45;
+        config.CurrentLimits.StatorCurrentLimit = 80;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.Slot0.kS = 0.2;
-        config.Slot0.kP = 17.0;
+        config.Slot0.kS = 0.46;
+        config.Slot0.kP = 25.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Feedback.FeedbackRemoteSensorID = cancoderID;
