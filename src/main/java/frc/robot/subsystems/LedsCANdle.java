@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.UniversalConstants;
 
 public class LedsCANdle extends SubsystemBase {
     private CANdle leds;
@@ -29,7 +30,7 @@ public class LedsCANdle extends SubsystemBase {
 
     public LedsCANdle(int id, int ledLength) {
         this.ledLength=ledLength;
-        leds = new CANdle(id);
+        leds = new CANdle(id, UniversalConstants.canivoreName);
         CANdleConfiguration config = new CANdleConfiguration();
 
         config.LED.StripType = StripTypeValue.GRB;

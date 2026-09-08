@@ -31,16 +31,16 @@ public final class Constants {
         public final static double gravityMetersPerSecondSquared = 9.81;
         public final static double defaultPeriodSeconds = 0.02;
 
-        public final static String canivoreName = "CTRENetwork2";
+        public final static String canivoreName = "BabyBotCTRENetwork";
 
         public enum Direction {
             left,
             right
         }
 
-        public static final double frameWidthMeters = Units.inchesToMeters(27);
+        public static final double frameWidthMeters = Units.inchesToMeters(15);
 
-        public static final double bumperWidthMeters = Units.inchesToMeters(27 + 7);
+        public static final double bumperWidthMeters = Units.inchesToMeters(18.75);
 
     }
 
@@ -55,11 +55,11 @@ public final class Constants {
         /**
          * Distance between the center point of the left wheels and the center point of the right wheels.
          */
-        public static final double trackwidthMeters = Units.inchesToMeters(22.0);
+        public static final double trackwidthMeters = Units.inchesToMeters(11.0);
         /**
          * Distance between the center point of the front wheels and the center point of the back wheels.
          */
-        public static final double wheelbaseMeters = Units.inchesToMeters(22.0);
+        public static final double wheelbaseMeters = Units.inchesToMeters(11.0);
         /**
          * Distance from the center of the robot to each swerve module.
          */
@@ -73,9 +73,9 @@ public final class Constants {
             new Translation2d(-wheelbaseMeters / 2.0, -trackwidthMeters / 2.0)
         );
 
-        public static final double frameWidthMeters = Units.inchesToMeters(27.0);
+        public static final double frameWidthMeters = Units.inchesToMeters(15.0);
 
-        public static final double bumperWidthMeters = Units.inchesToMeters(27 + 7);
+        public static final double bumperWidthMeters = Units.inchesToMeters(18.75);
         public static final double halfBumperWidthMeters = bumperWidthMeters / 2.0;
 
 
@@ -105,7 +105,8 @@ public final class Constants {
          * <br>
          * This value will be less than or equal to the maxAchievableVelocityMetersPerSecond, depending on driver preference.
          */
-        public static final double maxDesiredTeleopVelocityMetersPerSecond = maxAchievableVelocityMetersPerSecond; 
+        public static final double maxDesiredTeleopVelocityMetersPerSecond = maxAchievableVelocityMetersPerSecond
+        ; 
 
         /**
          * The maximum achievable angular velocity of the robot in radians per second.
@@ -152,7 +153,7 @@ public final class Constants {
         public static final double driveGearReductionSIM = (15.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
         // max torque ratio
-        public static final double driveGearReduction = (12.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
+        public static final double driveGearReduction = 0.33333;
 
         // public static final double driveGearReduction = (14.0 / 54.0) * (32.0 / 25.0) * (15.0 / 30.0);
 
@@ -192,7 +193,7 @@ public final class Constants {
 
 
     public final static class GyroConstants {
-        public static final int pigeonID = 50;
+        public static final int pigeonID = 14;
 
 
         //Follow the mount calibration process in Phoenix Tuner to determine these

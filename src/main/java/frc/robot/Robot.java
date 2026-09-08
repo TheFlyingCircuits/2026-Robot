@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = null;
   }
 
   @Override
@@ -70,7 +70,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = null;
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

@@ -78,6 +78,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         absoluteEncoder.getConfigurator().apply(cancoderConfigs);
     }
 
+
     private void configDriveMotor(InvertedValue invertedValue) {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = invertedValue;
@@ -105,7 +106,7 @@ public class SwerveModuleIOKraken implements SwerveModuleIO {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Slot0.kS = 0.2;
-        config.Slot0.kP = 34.0;
+        config.Slot0.kP = 17.0;
         config.Slot0.kI = 0.0; 
         config.Slot0.kD = 0.0;
         config.Feedback.FeedbackRemoteSensorID = cancoderID;
