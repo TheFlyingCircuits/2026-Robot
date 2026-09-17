@@ -25,6 +25,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -80,6 +81,9 @@ public class Drivetrain extends SubsystemBase {
     private SwerveSetpoint previousSetpoint;
 
     private double shiftTime = 0;
+
+    // max acel per second 10 m/s^2 arbitrarily set kinda close to our real acel
+    SlewRateLimiter swerveAcelLimiter = new SlewRateLimiter(40.0);
  
     public Drivetrain(
         GyroIO gyroIO, 
@@ -144,6 +148,10 @@ public class Drivetrain extends SubsystemBase {
         }
 
         configurePathPlanner(config);
+
+        // put this in so the limiter has a reference that the start vel is 0
+        // dont really know if this is needed tho
+        swerveAcelLimiter.calculate(0.0);
 
         setpointGenerator = new SwerveSetpointGenerator(
             config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
@@ -231,15 +239,17 @@ public class Drivetrain extends SubsystemBase {
      * @param closedLoop - Whether or not to used closed loop PID control to control the speed of the drive wheels.
     */
     public void robotOrientedDrive(ChassisSpeeds desiredChassisSpeeds) {
-        SwerveModuleState[] swerveModuleStates = DrivetrainConstants.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
-        // Note: it is important to not discretize speeds before or after
-        // using the setpoint generator, as it will discretize them for you
-        // previousSetpoint = setpointGenerator.generateSetpoint(
-        //     previousSetpoint, // The previous setpoint
-        //     desiredChassisSpeeds, // The desired target speeds
-        //     0.02 // The loop time of the robot code, in seconds
-        // );
-        // setModuleStates(previousSetpoint.moduleStates());
+
+        double limitedVelocity = swerveAcelLimiter.calculate(Math.hypot(desiredChassisSpeeds.vxMetersPerSecond,
+           desiredChassisSpeeds.vyMetersPerSecond));
+
+        double velcocityAngleRad = Math.atan2(desiredChassisSpeeds.vyMetersPerSecond, desiredChassisSpeeds.vxMetersPerSecond);
+
+        ChassisSpeeds slewLimitedSpeeds = new ChassisSpeeds(limitedVelocity * Math.cos(velcocityAngleRad), 
+            limitedVelocity * Math.sin(velcocityAngleRad), desiredChassisSpeeds.omegaRadiansPerSecond);
+
+        SwerveModuleState[] swerveModuleStates = DrivetrainConstants.swerveKinematics.toSwerveModuleStates(slewLimitedSpeeds);
+
         setModuleStates(swerveModuleStates);
     }
 
