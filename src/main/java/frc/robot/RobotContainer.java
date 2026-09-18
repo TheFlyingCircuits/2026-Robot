@@ -31,7 +31,6 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAndShootAuto;
-import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -66,6 +65,8 @@ public class RobotContainer {
 
     PathPlannerPath bumpP1Path;
     PathPlannerPath bumpP2Path;
+
+    public boolean leadWithIntake = false;
 
     // private final SendableChooser<String> autoChooser;
     
@@ -161,9 +162,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
-         () -> FlyingCircuitUtils.getNumberFromDashboard("angleDeg", 0.0),
-         () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0), intake, () -> drivetrain.getFieldOrientedVelocity()));
+        // duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
+        //  () -> FlyingCircuitUtils.getNumberFromDashboard("angleDeg", 0.0),
+        //  () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0), intake, () -> drivetrain.getFieldOrientedVelocity()));
 
 
         // duncanController.a().whileTrue(Commands.run(() ->indexer.setAllTargetVolts(0.0,0.0,0.0, FlyingCircuitUtils.getNumberFromDashboard("middeVolts", 0.0))))
@@ -181,10 +182,7 @@ public class RobotContainer {
         duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
 
         duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
-        // .alongWith(canLedsCounter.playFireNoteAnimationCommand()));
-
-        // duncanController.rightBumper().whileTrue(new ShootWithParams(turret, indexer, () -> 0.0, () -> 60.0 
-        // , () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0)));
+        duncanController.a().onTrue(new InstantCommand(() -> leadWithIntake = !leadWithIntake));
 
         duncanController.leftTrigger().whileTrue((aimAndShoot(() -> false, () -> true, () -> true))).whileFalse(
                 aimAndShoot(() -> false, () -> true, () -> false)
@@ -241,14 +239,14 @@ public class RobotContainer {
         } 
         // else
         return new AimAndShoot(turret, indexer, () -> TurretCalculations.getTurretTranslation(drivetrain.getPoseMeters().getTranslation()), 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake, () -> duncan.getRequestedFieldOrientedVelocity());
+        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake, () -> duncan.getRequestedFieldOrientedVelocity(), () -> leadWithIntake);
     }
 
-    private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
-    Supplier<Translation3d> manualTurretPose) {
-        return new AimAndShoot(turret, indexer, manualTurretPose, 
-        () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain, intake, () -> true, () -> duncan.getRequestedFieldOrientedVelocity());
-    }
+    // private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
+    // Supplier<Translation3d> manualTurretPose) {
+    //     return new AimAndShoot(turret, indexer, manualTurretPose, 
+    //     () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, true, drivetrain, intake, () -> true, () -> duncan.getRequestedFieldOrientedVelocity());
+    // }
 
     // private Command aimAndShoot(Supplier<TurretCalculations.possibeTargets> target, Supplier<Boolean> driverReadyToShoot) {
     //     return new AimAndShoot(turret, indexer, () -> new Translation3d(0,0,0), 
@@ -256,7 +254,12 @@ public class RobotContainer {
     // }
 
     private Command driverFullyControlDrivetrain() { return drivetrain.run(() -> {
-        drivetrain.fieldOrientedDrive(duncan.getRequestedFieldOrientedVelocity());
+        ChassisSpeeds reqVelocity = duncan.getRequestedFieldOrientedVelocity();
+        if(leadWithIntake) {
+            drivetrain.aimWhereDriving(reqVelocity);
+        } else {
+            drivetrain.fieldOrientedDrive(reqVelocity);
+        }
         Logger.recordOutput("drivetrain/runningDefaultCommand", true);
         }).finallyDo(() -> {
             Logger.recordOutput("drivetrain/runningDefaultCommand", false);

@@ -470,6 +470,17 @@ public class Drivetrain extends SubsystemBase {
         // return intakeCam.getClosestClusterTo(getPoseMeters().getTranslation());
     }
 
+    public void aimWhereDriving(ChassisSpeeds reqVelocity) {
+        // if velocity vector/the hypotinuse(cant spell) of the x and y velocity is
+        // below 0.25 meters per second don't aim, the prevents robot going crazy over 0.001 m/s
+        if(Math.hypot(reqVelocity.vxMetersPerSecond, reqVelocity.vyMetersPerSecond) < 0.25) {
+            fieldOrientedDrive(reqVelocity);
+        } else {
+            fieldOrientedDriveWhileAiming(reqVelocity,
+                new Rotation2d(Math.atan2(reqVelocity.vyMetersPerSecond, reqVelocity.vxMetersPerSecond)));
+        }
+    }
+
     public void fieldOrientedDriveWhileAiming(ChassisSpeeds desiredTranslationalSpeeds, Rotation2d desiredAngle) {
         // Use PID controller to generate a desired angular velocity based on the desired angle
         double measuredAngle = getPoseMeters().getRotation().getDegrees();

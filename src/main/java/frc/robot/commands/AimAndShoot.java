@@ -37,6 +37,7 @@ public class AimAndShoot extends Command {
     private boolean isShooting = false;
     private Drivetrain drivetrain;
     private Supplier<ChassisSpeeds> driverRequsetedVel;
+    private Supplier<Boolean> shouldLeadWithIntake;
 
     Translation3d originalTargetTranlsation;
     double[] shootingValues;
@@ -50,7 +51,7 @@ public class AimAndShoot extends Command {
     
 
     public AimAndShoot(Turret turret, Indexer indexer, Supplier<Translation3d> turretTranlsation, Supplier<ChassisSpeeds> robotFieldOrientedVelocity,
-    Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain, Intake intake, Supplier<Boolean> shouldIntake, Supplier<ChassisSpeeds> driverRequsetedVel) {
+    Supplier<Boolean> driverReadyToShoot, boolean needsReq, Drivetrain drivetrain, Intake intake, Supplier<Boolean> shouldIntake, Supplier<ChassisSpeeds> driverRequsetedVel, Supplier<Boolean> shouldLeadWithIntake) {
         this.turret=turret;
         this.indexer=indexer;
         this.intake=intake;
@@ -60,6 +61,7 @@ public class AimAndShoot extends Command {
         this.shouldIntake=shouldIntake;
         this.drivetrain=drivetrain;
         this.driverRequsetedVel=driverRequsetedVel;
+        this.shouldLeadWithIntake=shouldLeadWithIntake;
         isShooting = false;
 
         // drivetrain.allowTeleportsNextPoseUpdate();
@@ -252,7 +254,11 @@ public class AimAndShoot extends Command {
             SwerveModuleState[] states = {state2,state,state,state2};
             drivetrain.setModuleStates(states);
         } else if (DriverStation.isTeleop()) {
-            drivetrain.fieldOrientedDrive(driverRequsetedVel.get());
+            if(shouldLeadWithIntake.get()) {
+                drivetrain.aimWhereDriving(driverRequsetedVel.get());
+            } else {
+                drivetrain.fieldOrientedDrive(driverRequsetedVel.get());
+            }
         }
 
         // log values
