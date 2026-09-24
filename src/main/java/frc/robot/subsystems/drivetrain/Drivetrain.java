@@ -41,24 +41,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.FlyingCircuitUtils;
 import frc.robot.PlayingField.FieldConstants;
 import frc.robot.PlayingField.FieldElement;
-import frc.robot.subsystems.vision.SingleTagCam;
+import frc.robot.subsystems.vision.Limelights;
 import frc.robot.subsystems.vision.SingleTagPoseObservation;
 
 public class Drivetrain extends SubsystemBase {
     private GyroIO gyroIO;
     private GyroIOInputsAutoLogged gyroInputs;
-
-    private SingleTagCam[] tagCams = {
-        new SingleTagCam(VisionConstants.tagCameraNames[0], VisionConstants.tagCameraTransforms[0]), // front
-        new SingleTagCam(VisionConstants.tagCameraNames[1], VisionConstants.tagCameraTransforms[1]), // back
-        new SingleTagCam(VisionConstants.tagCameraNames[2], VisionConstants.tagCameraTransforms[2]), // left
-        new SingleTagCam(VisionConstants.tagCameraNames[3], VisionConstants.tagCameraTransforms[3])  // right
-    };
-    // private ColorCamera intakeCam = new ColorCamera("fuel", VisionConstants.robotToFuelCamera);
 
     private boolean fullyTrustVisionNextPoseUpdate = false;
     private boolean allowTeleportsNextPoseUpdate = false;
@@ -86,6 +77,8 @@ public class Drivetrain extends SubsystemBase {
 
     // 12 m/s^2 and the 0.02 is the loops time of 20 ms
     double arbitraryAcelLimitPerLoop = 40.0 * 0.02;
+
+    Limelights limelights;
  
     public Drivetrain(
         GyroIO gyroIO, 
@@ -104,6 +97,10 @@ public class Drivetrain extends SubsystemBase {
             new SwerveModule(blSwerveModuleIO, 2, "backLeft"),
             new SwerveModule(brSwerveModuleIO, 3, "backRight")
         };
+
+        ArrayList<String> camNames = new ArrayList<String>();
+        camNames.add(0,"limelight");
+        limelights = new Limelights(camNames);
 
         gyroIO.setRobotYaw(0);
 
@@ -395,9 +392,9 @@ public class Drivetrain extends SubsystemBase {
 
         // get all pose observations from each camera
         List<SingleTagPoseObservation> allFreshPoseObservations = new ArrayList<>();
-        for (SingleTagCam tagCam : tagCams) {
-            allFreshPoseObservations.addAll(tagCam.getFreshPoseObservations(false, getPoseMeters().getRotation().getDegrees()));
-        }
+
+        allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(false, getPoseMeters().getRotation().getDegrees()));
+
 
         // process pose obvervations in chronological order
         allFreshPoseObservations.sort(new Comparator<SingleTagPoseObservation>() {
