@@ -76,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
     // SlewRateLimiter swerveAcelLimiter = new SlewRateLimiter(40.0);
 
     // 12 m/s^2 and the 0.02 is the loops time of 20 ms
-    double arbitraryAcelLimitPerLoop = 40.0 * 0.02;
+    double arbitraryAcelLimitPerLoop = 50.0 * 0.02;
 
     Limelights limelights;
  
@@ -99,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
         };
 
         ArrayList<String> camNames = new ArrayList<String>();
-        camNames.add(0,"limelight");
+        camNames.add(0,"limelight-left");
         limelights = new Limelights(camNames);
 
         gyroIO.setRobotYaw(0);
@@ -393,7 +393,7 @@ public class Drivetrain extends SubsystemBase {
         // get all pose observations from each camera
         List<SingleTagPoseObservation> allFreshPoseObservations = new ArrayList<>();
 
-        allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(false, getPoseMeters().getRotation().getDegrees()));
+        allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(false, this));
 
 
         // process pose obvervations in chronological order
