@@ -254,22 +254,22 @@ public class Drivetrain extends SubsystemBase {
     public void fieldOrientedDrive(ChassisSpeeds desiredChassisSpeeds) {
         Rotation2d currentOrientation = getPoseMeters().getRotation();
 
-        ChassisSpeeds currentSpeeds = getFieldOrientedVelocity();
+        // ChassisSpeeds currentSpeeds = getFieldOrientedVelocity();
 
-        // Limit x acceleration and deceleration
-        double minX = currentSpeeds.vxMetersPerSecond - arbitraryAcelLimitPerLoop;
-        double maxX = currentSpeeds.vxMetersPerSecond + arbitraryAcelLimitPerLoop;
-        double limitedVx = MathUtil.clamp(desiredChassisSpeeds.vxMetersPerSecond, minX, maxX);
+        // // Limit x acceleration and deceleration
+        // double minX = currentSpeeds.vxMetersPerSecond - arbitraryAcelLimitPerLoop;
+        // double maxX = currentSpeeds.vxMetersPerSecond + arbitraryAcelLimitPerLoop;
+        // double limitedVx = MathUtil.clamp(desiredChassisSpeeds.vxMetersPerSecond, minX, maxX);
 
-        // Limit yacceleration and deceleration
-        double minY = currentSpeeds.vyMetersPerSecond - arbitraryAcelLimitPerLoop;
-        double maxY = currentSpeeds.vyMetersPerSecond + arbitraryAcelLimitPerLoop;
-        double limitedVy = MathUtil.clamp(desiredChassisSpeeds.vyMetersPerSecond, minY, maxY);
-        // gets now the limited speeds and uses hypot*cos(angle theta) = adjecent
-        ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, 
-            limitedVy, desiredChassisSpeeds.omegaRadiansPerSecond);
+        // // Limit yacceleration and deceleration
+        // double minY = currentSpeeds.vyMetersPerSecond - arbitraryAcelLimitPerLoop;
+        // double maxY = currentSpeeds.vyMetersPerSecond + arbitraryAcelLimitPerLoop;
+        // double limitedVy = MathUtil.clamp(desiredChassisSpeeds.vyMetersPerSecond, minY, maxY);
+        // // gets now the limited speeds and uses hypot*cos(angle theta) = adjecent
+        // ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, 
+        //     limitedVy, desiredChassisSpeeds.omegaRadiansPerSecond);
 
-        ChassisSpeeds robotOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(limitedSpeeds, currentOrientation);
+        ChassisSpeeds robotOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(desiredChassisSpeeds, currentOrientation);
         this.robotOrientedDrive(robotOrientedSpeeds);
     }
 
