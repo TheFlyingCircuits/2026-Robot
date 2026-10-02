@@ -75,7 +75,7 @@ public class Drivetrain extends SubsystemBase {
     // max acel per second 10 m/s^2 arbitrarily set kinda close to our real acel
     // SlewRateLimiter swerveAcelLimiter = new SlewRateLimiter(40.0);
 
-    // 12 m/s^2 and the 0.02 is the loops time of 20 ms
+    // 70 m/s^2 and the 0.02 is the loops time of 20 ms
     double arbitraryAcelLimitPerLoop = 70.0 * 0.02;
 
     Limelights limelights;
@@ -254,22 +254,7 @@ public class Drivetrain extends SubsystemBase {
     public void fieldOrientedDrive(ChassisSpeeds desiredChassisSpeeds) {
         Rotation2d currentOrientation = getPoseMeters().getRotation();
 
-        ChassisSpeeds currentSpeeds = getFieldOrientedVelocity();
-
-        // Limit x acceleration and deceleration
-        double minX = currentSpeeds.vxMetersPerSecond - arbitraryAcelLimitPerLoop;
-        double maxX = currentSpeeds.vxMetersPerSecond + arbitraryAcelLimitPerLoop;
-        double limitedVx = MathUtil.clamp(desiredChassisSpeeds.vxMetersPerSecond, minX, maxX);
-
-        // Limit yacceleration and deceleration
-        double minY = currentSpeeds.vyMetersPerSecond - arbitraryAcelLimitPerLoop;
-        double maxY = currentSpeeds.vyMetersPerSecond + arbitraryAcelLimitPerLoop;
-        double limitedVy = MathUtil.clamp(desiredChassisSpeeds.vyMetersPerSecond, minY, maxY);
-        // gets now the limited speeds and uses hypot*cos(angle theta) = adjecent
-        ChassisSpeeds limitedSpeeds = new ChassisSpeeds(limitedVx, 
-            limitedVy, desiredChassisSpeeds.omegaRadiansPerSecond);
-
-        ChassisSpeeds robotOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(limitedSpeeds, currentOrientation);
+        ChassisSpeeds robotOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(desiredChassisSpeeds, currentOrientation);
         this.robotOrientedDrive(robotOrientedSpeeds);
     }
 
