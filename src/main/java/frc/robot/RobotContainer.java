@@ -179,11 +179,11 @@ public class RobotContainer {
         //         TurretCalculations.getTargetFromEnum(PossibeTargets.HUB, () -> drivetrain.getPoseMeters().getTranslation()).toTranslation2d(), 
         //     drivetrain.getPoseMeters().getTranslation())));
 
-        // duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true, () -> false));
-        // duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
+        duncanController.rightStick().onTrue(aimAndShoot(() -> false, () -> true, () -> false));
+        duncanController.leftStick().onTrue(aimAndShoot(() -> false, () -> true,() -> false));
 
-        // duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
-        // duncanController.a().onTrue(new InstantCommand(() -> leadWithIntake = !leadWithIntake));
+        duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
+        duncanController.a().onTrue(new InstantCommand(() -> leadWithIntake = !leadWithIntake));
 
         duncanController.leftTrigger().whileTrue((aimAndShoot(() -> false, () -> true, () -> true))).whileFalse(
                 aimAndShoot(() -> false, () -> true, () -> false)
@@ -193,18 +193,18 @@ public class RobotContainer {
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
 
         // // reset everything
-        // duncanController.x().onTrue(Commands.runOnce(() -> {
-        //     CommandScheduler.getInstance().cancelAll();
-        // }));
+        duncanController.x().onTrue(Commands.runOnce(() -> {
+            CommandScheduler.getInstance().cancelAll();
+        }));
 
         // // duncanController.a().whileTrue(intake.intakeDownCommand());
-        // duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
-        // duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
+        duncanController.povUp().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->7.0));
+        duncanController.povDown().whileTrue(intake.setAllVoltsCommand(()->0.0, ()->0.0, () ->-7.0));
         // // duncanController.povRight().whileTrue(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand()));
         // // duncanController.povLeft().whileTrue(indexer.indexFuelCommand());
 
-        // duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand());
-        // duncanController.b().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
+        duncanController.rightTrigger().whileTrue(intake.reverseIntakeCommand());
+        duncanController.b().whileTrue(intake.reverseIntakeCommand().alongWith(indexer.reverseIndexerCommand()));
     }
 
     public void setDefaultCommands() {
