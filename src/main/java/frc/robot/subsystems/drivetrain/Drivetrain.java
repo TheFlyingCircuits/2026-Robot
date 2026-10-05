@@ -429,31 +429,39 @@ public class Drivetrain extends SubsystemBase {
                 continue;
             }
 
+             Matrix<N3, N1> stdDevs;
+
             if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.25)) {
                 hasSeenGoodTag = true;
                 Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
                 limelights.setIMUMode(3);
+                this.fullyTrustVisionNextPoseUpdate = false;
+                this.allowTeleportsNextPoseUpdate = false;
+                stdDevs = VecBuilder.fill(0, 0, 0);
+            } else {
+                // Don't allow the robot to teleport. Disallowing teleports can cause problems when we get bumped
+                // and experience lots of wheel slip, which is why we have the "allowTeleportsNextPoseUpdate" flag
+                // (used at driver's discretion (typically via y-button)). Also useful for seeding the robot pose
+                // at the beginning of a match.
+                double teleportToleranceMeters = 2.0;
+                if ((observedLocation.getDistance(locationNow) > teleportToleranceMeters) && (!this.allowTeleportsNextPoseUpdate)) {
+                    rejectedTags.add(poseObservation.getTagPose());
+                    continue;
+                }
+
+                // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
+                // if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed()))) {
+                //     rejectedTags.add(poseObservation.getTagPose());
+                //     continue;
+                // }
+
+                // This measurment passes all our checks, so we add it to the fusedPoseEstimator
+                acceptedTags.add(poseObservation.getTagPose());
+                stdDevs = this.fullyTrustVisionNextPoseUpdate ? VecBuilder.fill(0, 0, 0) : poseObservation.getStandardDeviations((focus.isPresent() && focus.get() == FieldElement.HUB));
             }
 
-            // Don't allow the robot to teleport. Disallowing teleports can cause problems when we get bumped
-            // and experience lots of wheel slip, which is why we have the "allowTeleportsNextPoseUpdate" flag
-            // (used at driver's discretion (typically via y-button)). Also useful for seeding the robot pose
-            // at the beginning of a match.
-            double teleportToleranceMeters = 2.0;
-            if ((observedLocation.getDistance(locationNow) > teleportToleranceMeters) && (!this.allowTeleportsNextPoseUpdate)) {
-                rejectedTags.add(poseObservation.getTagPose());
-                continue;
-            }
-
-            // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
-            // if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed()))) {
-            //     rejectedTags.add(poseObservation.getTagPose());
-            //     continue;
-            // }
-
-            // This measurment passes all our checks, so we add it to the fusedPoseEstimator
             acceptedTags.add(poseObservation.getTagPose());
-            Matrix<N3, N1> stdDevs = this.fullyTrustVisionNextPoseUpdate ? VecBuilder.fill(0, 0, 0) : poseObservation.getStandardDeviations((focus.isPresent() && focus.get() == FieldElement.HUB));
+
 
             fusedPoseEstimator.addVisionMeasurement(
                 poseObservation.robotPose().toPose2d(), 
