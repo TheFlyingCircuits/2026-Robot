@@ -31,6 +31,7 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.PlayingField.FieldElement;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAndShootAuto;
+import frc.robot.commands.ShootWithParams;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
@@ -162,9 +163,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
-        //  () -> FlyingCircuitUtils.getNumberFromDashboard("angleDeg", 0.0),
-        //  () -> FlyingCircuitUtils.getNumberFromDashboard("targetMPS", 0.0), intake, () -> drivetrain.getFieldOrientedVelocity()));
+        duncanController.a().whileTrue(new ShootWithParams(turret, indexer, ()->0.0, 
+         () -> 60.0,
+         () -> 6.0, intake, () -> drivetrain.getFieldOrientedVelocity()));
 
 
         // duncanController.a().whileTrue(Commands.run(() ->indexer.setAllTargetVolts(0.0,0.0,0.0, FlyingCircuitUtils.getNumberFromDashboard("middeVolts", 0.0))))
@@ -184,9 +185,9 @@ public class RobotContainer {
         // duncanController.rightBumper().onTrue(aimAndShoot(() -> true, () -> true, () -> true));
         // duncanController.a().onTrue(new InstantCommand(() -> leadWithIntake = !leadWithIntake));
 
-        // duncanController.leftTrigger().whileTrue((aimAndShoot(() -> false, () -> true, () -> true))).whileFalse(
-        //         aimAndShoot(() -> false, () -> true, () -> false)
-        //     );// also aims
+        duncanController.leftTrigger().whileTrue((aimAndShoot(() -> false, () -> true, () -> true))).whileFalse(
+                aimAndShoot(() -> false, () -> true, () -> false)
+            );// also aims
 
         duncanController.y().onTrue(reSeedRobotPose());
         duncanController.start().onTrue(Commands.runOnce(drivetrain::setRobotFacingForward));
@@ -211,9 +212,9 @@ public class RobotContainer {
             drivetrain.run(() ->drivetrain.playMusic("song"))
                 .finallyDo(() -> drivetrain.stopMusic()), 
                 () -> DriverStation.isEnabled()));
-        // turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
-        // indexer.setDefaultCommand(indexer.stopIndexingCommand());
-        // intake.setDefaultCommand(intake.noVoltageCommand());
+        turret.setDefaultCommand(turret.turretStopDoingStuffCommand());
+        indexer.setDefaultCommand(indexer.stopIndexingCommand());
+        intake.setDefaultCommand(intake.noVoltageCommand());
         // canLedsCounter.setDefaultCommand(canLedsCounter.solidColorCommand(Color.fromHSV(canLedsCounter.getAllianceHue(), 255, 255)).ignoringDisable(true));
     }
 
