@@ -13,9 +13,10 @@ public class Limelights {
 
     public Limelights(ArrayList<String> camNames) {
         this.camNames=camNames;
+        LimelightHelpers.setPipelineIndex(camNames.get(0), 0);
     }
 
-    public List<SingleTagPoseObservation> getFreshPoseObservations(boolean usingTrig, Drivetrain drivetrain) {
+    public List<SingleTagPoseObservation> getFreshPoseObservations(boolean usingMT2, Drivetrain drivetrain) {
         ArrayList<SingleTagPoseObservation> poseObservations = new ArrayList<SingleTagPoseObservation>();
 
         for(String camName : camNames) {
@@ -23,20 +24,39 @@ public class Limelights {
                 camName, drivetrain.getPoseMeters().getRotation().getDegrees(), 
                 Units.radiansToDegrees(drivetrain.getRobotRelativeVelocityMPS().omegaRadiansPerSecond), 0, 0, 0, 0);
 
-            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(camName);
-      
-            if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-                RawFiducial fiducialUsed = mt1.rawFiducials[0];
-                SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(
-                    camName, new Pose3d(mt1.pose), mt1.timestampSeconds, fiducialUsed.id, 
-                        fiducialUsed.distToCamera, fiducialUsed.ambiguity, false);
+            if(usingMT2) {
+                LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camName);
+        
+                if(mt2.tagCount == 1 && mt2.rawFiducials.length == 1) {
+                    RawFiducial fiducialUsed = mt2.rawFiducials[0];
+                    SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(
+                        camName, new Pose3d(mt2.pose), mt2.timestampSeconds, fiducialUsed.id, 
+                            fiducialUsed.distToCamera, fiducialUsed.ambiguity, false);
 
-                poseObservations.add(poseObservation);
+                    poseObservations.add(poseObservation);
+                }
+            } else {
+                LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(camName);
+        
+                if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+                    RawFiducial fiducialUsed = mt1.rawFiducials[0];
+                    SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(
+                        camName, new Pose3d(mt1.pose), mt1.timestampSeconds, fiducialUsed.id, 
+                            fiducialUsed.distToCamera, fiducialUsed.ambiguity, false);
+
+                    poseObservations.add(poseObservation);
+                }
             }
 
         }
 
         return poseObservations;
+    }
+
+    public void setIMUMode(int mode) {
+        for(String camName : camNames) {
+            LimelightHelpers.SetIMUMode(camName, mode);
+        }
     }
 
 }

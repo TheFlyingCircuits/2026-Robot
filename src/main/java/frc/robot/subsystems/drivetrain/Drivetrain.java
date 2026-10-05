@@ -72,6 +72,9 @@ public class Drivetrain extends SubsystemBase {
 
     private double shiftTime = 0;
 
+    // will turn to true and use mt2 if the robot gets a pose estimate that has low ambiguity and lower distance
+    private boolean hasSeenGoodTag = false;
+
     // max acel per second 10 m/s^2 arbitrarily set kinda close to our real acel
     // SlewRateLimiter swerveAcelLimiter = new SlewRateLimiter(40.0);
 
@@ -90,6 +93,7 @@ public class Drivetrain extends SubsystemBase {
         
         this.gyroIO = gyroIO;
         gyroInputs = new GyroIOInputsAutoLogged();
+        Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
 
         swerveModules = new SwerveModule[] {
             new SwerveModule(flSwerveModuleIO, 0, "frontLeft"),
@@ -380,7 +384,7 @@ public class Drivetrain extends SubsystemBase {
         // get all pose observations from each camera
         List<SingleTagPoseObservation> allFreshPoseObservations = new ArrayList<>();
 
-        allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(false, this));
+        allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(hasSeenGoodTag, this));
 
 
         // process pose obvervations in chronological order
@@ -398,9 +402,13 @@ public class Drivetrain extends SubsystemBase {
             Translation2d observedLocation = poseObservation.robotPose().getTranslation().toTranslation2d();
             Translation2d locationNow = getPoseMeters().getTranslation();
 
+            double tagToCamMeters = poseObservation.tagToCamMeters();
+            double poseAmbiguity = poseObservation.ambiguity();
+
             // reject tags that are too far away
-            if (poseObservation.tagToCamMeters() > 6.0) {
+            if (tagToCamMeters > 6.0) {
                 rejectedTags.add(poseObservation.getTagPose());
+                Logger.recordOutput("Odometry/distance meters", poseObservation.tagToCamMeters());
                 continue;
             }
 
@@ -408,13 +416,23 @@ public class Drivetrain extends SubsystemBase {
             // is in the air or beneath the floor
             if (Math.abs(poseObservation.robotPose().getZ()) > Units.inchesToMeters(7)) {
                 rejectedTags.add(poseObservation.getTagPose());
+                Logger.recordOutput("Odometry/height", Math.abs(poseObservation.robotPose().getZ()));
                 continue;
             }
 
+            // Logger.recordOutput("Odometry/Pose ambiguity", poseObservation.ambiguity());
+
             // reject tags that are too ambiguous
-            if (poseObservation.ambiguity() > 0.25) {
+            if (poseAmbiguity > 0.7) {
+                Logger.recordOutput("Odometry/Pose ambiguity", poseObservation.ambiguity());
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;
+            }
+
+            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.25)) {
+                hasSeenGoodTag = true;
+                Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
+                limelights.setIMUMode(3);
             }
 
             // Don't allow the robot to teleport. Disallowing teleports can cause problems when we get bumped
@@ -428,10 +446,10 @@ public class Drivetrain extends SubsystemBase {
             }
 
             // Don't use tags that are irrelevant to our current goal (e.g. only use hub tags when shooting).
-            if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed()))) {
-                rejectedTags.add(poseObservation.getTagPose());
-                continue;
-            }
+            // if ((focus.isPresent() && !focus.get().hasTagID(poseObservation.tagUsed()))) {
+            //     rejectedTags.add(poseObservation.getTagPose());
+            //     continue;
+            // }
 
             // This measurment passes all our checks, so we add it to the fusedPoseEstimator
             acceptedTags.add(poseObservation.getTagPose());
