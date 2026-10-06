@@ -105,6 +105,7 @@ public class Drivetrain extends SubsystemBase {
         ArrayList<String> camNames = new ArrayList<String>();
         camNames.add(0,"limelight-left");
         limelights = new Limelights(camNames);
+        limelights.setIMUModeNow(1);
 
         gyroIO.setRobotYaw(0);
 
@@ -386,7 +387,6 @@ public class Drivetrain extends SubsystemBase {
 
         allFreshPoseObservations.addAll(limelights.getFreshPoseObservations(hasSeenGoodTag, this));
 
-
         // process pose obvervations in chronological order
         allFreshPoseObservations.sort(new Comparator<SingleTagPoseObservation>() {
             public int compare(SingleTagPoseObservation a, SingleTagPoseObservation b) {
@@ -431,10 +431,11 @@ public class Drivetrain extends SubsystemBase {
 
              Matrix<N3, N1> stdDevs;
 
-            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.25)) {
+            // if we have seen a good enough tag then start using mt2
+            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.3)) {
                 hasSeenGoodTag = true;
                 Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
-                limelights.setIMUMode(3);
+                limelights.setIMUModeNextLoop(3);
                 this.fullyTrustVisionNextPoseUpdate = false;
                 this.allowTeleportsNextPoseUpdate = false;
                 stdDevs = VecBuilder.fill(0, 0, 0);

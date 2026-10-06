@@ -18,22 +18,24 @@ public record SingleTagPoseObservation (String camName, Pose3d robotPose, double
         // double slopeStdDevMeters_PerMeter = 0.0023;
         double slopeStdDevMeters_PerMeter;
         if(isScoringInHub) {
-            slopeStdDevMeters_PerMeter = 0.0;
+            slopeStdDevMeters_PerMeter = 0.001;
         } else if(DriverStation.isAutonomous()) {
-            slopeStdDevMeters_PerMeter = 0.004;
+            slopeStdDevMeters_PerMeter = 0.005;
         } else {
             slopeStdDevMeters_PerMeter = 0.010;
             if (tagToCamMeters < 1.5) {
-                slopeStdDevMeters_PerMeter = 0.005;
-            } else if (tagToCamMeters < 3) {
                 slopeStdDevMeters_PerMeter = 0.008;
+            } else if (tagToCamMeters < 3) {
+                slopeStdDevMeters_PerMeter = 0.016;
             }
         }
+
+        double camStdDevPerMeter = 0.01;
 
         return VecBuilder.fill(
             slopeStdDevMeters_PerMeter*tagToCamMeters,
             slopeStdDevMeters_PerMeter*tagToCamMeters,
-            99999
+            camStdDevPerMeter*tagToCamMeters
         );
     }
 
