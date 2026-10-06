@@ -29,22 +29,36 @@ public class Limelights {
             if(usingMT2) {
                 LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camName);
         
-                if(mt2.tagCount == 1 && mt2.rawFiducials.length == 1) {
-                    RawFiducial fiducialUsed = mt2.rawFiducials[0];
+                if(LimelightHelpers.validPoseEstimate(mt2)) {
+                    RawFiducial[] fiducialsUsed = mt2.rawFiducials;
+                    boolean seesMultibleTags = fiducialsUsed.length > 1;
+
+                    RawFiducial closestTag = fiducialsUsed[0];
+                    for(RawFiducial tag : fiducialsUsed) {
+                        if(tag.distToCamera < closestTag.distToCamera) closestTag = tag;
+                    }
+
                     SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(
-                        camName, new Pose3d(mt2.pose), mt2.timestampSeconds, fiducialUsed.id, 
-                            fiducialUsed.distToCamera, 0.0, false);
+                        camName, new Pose3d(mt2.pose), mt2.timestampSeconds, fiducialsUsed, 
+                            closestTag.distToCamera, 0.0, seesMultibleTags, closestTag.id);
 
                     poseObservations.add(poseObservation);
                 }
             } else {
                 LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(camName);
         
-                if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-                    RawFiducial fiducialUsed = mt1.rawFiducials[0];
+                if(LimelightHelpers.validPoseEstimate(mt1)) {
+                    RawFiducial[] fiducialsUsed = mt1.rawFiducials;
+                    boolean seesMultibleTags = fiducialsUsed.length > 1;
+
+                    RawFiducial closestTag = fiducialsUsed[0];
+                    for(RawFiducial tag : fiducialsUsed) {
+                        if(tag.distToCamera < closestTag.distToCamera) closestTag = tag;
+                    }
+
                     SingleTagPoseObservation poseObservation = new SingleTagPoseObservation(
-                        camName, new Pose3d(mt1.pose), mt1.timestampSeconds, fiducialUsed.id, 
-                            fiducialUsed.distToCamera, fiducialUsed.ambiguity, false);
+                        camName, new Pose3d(mt1.pose), mt1.timestampSeconds, fiducialsUsed, 
+                            closestTag.distToCamera, closestTag.ambiguity, seesMultibleTags, closestTag.id);
 
                     poseObservations.add(poseObservation);
                 }
