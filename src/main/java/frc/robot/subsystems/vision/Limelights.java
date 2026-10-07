@@ -15,7 +15,9 @@ public class Limelights {
 
     public Limelights(ArrayList<String> camNames) {
         this.camNames=camNames;
-        LimelightHelpers.setPipelineIndex(camNames.get(0), 0);
+        for(String camName : camNames) {
+            LimelightHelpers.setPipelineIndex(camName, 0);
+        }
     }
 
     public List<SingleTagPoseObservation> getFreshPoseObservations(boolean usingMT2, Drivetrain drivetrain) {

@@ -432,7 +432,7 @@ public class Drivetrain extends SubsystemBase {
              Matrix<N3, N1> stdDevs;
 
             // if we have seen a good enough tag then start using mt2
-            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.3)) {
+            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.26)) {
                 hasSeenGoodTag = true;
                 Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
                 limelights.setIMUModeNextLoop(3);
