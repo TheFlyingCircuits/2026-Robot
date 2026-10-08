@@ -104,6 +104,7 @@ public class Drivetrain extends SubsystemBase {
 
         ArrayList<String> camNames = new ArrayList<String>();
         camNames.add(0,"limelight-left");
+        camNames.add(1,"limelight-right");
         limelights = new Limelights(camNames);
         limelights.setIMUModeNow(1);
 
@@ -432,7 +433,7 @@ public class Drivetrain extends SubsystemBase {
              Matrix<N3, N1> stdDevs;
 
             // if we have seen a good enough tag then start using mt2
-            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.5) && (poseAmbiguity < 0.26)) {
+            if(!(hasSeenGoodTag) && (tagToCamMeters < 4.0) && (poseAmbiguity < 0.2)) {
                 hasSeenGoodTag = true;
                 Logger.recordOutput("Odometry/hasSeenGoodTag", hasSeenGoodTag);
                 limelights.setIMUModeNextLoop(3);
