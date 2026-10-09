@@ -21,9 +21,9 @@ double ambiguity, boolean usingMultiTag, int closestTagID, double yawRateRad) {
 
         if(usingMultiTag) {
             return VecBuilder.fill(
-                0.1,
-                0.1,
-                0.5
+                0.1 + yawRateRad * 1.0,
+                0.1 + yawRateRad * 1.0,
+                0.5 + yawRateRad * 1.0
             );
         }
         // double slopeStdDevMeters_PerMeter = 0.0023;
