@@ -424,7 +424,7 @@ public class Drivetrain extends SubsystemBase {
             // Logger.recordOutput("Odometry/Pose ambiguity", poseObservation.ambiguity());
 
             // reject tags that are too ambiguous
-            if (poseAmbiguity > 0.7) {
+            if (poseAmbiguity > 0.5) {
                 Logger.recordOutput("Odometry/Pose ambiguity", poseObservation.ambiguity());
                 rejectedTags.add(poseObservation.getTagPose());
                 continue;

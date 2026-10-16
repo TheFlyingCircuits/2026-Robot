@@ -17,8 +17,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -69,10 +73,11 @@ public class RobotContainer {
 
     public boolean leadWithIntake = false;
 
-    // private final SendableChooser<String> autoChooser;
+    private final SendableChooser<String> autoChooser;
     
     protected final HumanDriver duncan = new HumanDriver(0);
     final CommandXboxController duncanController;
+    private String currentAuto = "none";
 
     public RobotContainer() {
         /**** INITIALIZE SUBSYSTEMS ****/
@@ -131,16 +136,12 @@ public class RobotContainer {
         duncanController = duncan.getXboxController();
 
         // AUTO ---------------
-
-        // autoChooser = new SendableChooser<>();
-        // autoChooser.addOption("Deep", "Deep");
-        // autoChooser.addOption("Shallow", "Shallow");
-        // autoChooser.addOption("DeepShallow", "DeepShallow");
-        // autoChooser.addOption("ShallowDeep", "ShallowDeep");
-
-        // autoChooser.setDefaultOption("Deep", "Deep");
-
-        // SmartDashboard.putData("Auto Chooser", autoChooser);
+        autoChooser = new SendableChooser<>();
+        autoChooser.addOption("Left_Trench_Auto", "Left");
+        autoChooser.addOption("Right_Trench_Auto", "Right");
+        
+        autoChooser.setDefaultOption("Left_Trench_Auto", "Left");
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         new EventTrigger("intakeDown").onTrue(new ProxyCommand(intake.intakeDownCommand().until(() -> intake.isIntakeDown()).andThen(intake.intakeDefualtAndIntakeCommand())));
         // new EventTrigger("intake").onTrue(new ProxyCommand(intake.inAutoIntakeCommand()));
@@ -243,6 +244,15 @@ public class RobotContainer {
         () -> drivetrain.getFieldOrientedVelocity(), driverReadyToShoot, needsReqs.get(), drivetrain, intake, shouldIntake, () -> duncan.getRequestedFieldOrientedVelocity(), () -> leadWithIntake);
     }
 
+    public boolean isOnRightSideField() {
+
+        // gets linear distance from robot pose to both trech poses and checks what trench is closer
+        double distFromLeftTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_LEFT.getLocation2d());
+        double distFromRightTrench = drivetrain.getPoseMeters().getTranslation().getDistance(FieldElement.TRENCH_RIGHT.getLocation2d());
+
+        return (distFromRightTrench < distFromLeftTrench);
+    }
+
     // private Command aimAndShootManual(Supplier<Boolean> driverReadyToShoot,
     // Supplier<Translation3d> manualTurretPose) {
     //     return new AimAndShoot(turret, indexer, manualTurretPose, 
@@ -271,6 +281,37 @@ public class RobotContainer {
         drivetrain.fullyTrustVisionNextPoseUpdate();
         drivetrain.allowTeleportsNextPoseUpdate();
     }).until(drivetrain::seesAcceptableTag).ignoringDisable(true);}
+
+      /**
+   * This method only sets the pose when first called and when the auto choser is changed to a different auto
+   * so the vision can reseed the pose so that this method wont overide it each loop.
+   */
+  public void setPoseToAutoStart() {
+    if(!autoChooser.getSelected().isEmpty()) {
+      if(!(currentAuto.equals(autoChooser.getSelected()))) {
+
+        try {
+            PathPlannerPath firstPath = PathPlannerPath.fromPathFile("Agressive Bump P1");
+
+            // gets alliance value and sees if mirrors path so robot follows correct path
+            final boolean isRedAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+
+            boolean shouldMirror = !isOnRightSideField();
+            PathPlannerPath trajectory = shouldMirror ? firstPath.mirrorPath() : firstPath;
+            if(isRedAlliance) trajectory = trajectory.flipPath();
+            Pose2d targetPose = trajectory.getPathPoses().get(0);
+
+            drivetrain.setPoseMeters(targetPose);
+
+            Pose2d currentPose = drivetrain.getPoseMeters();
+            if(targetPose.equals(currentPose)){
+                currentAuto = autoChooser.getSelected();
+            }
+        } catch(Exception e) {}
+    }
+    }
+  }
+
 
     // private Command reSeedRobotPoseOnTimeInterval(double timeIntervalSec) {return new ConditionalCommand(
     //     new InstantCommand(() -> trustCamerasTimer.reset()).alongWith(new InstantCommand(() -> System.out.println("lllllllllllllllllllllllllllllllllll"))),

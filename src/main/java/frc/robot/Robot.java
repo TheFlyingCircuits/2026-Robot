@@ -57,6 +57,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    m_robotContainer.setPoseToAutoStart();
     m_robotContainer.drivetrain.allowTeleportsNextPoseUpdate();
     m_robotContainer.drivetrain.fullyTrustVisionNextPoseUpdate();
 
