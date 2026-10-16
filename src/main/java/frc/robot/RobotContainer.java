@@ -14,6 +14,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -296,10 +297,12 @@ public class RobotContainer {
             // gets alliance value and sees if mirrors path so robot follows correct path
             final boolean isRedAlliance = DriverStation.getAlliance().get() == Alliance.Red;
 
-            boolean shouldMirror = !isOnRightSideField();
+            // boolean shouldMirror = !isOnRightSideField();
+            boolean shouldMirror = autoChooser.getSelected().equals("Right");
             PathPlannerPath trajectory = shouldMirror ? firstPath.mirrorPath() : firstPath;
-            if(isRedAlliance) trajectory = trajectory.flipPath();
+            if(isRedAlliance) trajectory = trajectory.flipPath().mirrorPath(); //why mirror twice
             Pose2d targetPose = trajectory.getPathPoses().get(0);
+            if(isRedAlliance) targetPose = new Pose2d(targetPose.getTranslation(), targetPose.getRotation().plus(Rotation2d.k180deg));
 
             drivetrain.setPoseMeters(targetPose);
 
