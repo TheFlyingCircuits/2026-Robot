@@ -38,6 +38,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
@@ -54,6 +55,9 @@ public class Drivetrain extends SubsystemBase {
     private boolean fullyTrustVisionNextPoseUpdate = false;
     private boolean allowTeleportsNextPoseUpdate = false;
     private boolean hasAcceptablePoseObservationsThisLoop = false;
+    private Translation2d robotAcelVector = new Translation2d(0.0,0.0);
+    private double lastLoopTimeStamp = Timer.getFPGATimestamp();
+    private ChassisSpeeds lastLoopChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private Optional<FieldElement> focus = Optional.empty();
 
     private SwerveModule[] swerveModules;
@@ -602,6 +606,10 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public Translation2d getRobotAcelFieldRelative() {
+        return robotAcelVector;
+    }
+
 
 
     @Override
@@ -617,6 +625,12 @@ public class Drivetrain extends SubsystemBase {
         Logger.processInputs("gyroInputs", gyroInputs);
 
         updatePoseEstimator();
+
+        double loopTimeDelta = lastLoopTimeStamp-Timer.getFPGATimestamp();
+        ChassisSpeeds chassisSpeedsDelta = getFieldOrientedVelocity().minus(lastLoopChassisSpeeds);
+        
+
+        robotAcelVector = new Translation2d(chassisSpeedsDelta.vxMetersPerSecond/loopTimeDelta, chassisSpeedsDelta.vyMetersPerSecond/loopTimeDelta);
         
 
         // intakeCam.periodic(fusedPoseEstimator);
