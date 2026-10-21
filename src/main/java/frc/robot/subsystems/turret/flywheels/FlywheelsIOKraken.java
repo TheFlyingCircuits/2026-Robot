@@ -101,7 +101,7 @@ public class FlywheelsIOKraken implements FlywheelsIO {
     public void setTargetFrontWheelVelocity(double targetVelocityRPS) {
         targetFrontWheelMPSLocal = targetVelocityRPS*1.0 * (Math.PI*TurretConstants.mainFlywheelDiameterMeters);
         if(!(runningBangBangController)) {
-            frontWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS*1.0));
+            frontWheelKraken.setControl(velTorqueFOC.withVelocity(targetVelocityRPS));
             // even is you set the motors to clockwise and counterclockwise you still need to set opposed if opposed
             frontWheelKrakenFollower.setControl(new Follower(TurretConstants.frontWheelKrakenID, MotorAlignmentValue.Opposed));
         } else {
