@@ -59,6 +59,7 @@ public class Drivetrain extends SubsystemBase {
     private double lastLoopTimeStamp = Timer.getFPGATimestamp();
     private ChassisSpeeds lastLoopChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
     private Optional<FieldElement> focus = Optional.empty();
+    public Pose3d boxTagPoseReal = new Pose3d();
 
     private SwerveModule[] swerveModules;
 
@@ -614,6 +615,12 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Optional<Pose3d> boxTagPose = limelights.getBoxTagPose(getPoseMeters(), this);
+        if(boxTagPose.isPresent()) {
+            boxTagPoseReal = boxTagPose.get();
+            // Logger.recordOutput("boxTagPose", boxTagPoseReal);
+        }
+        Logger.recordOutput("boxTagPose", boxTagPoseReal);
         // Logger.recordOutput("shift Timer", getShiftTeleTimer());
         // Logger.recordOutput("Time Till End", Shift.getSecondsTillEnd());
         for (SwerveModule mod : swerveModules)

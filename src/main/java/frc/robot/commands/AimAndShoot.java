@@ -176,6 +176,7 @@ public class AimAndShoot extends Command {
         //     robotFieldOrientedVelocity.get(), angleOfAttack, turretTranslation.get());
 
         // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
+        originalTargetTranlsation=drivetrain.boxTagPoseReal.getTranslation();
         shootingValues = TurretCalculations.angleOfAttackTrajCalc(originalTargetTranlsation, 
             angleOfAttack, turretTranslation.get());
 
