@@ -76,10 +76,10 @@ public class Drivetrain extends SubsystemBase {
     /** error measured in meters, output is in meters per second. */
     private PIDController translationController;
 
-    private final SwerveSetpointGenerator setpointGenerator;
-    private SwerveSetpoint previousSetpoint;
+    // private final SwerveSetpointGenerator setpointGenerator;
+    // private SwerveSetpoint previousSetpoint;
 
-    private double shiftTime = 0;
+    // private double shiftTime = 0;
  
     public Drivetrain(
         GyroIO gyroIO, 
@@ -134,26 +134,26 @@ public class Drivetrain extends SubsystemBase {
             new Pose2d());
 
 
-        RobotConfig config;
-        try{
-          config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-          // Handle exception as needed
-          config = null;
-          e.printStackTrace();
-        }
+        // RobotConfig config;
+        // try{
+        //   config = RobotConfig.fromGUISettings();
+        // } catch (Exception e) {
+        //   // Handle exception as needed
+        //   config = null;
+        //   e.printStackTrace();
+        // }
 
-        configurePathPlanner(config);
+        // configurePathPlanner(config);
 
-        setpointGenerator = new SwerveSetpointGenerator(
-            config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
-            Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
-        );
+        // setpointGenerator = new SwerveSetpointGenerator(
+        //     config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
+        //     Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
+        // );
 
         // Initialize the previous setpoint to the robot's current speeds & module states
-        ChassisSpeeds currentSpeeds = getRobotRelativeVelocityMPS(); // Method to get current robot-relative chassis speeds
-        SwerveModuleState[] currentStates = getModuleStates(); // Method to get the current swerve module states
-        previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules));
+        // ChassisSpeeds currentSpeeds = getRobotRelativeVelocityMPS(); // Method to get current robot-relative chassis speeds
+        // SwerveModuleState[] currentStates = getModuleStates(); // Method to get the current swerve module states
+        // previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules));
     }
 
     private void configurePathPlanner(RobotConfig config) {
