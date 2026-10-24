@@ -67,7 +67,7 @@ public class Limelights {
                     distanceM * Math.sin(Units.degreesToRadians(pitchReal))),
                     // new Rotation3d()
 
-                    new Rotation3d(0,0, Units.degreesToRadians(yawReal+180))
+                    new Rotation3d(0,0, Units.degreesToRadians(yawReal))
                 )));
             }
         }

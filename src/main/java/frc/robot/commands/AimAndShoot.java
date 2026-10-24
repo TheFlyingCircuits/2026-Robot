@@ -178,7 +178,7 @@ public class AimAndShoot extends Command {
         // in the list 0 is output velocity in mps, 1 is launch angle degrees, and 2 is time of impact seconds
         originalTargetTranlsation=drivetrain.boxTagPoseReal.getTranslation();
         double tagYawRad = drivetrain.boxTagPoseReal.getRotation().getZ();
-        originalTargetTranlsation = originalTargetTranlsation.plus(new Translation3d(0.0*tagYawRad,0.0*tagYawRad,0.7));
+        originalTargetTranlsation = originalTargetTranlsation.plus(new Translation3d(0.3*Math.cos(tagYawRad),0.3*Math.sin(tagYawRad),0.6));
         
         shootingValues = TurretCalculations.angleOfAttackTrajCalc(originalTargetTranlsation, 
             angleOfAttack, turretTranslation.get());
