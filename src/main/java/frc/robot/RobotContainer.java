@@ -351,8 +351,8 @@ public class RobotContainer {
     // AUTOS -------------------------------------------------------------------------------
 
     public Command getAutonomousCommand() {
-        // return new MeasureWheelDiameter(drivetrain);
-        return bumpAuto();
+        return new InstantCommand();
+        // return bumpAuto();
     }
 
     private Command passingLeftAuto() {

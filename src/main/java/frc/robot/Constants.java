@@ -88,8 +88,8 @@ public final class Constants {
         // public static final double maxAchievableVelocityMetersPerSecond = 1.0;
         public static final double krakenFreeSpeedRPM = 5800;
         public static final double krakenFreeSpeedRotationsPerSecond = krakenFreeSpeedRPM / 60.;
-        public static final double maxAchievableVelocityMetersPerSecond = krakenFreeSpeedRotationsPerSecond *
-            (SwerveModuleConstants.driveGearReduction) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
+        // public static final double maxAchievableVelocityMetersPerSecond = krakenFreeSpeedRotationsPerSecond *
+        //     (SwerveModuleConstants.driveGearReduction) * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
                                                                                                        // ~5.06 when adding 1/16 of an inch of wheel sink into the carpet.
                                                                                                        // ~5.10 using an emperical measurement of wheel radius on fresh wheels.
                                                                                                        // Actual top speed based on testing is ~4.7 m/s
@@ -98,6 +98,7 @@ public final class Constants {
                                                                                                        //  the battery voltage will likely drop below 12 when all drive motors are running)
                                                                                                        // To give ourselves a little breathing room, we use a max speed of 4.5 m/s in auto.
 
+         public static final double maxAchievableVelocityMetersPerSecond = 2.0;
         /**
          * This is the max desired speed that will be achievable in teleop.
          * <br>
@@ -127,7 +128,7 @@ public final class Constants {
          * This value will be tuned based off of driver preference.
          */ 
         // 1.7 rot per sec is about our max
-        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.5);
+        public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(1.0);
 
 
         public static final PathConstraints pathfindingConstraints = new PathConstraints(
